@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AGRIVISION | Real-Time Foliar Crop Disease Detection</title>
+  <title>AGRIVISION PRO | Real-Time Foliar Crop Disease Detection & Autonomous Telemetry</title>
   
-  <!-- Leaflet GIS & Modern Typography -->
+  <!-- Leaflet GIS & Fonts -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   
@@ -15,56 +15,73 @@
 
   <style>
     :root {
-      --bg-surface: #09110d;
-      --bg-panel: rgba(13, 25, 19, 0.82);
-      --bg-panel-hover: rgba(18, 36, 27, 0.9);
-      --bg-card: rgba(20, 39, 30, 0.6);
-      --bg-card-subtle: rgba(25, 48, 38, 0.5);
-      --bg-elevated: #162c21;
+      --bg-base: #0a0e17;
+      --bg-surface: #0f172a;
+      --bg-panel: rgba(17, 24, 39, 0.75);
+      --bg-panel-elevated: rgba(30, 41, 59, 0.85);
+      --bg-card: rgba(15, 23, 42, 0.65);
+      --bg-card-hover: rgba(30, 41, 59, 0.75);
       
-      --border-light: rgba(52, 211, 153, 0.15);
-      --border-accent: rgba(52, 211, 153, 0.35);
-      --border-glow: rgba(16, 185, 129, 0.45);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(16, 185, 129, 0.35);
+      --border-glow: rgba(16, 185, 129, 0.4);
       
-      --emerald-primary: #10b981;
-      --emerald-bright: #34d399;
-      --emerald-dark: #059669;
-      --cyan-accent: #06b6d4;
-      --amber-accent: #f59e0b;
-      --rose-accent: #ef4444;
+      --brand-emerald: #10b981;
+      --brand-mint: #34d399;
+      --brand-cyan: #06b6d4;
+      --brand-amber: #f59e0b;
+      --brand-rose: #ef4444;
       
-      --text-white: #ffffff;
-      --text-primary: #f2fbf6;
-      --text-secondary: #a7f3d0;
-      --text-muted: #6ee7b7;
-      --text-dim: #4ade80;
-      --text-slate: #94a3b8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --text-emerald: #34d399;
       
-      --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-ui: 'Plus Jakarta Sans', -apple-system, sans-serif;
       --font-body: 'Inter', sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       
       --radius-sm: 8px;
       --radius-md: 12px;
-      --radius-lg: 18px;
+      --radius-lg: 16px;
       --radius-full: 9999px;
       
-      --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.6), 0 0 1px rgba(52, 211, 153, 0.2);
-      --shadow-glow: 0 0 25px rgba(16, 185, 129, 0.25);
-      --backdrop-blur: blur(24px);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255, 255, 255, 0.1);
+      --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.25);
+      --backdrop-blur: blur(20px);
+    }
+
+    /* THEME: CYBER EMERALD */
+    body.theme-cyber {
+      --bg-base: #050f0a;
+      --bg-surface: #0a1f15;
+      --bg-panel: rgba(10, 31, 21, 0.82);
+      --border-subtle: rgba(52, 211, 153, 0.18);
+    }
+
+    /* THEME: FIELD DAYLIGHT */
+    body.theme-light {
+      --bg-base: #f1f5f9;
+      --bg-surface: #ffffff;
+      --bg-panel: rgba(255, 255, 255, 0.9);
+      --bg-card: rgba(241, 245, 249, 0.8);
+      --border-subtle: rgba(0, 0, 0, 0.1);
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #64748b;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background-color: var(--bg-surface);
+      background-color: var(--bg-base);
       background-image: 
-        radial-gradient(circle at 12% 8%, rgba(16, 185, 129, 0.1) 0%, transparent 40%),
-        radial-gradient(circle at 88% 92%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
-        linear-gradient(to right, rgba(52, 211, 153, 0.04) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(52, 211, 153, 0.04) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 28px 28px, 28px 28px;
-      color: var(--text-primary);
+        radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(6, 182, 212, 0.06) 0%, transparent 40%),
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+      color: var(--text-main);
       font-family: var(--font-body);
       min-height: 100vh;
       display: flex;
@@ -73,12 +90,12 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* TOP BRAND & TELEMETRY NAVBAR */
-    header.status-bar {
-      background: rgba(8, 18, 13, 0.88);
+    /* TOP NAVBAR */
+    header.top-navbar {
+      background: rgba(10, 14, 23, 0.85);
       backdrop-filter: var(--backdrop-blur);
       -webkit-backdrop-filter: var(--backdrop-blur);
-      border-bottom: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--border-subtle);
       padding: 12px 28px;
       display: flex;
       justify-content: space-between;
@@ -93,91 +110,87 @@
     .brand-group {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
     }
 
-    .brand-icon-box {
-      width: 42px;
-      height: 42px;
-      background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+    .brand-logo-badge {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #10b981 0%, #064e3b 100%);
       border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
+      font-size: 20px;
       border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.35);
     }
 
-    .brand-text-col {
+    .brand-title-wrap {
       display: flex;
       flex-direction: column;
-      gap: 2px;
     }
 
     .brand-title {
       font-family: var(--font-ui);
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 800;
-      letter-spacing: -0.3px;
-      color: var(--text-white);
+      letter-spacing: -0.2px;
+      color: var(--text-main);
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .brand-subtitle {
+    .brand-tag {
       font-family: var(--font-mono);
       font-size: 11px;
-      color: var(--emerald-bright);
+      color: var(--brand-mint);
       font-weight: 500;
-      letter-spacing: 0.4px;
     }
 
-    .header-telemetry-strip {
+    .telemetry-strip {
       display: flex;
       align-items: center;
       gap: 10px;
-      font-family: var(--font-mono);
-      font-size: 12px;
       flex-wrap: wrap;
     }
 
-    .telemetry-chip {
+    .pill-card {
       background: var(--bg-card);
-      border: 1px solid var(--border-light);
+      border: 1px solid var(--border-subtle);
       padding: 6px 12px;
       border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       gap: 8px;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-      transition: all 0.2s ease;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      transition: all 0.2s;
     }
 
-    .telemetry-chip:hover {
+    .pill-card:hover {
       border-color: var(--border-accent);
-      background: var(--bg-card-subtle);
     }
 
-    .chip-label {
-      color: var(--text-slate);
-      font-size: 11px;
+    .pill-label {
+      color: var(--text-dim);
       text-transform: uppercase;
       font-weight: 600;
+      font-size: 10.5px;
     }
 
-    .chip-val {
+    .pill-val {
+      color: var(--text-main);
       font-weight: 600;
-      color: var(--text-white);
     }
 
     .pulse-dot {
       width: 8px;
       height: 8px;
-      border-radius: var(--radius-full);
-      background: var(--emerald-bright);
-      box-shadow: 0 0 10px var(--emerald-bright);
+      border-radius: 50%;
+      background: var(--brand-mint);
+      box-shadow: 0 0 8px var(--brand-mint);
       animation: pulse 1.8s infinite;
     }
 
@@ -187,52 +200,133 @@
       100% { opacity: 1; transform: scale(1); }
     }
 
-    /* SEGMENTED DRIVE MODE */
-    .segmented-control {
+    /* NOTIFICATION BELL & THEME SWITCHER */
+    .nav-actions-right {
       display: flex;
       align-items: center;
-      background: rgba(14, 30, 22, 0.8);
-      border: 1px solid var(--border-light);
-      padding: 3px;
+      gap: 10px;
+    }
+
+    .btn-icon-nav {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      width: 36px;
+      height: 36px;
       border-radius: var(--radius-sm);
-      gap: 2px;
-    }
-
-    .segmented-btn {
-      padding: 5px 12px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-family: var(--font-mono);
-      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      border: none;
-      background: transparent;
-      color: var(--text-slate);
+      position: relative;
       transition: all 0.2s;
+      font-size: 16px;
     }
 
-    .segmented-btn.active {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: #02261a;
-      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
+    .btn-icon-nav:hover {
+      color: var(--text-main);
+      border-color: var(--border-accent);
+      background: var(--bg-card-hover);
     }
 
-    /* WORKSPACE SUB-NAV TABS */
+    .notif-badge-count {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: var(--brand-rose);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 800;
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--bg-base);
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+    }
+
+    /* NOTIFICATION DROPDOWN POPUP */
+    .notif-dropdown {
+      position: absolute;
+      top: 58px;
+      right: 28px;
+      width: 380px;
+      max-width: 90vw;
+      background: #0f172a;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.7), 0 0 20px rgba(16, 185, 129, 0.15);
+      z-index: 2000;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .notif-header {
+      padding: 12px 16px;
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .notif-list {
+      max-height: 320px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .notif-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+      transition: background 0.15s;
+    }
+
+    .notif-item:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .notif-item-top {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    /* SUB-NAV TABS */
     nav.subnav-tabs {
-      background: rgba(9, 20, 15, 0.7);
-      border-bottom: 1px solid var(--border-light);
+      background: rgba(10, 14, 23, 0.6);
+      border-bottom: 1px solid var(--border-subtle);
       padding: 8px 28px;
       display: flex;
       gap: 8px;
       align-items: center;
-      backdrop-filter: blur(16px);
+      backdrop-filter: blur(12px);
       overflow-x: auto;
     }
 
     .nav-tab-btn {
       background: transparent;
       border: 1px solid transparent;
-      color: var(--text-slate);
+      color: var(--text-muted);
       font-family: var(--font-ui);
       font-size: 13px;
       font-weight: 600;
@@ -247,20 +341,20 @@
     }
 
     .nav-tab-btn:hover {
-      background: rgba(52, 211, 153, 0.08);
-      color: var(--text-white);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
     }
 
     .nav-tab-btn.active {
       background: rgba(16, 185, 129, 0.15);
-      border-color: rgba(52, 211, 153, 0.3);
-      color: var(--emerald-bright);
+      border-color: rgba(52, 211, 153, 0.35);
+      color: var(--brand-mint);
     }
 
     /* MAIN GRID LAYOUT */
     main.dashboard-grid {
       display: grid;
-      grid-template-columns: 1.18fr 0.82fr;
+      grid-template-columns: 1.2fr 0.8fr;
       gap: 20px;
       padding: 24px 28px;
       flex: 1;
@@ -273,7 +367,6 @@
       main.dashboard-grid {
         grid-template-columns: 1fr;
         padding: 16px;
-        gap: 16px;
       }
     }
 
@@ -282,14 +375,13 @@
       background: var(--bg-panel);
       backdrop-filter: var(--backdrop-blur);
       -webkit-backdrop-filter: var(--backdrop-blur);
-      border: 1px solid var(--border-light);
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
       padding: 20px;
       display: flex;
       flex-direction: column;
       gap: 16px;
-      box-shadow: var(--shadow-soft);
-      position: relative;
+      box-shadow: var(--shadow-card);
       transition: border-color 0.2s ease;
     }
 
@@ -301,7 +393,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--border-subtle);
       padding-bottom: 12px;
       gap: 12px;
       flex-wrap: wrap;
@@ -309,9 +401,9 @@
 
     .panel-title {
       font-family: var(--font-ui);
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
-      color: var(--text-white);
+      color: var(--text-main);
       display: flex;
       align-items: center;
       gap: 8px;
@@ -321,12 +413,11 @@
       font-family: var(--font-mono);
       font-size: 11px;
       font-weight: 600;
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--emerald-bright);
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--brand-mint);
       border: 1px solid rgba(52, 211, 153, 0.3);
       padding: 3px 8px;
       border-radius: var(--radius-full);
-      white-space: nowrap;
     }
 
     /* 16:9 COMPUTER VISION VIEWPORT */
@@ -334,11 +425,10 @@
       position: relative;
       width: 100%;
       aspect-ratio: 16 / 9;
-      background: #020604;
+      background: #000000;
       border-radius: var(--radius-md);
       overflow: hidden;
-      border: 1px solid var(--border-light);
-      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.85);
+      border: 1px solid var(--border-subtle);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -356,9 +446,9 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 2.5px;
-      background: linear-gradient(90deg, transparent 0%, var(--emerald-bright) 50%, var(--cyan-accent) 80%, transparent 100%);
-      box-shadow: 0 0 14px var(--emerald-bright), 0 0 24px var(--cyan-accent);
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, var(--brand-mint) 50%, var(--brand-cyan) 80%, transparent 100%);
+      box-shadow: 0 0 12px var(--brand-mint), 0 0 20px var(--brand-cyan);
       animation: laserSweep 3.2s ease-in-out infinite alternate;
       pointer-events: none;
       z-index: 20;
@@ -378,9 +468,9 @@
 
     .hud-corner {
       position: absolute;
-      width: 20px;
-      height: 20px;
-      border-color: rgba(52, 211, 153, 0.65);
+      width: 18px;
+      height: 18px;
+      border-color: rgba(52, 211, 153, 0.6);
     }
     .hud-tl { top: 12px; left: 12px; border-top: 2px solid; border-left: 2px solid; }
     .hud-tr { top: 12px; right: 12px; border-top: 2px solid; border-right: 2px solid; }
@@ -394,11 +484,11 @@
       font-family: var(--font-mono);
       font-size: 11px;
       color: rgba(240, 253, 244, 0.9);
-      background: rgba(6, 17, 12, 0.85);
+      background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(8px);
       padding: 4px 10px;
       border-radius: 6px;
-      border: 1px solid var(--border-light);
+      border: 1px solid var(--border-subtle);
       display: flex;
       gap: 12px;
     }
@@ -406,7 +496,7 @@
     /* BOUNDING BOXES */
     .bbox {
       position: absolute;
-      border: 2px solid var(--rose-accent);
+      border: 2px solid var(--brand-rose);
       background: rgba(239, 68, 68, 0.16);
       border-radius: 4px;
       box-shadow: 0 0 14px rgba(239, 68, 68, 0.5);
@@ -416,7 +506,7 @@
     }
 
     .bbox.moderate {
-      border-color: var(--amber-accent);
+      border-color: var(--brand-amber);
       background: rgba(245, 158, 11, 0.16);
       box-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
     }
@@ -425,7 +515,7 @@
       position: absolute;
       top: -24px;
       left: -2px;
-      background: var(--rose-accent);
+      background: var(--brand-rose);
       color: #fff;
       font-family: var(--font-mono);
       font-size: 11px;
@@ -436,14 +526,14 @@
     }
 
     .bbox.moderate .bbox-tag {
-      background: var(--amber-accent);
+      background: var(--brand-amber);
       color: #000;
     }
 
-    /* UPLOAD & AUDIO SPEECH CONTROL BAR */
+    /* ACTION TOOLBAR: UPLOAD & SELECTIVE AUDIO */
     .action-toolbar-box {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(6, 182, 212, 0.04) 100%);
-      border: 1px solid var(--border-light);
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       padding: 14px 18px;
       display: flex;
@@ -461,19 +551,19 @@
 
     .upload-icon {
       font-size: 24px;
-      color: var(--emerald-bright);
+      color: var(--brand-mint);
     }
 
     .upload-text-title {
       font-family: var(--font-ui);
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 700;
-      color: var(--text-white);
+      color: var(--text-main);
     }
 
     .upload-text-desc {
       font-size: 11.5px;
-      color: var(--text-slate);
+      color: var(--text-muted);
       font-family: var(--font-mono);
     }
 
@@ -484,25 +574,25 @@
       flex-wrap: wrap;
     }
 
-    /* AUDIO TOGGLE SWITCH (Auto-Speak: ON/OFF) */
+    /* AUTO-SPEAK TOGGLE (OFF BY DEFAULT) */
     .toggle-wrapper {
       display: flex;
       align-items: center;
       gap: 8px;
-      background: rgba(8, 20, 14, 0.7);
-      border: 1px solid var(--border-light);
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-subtle);
       padding: 4px 10px;
       border-radius: var(--radius-full);
       font-family: var(--font-mono);
       font-size: 11px;
-      color: var(--text-slate);
+      color: var(--text-muted);
       user-select: none;
     }
 
     .toggle-switch {
       position: relative;
       display: inline-block;
-      width: 34px;
+      width: 32px;
       height: 18px;
     }
 
@@ -516,10 +606,9 @@
       position: absolute;
       cursor: pointer;
       top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #1e3a2b;
-      transition: .3s;
+      background-color: #334155;
+      transition: .25s;
       border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .toggle-slider:before {
@@ -527,19 +616,19 @@
       content: "";
       height: 12px;
       width: 12px;
-      left: 2px;
-      bottom: 2px;
+      left: 3px;
+      bottom: 3px;
       background-color: #94a3b8;
-      transition: .3s;
+      transition: .25s;
       border-radius: 50%;
     }
 
     input:checked + .toggle-slider {
-      background-color: var(--emerald-primary);
+      background-color: var(--brand-emerald);
     }
 
     input:checked + .toggle-slider:before {
-      transform: translateX(16px);
+      transform: translateX(14px);
       background-color: #ffffff;
     }
 
@@ -556,19 +645,19 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.25);
       transition: all 0.2s;
     }
 
     .btn-action-primary:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.5);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
     }
 
     .btn-action-outline {
-      background: rgba(16, 36, 25, 0.7);
-      border: 1px solid var(--border-accent);
-      color: var(--text-primary);
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
       padding: 8px 14px;
       border-radius: var(--radius-sm);
       font-family: var(--font-mono);
@@ -582,16 +671,16 @@
     }
 
     .btn-action-outline:hover {
-      background: rgba(52, 211, 153, 0.15);
-      border-color: var(--emerald-bright);
-      color: var(--emerald-bright);
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--brand-mint);
+      color: var(--brand-mint);
     }
 
     /* PATHOLOGY WARNING BANNER */
     .pathology-banner {
-      background: linear-gradient(90deg, rgba(239, 68, 68, 0.2) 0%, rgba(185, 28, 28, 0.1) 100%);
-      border: 1px solid rgba(239, 68, 68, 0.6);
-      border-left: 5px solid var(--rose-accent);
+      background: linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, rgba(185, 28, 28, 0.08) 100%);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-left: 4px solid var(--brand-rose);
       border-radius: var(--radius-md);
       padding: 12px 18px;
       display: flex;
@@ -603,14 +692,14 @@
 
     .pathology-title {
       font-family: var(--font-ui);
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       color: #fca5a5;
     }
 
     .pathology-desc {
       font-size: 12px;
-      color: #e2e8f0;
+      color: #cbd5e1;
       font-family: var(--font-mono);
       margin-top: 3px;
     }
@@ -645,7 +734,7 @@
       background: var(--bg-card);
       padding: 10px 14px;
       border-radius: var(--radius-md);
-      border: 1px solid var(--border-light);
+      border: 1px solid var(--border-subtle);
     }
 
     .slider-control-group {
@@ -654,22 +743,22 @@
       gap: 8px;
       font-family: var(--font-mono);
       font-size: 12px;
-      color: var(--text-slate);
+      color: var(--text-muted);
     }
 
     .slider-control-group strong {
-      color: var(--emerald-bright);
+      color: var(--brand-mint);
     }
 
     input[type=range] {
-      accent-color: var(--emerald-primary);
+      accent-color: var(--brand-emerald);
       cursor: pointer;
     }
 
     .model-select {
-      background: var(--bg-tile);
-      color: var(--text-white);
-      border: 1px solid var(--border-light);
+      background: var(--bg-surface);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
       padding: 6px 10px;
       border-radius: 6px;
       font-family: var(--font-mono);
@@ -692,7 +781,7 @@
 
     .hw-tile {
       background: var(--bg-card);
-      border: 1px solid var(--border-light);
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       padding: 14px;
       display: flex;
@@ -706,8 +795,8 @@
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 2.5px;
-      background: var(--emerald-primary);
+      height: 2px;
+      background: var(--brand-emerald);
     }
 
     .hw-tile-head {
@@ -715,7 +804,7 @@
       justify-content: space-between;
       font-family: var(--font-mono);
       font-size: 11px;
-      color: var(--text-slate);
+      color: var(--text-dim);
       text-transform: uppercase;
       font-weight: 600;
     }
@@ -732,14 +821,14 @@
 
     .hw-main-val span.unit {
       font-size: 13px;
-      color: var(--text-slate);
+      color: var(--text-dim);
       font-weight: 400;
     }
 
     .hw-tile-sub {
       font-family: var(--font-mono);
       font-size: 11px;
-      color: var(--text-secondary);
+      color: var(--text-muted);
       display: flex;
       justify-content: space-between;
     }
@@ -750,11 +839,11 @@
       border-radius: var(--radius-full);
       font-weight: 700;
     }
-    .badge-status.safe { background: rgba(16, 185, 129, 0.2); color: var(--emerald-bright); }
-    .badge-status.warn { background: rgba(245, 158, 11, 0.2); color: var(--amber-accent); }
-    .badge-status.danger { background: rgba(239, 68, 68, 0.2); color: var(--rose-accent); }
+    .badge-status.safe { background: rgba(16, 185, 129, 0.15); color: var(--brand-mint); }
+    .badge-status.warn { background: rgba(245, 158, 11, 0.15); color: var(--brand-amber); }
+    .badge-status.danger { background: rgba(239, 68, 68, 0.15); color: var(--brand-rose); }
 
-    /* D-PAD HUB & ACTUATORS */
+    /* D-PAD HUB */
     .dpad-hub-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -768,8 +857,8 @@
 
     .dpad-matrix {
       display: grid;
-      grid-template-columns: repeat(3, 54px);
-      grid-template-rows: repeat(3, 54px);
+      grid-template-columns: repeat(3, 52px);
+      grid-template-rows: repeat(3, 52px);
       gap: 8px;
       justify-content: center;
       margin: 0 auto;
@@ -777,9 +866,9 @@
 
     .dpad-btn {
       background: var(--bg-card);
-      border: 1px solid var(--border-light);
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius-sm);
-      color: var(--text-primary);
+      color: var(--text-main);
       font-family: var(--font-ui);
       font-size: 16px;
       font-weight: 700;
@@ -794,17 +883,17 @@
 
     .dpad-btn span.key-label {
       font-family: var(--font-mono);
-      font-size: 9.5px;
-      color: var(--text-slate);
+      font-size: 9px;
+      color: var(--text-dim);
     }
 
-    .dpad-btn:hover { background: rgba(52, 211, 153, 0.15); border-color: var(--emerald-bright); color: #fff; }
-    .dpad-btn:active, .dpad-btn.pressed { background: var(--emerald-bright); color: #02261a; transform: scale(0.95); }
+    .dpad-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--brand-mint); }
+    .dpad-btn:active, .dpad-btn.pressed { background: var(--brand-mint); color: #02261a; transform: scale(0.95); }
 
     .dpad-empty { background: transparent; border: none; }
-    .dpad-stop { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); color: #f87171; }
-    .dpad-stop:hover { background: rgba(239, 68, 68, 0.3); }
-    .dpad-stop:active, .dpad-stop.pressed { background: var(--rose-accent); color: #fff; }
+    .dpad-stop { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.35); color: #f87171; }
+    .dpad-stop:hover { background: rgba(239, 68, 68, 0.25); }
+    .dpad-stop:active, .dpad-stop.pressed { background: var(--brand-rose); color: #fff; }
 
     .btn-emergency-halt {
       background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
@@ -813,7 +902,7 @@
       border-radius: var(--radius-md);
       padding: 12px;
       font-family: var(--font-ui);
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 800;
       cursor: pointer;
       text-transform: uppercase;
@@ -821,18 +910,18 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      box-shadow: 0 0 18px rgba(239, 68, 68, 0.35);
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.35);
       transition: all 0.2s;
     }
 
     .btn-emergency-halt:hover {
-      box-shadow: 0 0 28px rgba(239, 68, 68, 0.6);
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.6);
       transform: translateY(-1px);
     }
 
     .throttle-box {
       background: var(--bg-card);
-      border: 1px solid var(--border-light);
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       padding: 10px 14px;
       display: flex;
@@ -844,9 +933,9 @@
     .throttle-presets { display: flex; gap: 6px; }
     .throttle-chip {
       flex: 1;
-      background: var(--bg-tile);
-      border: 1px solid var(--border-light);
-      color: var(--text-slate);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
       font-family: var(--font-mono);
       font-size: 11px;
       padding: 4px 0;
@@ -856,9 +945,9 @@
       transition: all 0.2s;
     }
     .throttle-chip.active {
-      border-color: var(--emerald-bright);
-      background: rgba(16, 185, 129, 0.2);
-      color: var(--emerald-bright);
+      border-color: var(--brand-mint);
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--brand-mint);
       font-weight: 700;
     }
 
@@ -870,7 +959,7 @@
       background: var(--bg-card);
       padding: 8px 14px;
       border-radius: var(--radius-sm);
-      border: 1px solid var(--border-light);
+      border: 1px solid var(--border-subtle);
       font-family: var(--font-mono);
       font-size: 11px;
       flex-wrap: wrap;
@@ -881,13 +970,13 @@
       width: 100%;
       height: 240px;
       border-radius: var(--radius-md);
-      border: 1px solid var(--border-light);
+      border: 1px solid var(--border-subtle);
     }
 
     .btn-realtime-loc {
       background: linear-gradient(135deg, #059669 0%, #047857 100%);
       color: #fff;
-      border: 1px solid var(--emerald-bright);
+      border: 1px solid var(--brand-mint);
       padding: 5px 12px;
       border-radius: 6px;
       font-family: var(--font-mono);
@@ -901,8 +990,8 @@
 
     /* TERMINAL AUDIT TRAIL */
     .terminal-container {
-      background: #030805;
-      border: 1px solid var(--border-light);
+      background: #060a12;
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       padding: 10px 14px;
       display: flex;
@@ -923,16 +1012,16 @@
     }
 
     .log-line { display: flex; gap: 6px; word-break: break-all; }
-    .log-time { color: var(--emerald-dark); }
-    .log-subsys { color: var(--emerald-bright); font-weight: 600; }
-    .log-line.danger .log-msg { color: var(--rose-accent); font-weight: 600; }
-    .log-line.warn .log-msg { color: var(--amber-accent); }
+    .log-time { color: var(--text-dim); }
+    .log-subsys { color: var(--brand-cyan); font-weight: 600; }
+    .log-line.danger .log-msg { color: var(--brand-rose); font-weight: 600; }
+    .log-line.warn .log-msg { color: var(--brand-amber); }
 
     /* ADVISORY CARD */
     .advisory-table-wrapper {
       max-height: 220px;
       overflow-y: auto;
-      border: 1px solid var(--border-light);
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       margin-top: 10px;
     }
@@ -945,104 +1034,206 @@
     }
 
     table.advisory-table th {
-      background: #0d2218;
-      color: #6ee7b7;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-muted);
       font-family: var(--font-mono);
       padding: 8px 12px;
       position: sticky;
       top: 0;
-      border-bottom: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--border-subtle);
     }
 
     table.advisory-table td {
       padding: 8px 12px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      color: #d1fae5;
+      color: #cbd5e1;
     }
 
     .pesticide-highlight {
-      color: var(--emerald-bright);
+      color: var(--brand-mint);
       font-family: var(--font-mono);
       font-weight: 600;
     }
 
-    /* MODAL */
+    /* IN-APP DASHBOARD NOTIFICATION BANNER */
+    .dashboard-notif-banner {
+      position: fixed;
+      top: 76px;
+      right: 28px;
+      width: 420px;
+      max-width: 90vw;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.98) 100%);
+      border: 1px solid var(--border-accent);
+      border-left: 5px solid var(--brand-emerald);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 25px rgba(16, 185, 129, 0.3);
+      z-index: 3000;
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(50px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .notif-banner-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-ui);
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .notif-banner-body {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      line-height: 1.5;
+      color: #cbd5e1;
+    }
+
+    /* MODAL FOR DISPATCH SMS / EMAIL */
     .modal-overlay {
       position: fixed; inset: 0;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.75);
       display: none; align-items: center; justify-content: center;
-      z-index: 2000; backdrop-filter: blur(4px);
+      z-index: 2500; backdrop-filter: blur(6px);
     }
 
     .modal-card {
-      background: #0d1e16;
-      border: 2px solid var(--rose-accent);
+      background: #0f172a;
+      border: 1px solid var(--border-subtle);
+      border-top: 3px solid var(--brand-emerald);
       border-radius: var(--radius-lg);
-      width: 90%; max-width: 520px;
+      width: 90%; max-width: 540px;
       padding: 24px;
-      display: flex; flex-direction: column; gap: 14px;
-      box-shadow: 0 0 35px rgba(239, 68, 68, 0.35);
+      display: flex; flex-direction: column; gap: 16px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.7);
     }
 
+    .modal-input-field {
+      width: 100%;
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      padding: 9px 14px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      outline: none;
+    }
+    .modal-input-field:focus { border-color: var(--brand-emerald); }
+
     .sms-preview-bubble {
-      background: #06110c;
-      border: 1px solid #1e4533;
-      border-radius: 8px;
-      padding: 14px;
+      background: #020617;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
       font-family: var(--font-mono);
       font-size: 11.5px;
-      line-height: 1.55;
-      color: #ecfdf5;
+      line-height: 1.5;
+      color: #e2e8f0;
       white-space: pre-wrap;
     }
 
     .toast {
       position: fixed; bottom: 24px; right: 24px;
-      background: #047857; border: 1px solid #34d399;
+      background: #064e3b; border: 1px solid var(--brand-mint);
       color: #fff; padding: 12px 20px; border-radius: var(--radius-md);
       font-family: var(--font-mono); font-size: 12.5px;
-      display: none; z-index: 3000; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      display: none; z-index: 4000; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
   </style>
 </head>
-<body>
+<body class="theme-obsidian">
 
-  <!-- [TOP BRAND & TELEMETRY NAVBAR] -->
-  <header class="status-bar">
+  <!-- [TOP NAVBAR] -->
+  <header class="top-navbar">
     <div class="brand-group">
-      <div class="brand-icon-box">🌿</div>
-      <div class="brand-text-col">
+      <div class="brand-logo-badge">🌿</div>
+      <div class="brand-title-wrap">
         <div class="brand-title">
           AGRIVISION OPERATOR DASHBOARD
         </div>
-        <div class="brand-subtitle">
-          REAL-TIME FOLIAR CROP DISEASE DETECTION &amp; AUTONOMOUS TELEMETRY
+        <div class="brand-tag">
+          FOLIAR PATHOLOGY EDGE PLATFORM • ALLIANCE UNIVERSITY LOT 3
         </div>
       </div>
     </div>
 
-    <div class="header-telemetry-strip">
-      <div class="telemetry-chip">
+    <!-- Live Telemetry Strip -->
+    <div class="telemetry-strip">
+      <div class="pill-card">
         <div class="pulse-dot"></div>
-        <span class="chip-label">Wi-Fi:</span>
-        <span class="chip-val" id="wifi-rssi" style="color: var(--emerald-bright);">-58 dBm</span>
+        <span class="pill-label">Wi-Fi:</span>
+        <span class="pill-val" id="wifi-rssi" style="color: var(--brand-mint);">-58 dBm</span>
       </div>
-      <div class="telemetry-chip">
-        <span class="chip-label">Camera:</span>
-        <span class="chip-val" style="color: var(--cyan-accent);">GalaxyCore GC2145 (10 MHz)</span>
+      <div class="pill-card">
+        <span class="pill-label">Camera:</span>
+        <span class="pill-val" style="color: var(--brand-cyan);">GC2145 (10 MHz)</span>
       </div>
-      <div class="telemetry-chip">
-        <span class="chip-label">Battery:</span>
-        <span class="chip-val" id="power-rail" style="color: var(--emerald-bright);">7.42V Rail (82%)</span>
+      <div class="pill-card">
+        <span class="pill-label">Power:</span>
+        <span class="pill-val" id="power-rail" style="color: var(--brand-mint);">7.42V Rail (82%)</span>
       </div>
-      <div class="segmented-control">
+      <div class="segmented-control" style="display:flex; background:rgba(255,255,255,0.05); padding:2px; border-radius:6px;">
         <button class="segmented-btn active" id="btn-manual" onclick="setMode('manual')">MANUAL</button>
         <button class="segmented-btn" id="btn-auto" onclick="setMode('auto')">AUTO</button>
       </div>
     </div>
+
+    <!-- Actions: Notifications Bell & Theme Toggle -->
+    <div class="nav-actions-right">
+      <!-- Notification Center Bell -->
+      <button class="btn-icon-nav" id="btn-notif-bell" onclick="toggleNotifDropdown()" title="View In-Dashboard Dispatch Alerts">
+        🔔
+        <div class="notif-badge-count" id="notif-badge">1</div>
+      </button>
+
+      <!-- Theme Switcher -->
+      <button class="btn-icon-nav" onclick="cycleTheme()" title="Switch Theme (Obsidian / Cyber Emerald / Light)">
+        🎨
+      </button>
+    </div>
   </header>
 
-  <!-- SUB-NAV TABS -->
+  <!-- NOTIFICATION DROPDOWN POPUP -->
+  <div class="notif-dropdown" id="notif-dropdown">
+    <div class="notif-header">
+      <span>🔔 In-Dashboard Alert Manifest</span>
+      <span style="font-family: var(--font-mono); font-size: 11px; color: var(--brand-mint);" id="notif-header-count">1 Dispatched Alert</span>
+    </div>
+    <div class="notif-list" id="notif-items-list">
+      <div class="notif-item">
+        <div class="notif-item-top">
+          <span style="color: var(--brand-rose); font-weight:700;">POTATO LATE BLIGHT</span>
+          <span style="color: var(--text-dim);">16:25 IST</span>
+        </div>
+        <div style="color: #cbd5e1;">Prescribed: Mancozeb 75% WP @ 2.5g/L</div>
+        <div style="color: var(--brand-mint); font-size:11px;">Target: harikant4880@gmail.com</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IN-APP DASHBOARD NOTIFICATION BANNER (Triggered on Dispatch) -->
+  <div class="dashboard-notif-banner" id="dash-notif-banner">
+    <div class="notif-banner-header">
+      <span id="banner-title">⚡ DISPATCH NOTIFICATION: Potato Late Blight</span>
+      <button onclick="closeDashBanner()" style="background:transparent; border:none; color:#94a3b8; font-size:16px; cursor:pointer;">&times;</button>
+    </div>
+    <div class="notif-banner-body" id="banner-body">
+      Disease alert dispatched to <strong>harikant4880@gmail.com</strong>.<br>
+      GPS: 12.82580° N, 77.71260° E | Alliance Lot 3.<br>
+      Prescribed: Mancozeb 75% WP @ 2.5g/L or Ridomil MZ @ 2g/L.
+    </div>
+  </div>
+
+  <!-- WORKSPACE SUBNAV TABS -->
   <nav class="subnav-tabs">
     <button class="nav-tab-btn active" onclick="switchTab('teleop')">⚡ Operator Workstation</button>
     <button class="nav-tab-btn" onclick="switchTab('diagnostics')">🔬 AI Pathology Lab</button>
@@ -1063,7 +1254,7 @@
             <span>Modules 3 &amp; 4: Computer Vision Viewport</span>
             <span class="badge-pill">YOLOv8 Edge Engine</span>
           </div>
-          <div style="font-family: var(--font-mono); font-size: 11.5px; color: var(--emerald-bright);" id="feed-status">
+          <div style="font-family: var(--font-mono); font-size: 11.5px; color: var(--brand-mint);" id="feed-status">
             ● LIVE STREAM | 15.2 FPS (DVP 10MHz)
           </div>
         </div>
@@ -1094,7 +1285,7 @@
                 Upload Leaf Photo for Instant Pathology Diagnosis
               </div>
               <div class="upload-text-desc">
-                Drop crop photos here to run instant bounding-box lesion detection
+                Select field crop photos to run instant bounding-box lesion detection
               </div>
             </div>
           </div>
@@ -1107,7 +1298,7 @@
                 <input type="checkbox" id="auto-speak-toggle" onchange="toggleAutoSpeak(this.checked)">
                 <span class="toggle-slider"></span>
               </label>
-              <span id="auto-speak-label" style="font-weight: 600; color: var(--text-slate);">OFF</span>
+              <span id="auto-speak-label" style="font-weight: 600; color: var(--text-muted);">OFF</span>
             </div>
 
             <input type="file" id="leaf-photo-input" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
@@ -1120,13 +1311,15 @@
           </div>
         </div>
 
-        <!-- Pathology Warning Banner -->
+        <!-- Pathology Warning Banner with Direct Email / SMS Dispatch Button -->
         <div class="pathology-banner" id="pathology-banner">
           <div>
             <div class="pathology-title" id="pathology-title">⚠️ PATHOLOGY DETECTED: Potato Late Blight</div>
             <div class="pathology-desc" id="pathology-desc">Prescribed Remedy: Mancozeb 75% WP @ 2.5g/L or Metalaxyl + Mancozeb (Ridomil MZ) @ 2g/L</div>
           </div>
-          <button class="btn-dispatch-sms" onclick="openSmsModal()">📱 Dispatch SMS</button>
+          <button class="btn-dispatch-sms" onclick="openSmsModal()">
+            📱 Dispatch to Email &amp; SMS
+          </button>
         </div>
 
         <!-- CV Controls Toolbar -->
@@ -1136,7 +1329,7 @@
             <input type="range" id="conf-slider" min="50" max="98" value="85" oninput="updateConfidence(this.value)">
           </div>
           <div>
-            <span style="font-family: var(--font-mono); font-size: 11.5px; color: var(--text-slate);">Model: </span>
+            <span style="font-family: var(--font-mono); font-size: 11.5px; color: var(--text-muted);">Model: </span>
             <select class="model-select" onchange="logEvent('MODEL', 'Model switched to ' + this.value, 'safe')">
               <option value="YOLOv8n">YOLOv8n-Foliar (3.2MB Nano)</option>
               <option value="YOLOv8s">YOLOv8s-CropDisease (11.2MB Standard)</option>
@@ -1159,7 +1352,7 @@
             <span>Modules 1, 2 &amp; 5: Real-Time Hardware Tiles</span>
             <span class="badge-pill">ESP32 &amp; Actuators</span>
           </div>
-          <div style="font-family: var(--font-mono); font-size: 11.5px; color: var(--emerald-bright);">
+          <div style="font-family: var(--font-mono); font-size: 11.5px; color: var(--brand-mint);">
             Telemetry Rate: 30 Hz
           </div>
         </div>
@@ -1171,7 +1364,7 @@
               <span class="badge-status safe" id="sonar-badge">CLEAR</span>
             </div>
             <div class="hw-main-val"><span id="sonar-dist">42.4</span><span class="unit">cm</span></div>
-            <div class="hw-tile-sub"><span>Auto-Stop: &lt; 20 cm</span><span style="color: var(--emerald-bright);">Safe Range</span></div>
+            <div class="hw-tile-sub"><span>Auto-Stop: &lt; 20 cm</span><span style="color: var(--brand-mint);">Safe Range</span></div>
           </div>
 
           <div class="hw-tile">
@@ -1203,8 +1396,8 @@
           </div>
         </div>
         <div style="display: flex; gap: 8px;">
-          <input type="text" id="advisory-search" placeholder="Search crop, disease or fungicide (e.g. Mancozeb, Potato, Rust)..." style="flex:1; background: var(--bg-card); border: 1px solid var(--border-light); color:#fff; padding:8px 14px; border-radius:var(--radius-sm); font-size:12px;" oninput="filterAdvisory()">
-          <select id="advisory-cat" style="background: var(--bg-card); border: 1px solid var(--border-light); color:#fff; padding:8px 14px; border-radius:var(--radius-sm); font-size:12px;" onchange="filterAdvisory()">
+          <input type="text" id="advisory-search" placeholder="Search crop, disease or fungicide (e.g. Mancozeb, Potato, Rust)..." style="flex:1; background: var(--bg-card); border: 1px solid var(--border-subtle); color:#fff; padding:8px 14px; border-radius:var(--radius-sm); font-size:12px;" oninput="filterAdvisory()">
+          <select id="advisory-cat" style="background: var(--bg-card); border: 1px solid var(--border-subtle); color:#fff; padding:8px 14px; border-radius:var(--radius-sm); font-size:12px;" onchange="filterAdvisory()">
             <option value="ALL">All Categories</option>
             <option value="Vegetables">Vegetables</option>
             <option value="Pulses & Oilseeds">Pulses &amp; Oilseeds</option>
@@ -1263,8 +1456,8 @@
           <div>
             <button class="btn-emergency-halt" onclick="triggerHalt()">🛑 EMERGENCY HALT</button>
             <div class="throttle-box">
-              <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11.5px; color:var(--text-secondary);">
-                <span>PWM Throttle:</span><span id="throttle-label">75% (191 PWM)</span>
+              <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11.5px; color:var(--text-muted);">
+                <span>PWM Throttle:</span><span id="throttle-label" style="color: var(--brand-mint);">75% (191 PWM)</span>
               </div>
               <input type="range" min="30" max="100" value="75" oninput="setThrottle(this.value)">
               <div class="throttle-presets">
@@ -1291,9 +1484,9 @@
         </div>
 
         <div class="location-hud-strip">
-          <div>GPS: <strong style="color: var(--emerald-bright);" id="gps-coords">12.82580° N, 77.71260° E</strong></div>
-          <div>Loc: <span style="color: #a7f3d0;" id="loc-name">Anekal Rural, Alliance Lot 3</span></div>
-          <div>Accuracy: <span style="color: var(--cyan-accent);" id="gps-acc">±2.4 m</span></div>
+          <div>GPS: <strong style="color: var(--brand-mint);" id="gps-coords">12.82580° N, 77.71260° E</strong></div>
+          <div>Loc: <span style="color: #cbd5e1;" id="loc-name">Alliance Lot 3, Bengaluru</span></div>
+          <div>Accuracy: <span style="color: var(--brand-cyan);" id="gps-acc">±2.4 m</span></div>
         </div>
 
         <div id="map" class="map-container"></div>
@@ -1308,7 +1501,7 @@
           </div>
           <div style="display: flex; gap: 6px;">
             <button class="btn-action-outline" onclick="clearLogs()">Clear</button>
-            <button class="btn-action-outline" style="color: var(--emerald-bright);" onclick="exportCSV()">1-Click CSV Export</button>
+            <button class="btn-action-outline" style="color: var(--brand-mint);" onclick="exportCSV()">1-Click CSV Export</button>
           </div>
         </div>
         <div class="terminal-container">
@@ -1319,15 +1512,42 @@
     </div>
   </main>
 
-  <!-- SMS MODAL -->
+  <!-- MODAL: DISPATCH SMS & EMAIL TO HARIKANT4880@GMAIL.COM -->
   <div class="modal-overlay" id="sms-modal">
     <div class="modal-card">
-      <h3 style="color:#fca5a5; font-family:var(--font-ui); font-size:18px;">📲 DISPATCH AGRONOMIC SMS ADVISORY</h3>
-      <p style="font-size:12px; color:var(--text-secondary);">Target: Alliance University Agro Station (+91 98450 12849)</p>
-      <div class="sms-preview-bubble" id="sms-text"></div>
-      <div style="display:flex; justify-content:flex-end; gap:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="color:#fca5a5; font-family:var(--font-ui); font-size:17px; font-weight:700;">
+          📲 DISPATCH PATHOLOGY ALERT
+        </h3>
+        <button onclick="closeSmsModal()" style="background:transparent; border:none; color:#94a3b8; font-size:18px; cursor:pointer;">&times;</button>
+      </div>
+
+      <!-- Recipient Inputs -->
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <label style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">Recipient Email ID (Configured):</label>
+        <input type="email" id="dispatch-email-input" class="modal-input-field" value="harikant4880@gmail.com" placeholder="Enter recipient email">
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <label style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">SMS Gateway Mobile Number:</label>
+        <input type="text" id="dispatch-phone-input" class="modal-input-field" value="+91 98450 12849" placeholder="Enter mobile number">
+      </div>
+
+      <!-- Preview -->
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <label style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">Alert Payload Preview:</label>
+        <div class="sms-preview-bubble" id="sms-text"></div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; margin-top:4px;">
         <button class="btn-action-outline" onclick="closeSmsModal()">Cancel</button>
-        <button class="btn-dispatch-sms" onclick="sendSms()">Confirm &amp; Send SMS</button>
+        <button class="btn-action-outline" style="border-color:var(--brand-cyan); color:var(--brand-cyan);" onclick="sendViaMailClient()">
+          ✉️ Open Mail Client
+        </button>
+        <button class="btn-dispatch-sms" onclick="sendSms()">
+          ⚡ Dispatch &amp; Notify Dashboard
+        </button>
       </div>
     </div>
   </div>
@@ -1365,7 +1585,7 @@
         disease: "Potato Late Blight (Phytophthora infestans)",
         severity: "HIGH",
         remedy: "Mancozeb 75% WP @ 2.5g/L or Metalaxyl + Mancozeb (Ridomil MZ) @ 2g/L",
-        color: "#20461e",
+        color: "#1e3a24",
         spots: [{x: 420, y: 220, r: 55, c: "#1c1917", h: "#854d0e"}],
         box: {x: 350, y: 140, w: 250, h: 210, label: "Potato Late Blight", conf: 0.95}
       },
@@ -1374,7 +1594,7 @@
         disease: "Groundnut Early Leaf Spot (Cercospora arachidicola)",
         severity: "MODERATE",
         remedy: "Mancozeb 75% WP @ 2g/L or Chlorothalonil 75% WP @ 2g/L",
-        color: "#2d4f13",
+        color: "#284218",
         spots: [{x: 380, y: 180, r: 35, c: "#451a03", h: "#eab308"}],
         box: {x: 320, y: 130, w: 200, h: 180, label: "Groundnut Leaf Spot", conf: 0.89}
       },
@@ -1383,7 +1603,7 @@
         disease: "Chilli Anthracnose (Colletotrichum capsici)",
         severity: "HIGH",
         remedy: "Mancozeb 75% WP @ 2.5g/L or Azoxystrobin @ 1ml/L",
-        color: "#163519",
+        color: "#152e19",
         spots: [{x: 460, y: 240, r: 45, c: "#1c1917", h: "#92400e"}],
         box: {x: 380, y: 170, w: 210, h: 190, label: "Chilli Anthracnose", conf: 0.92}
       }
@@ -1397,11 +1617,16 @@
     let path = [[roverLat, roverLng]];
     let logs = [];
     let customUploaded = false;
-    let autoSpeakEnabled = false; // By default: OFF (only speaks when user clicks "Speak Diagnosis")
+    let autoSpeakEnabled = false; // Muted by default per user instruction!
+    let notificationCount = 1;
+    let currentThemeIdx = 0;
+    const themes = ["theme-obsidian", "theme-cyber", "theme-light"];
+
     let currentDiagnosis = {
       crop: "Potato",
-      disease: "Potato Late Blight",
-      remedy: "Mancozeb 75% WP or Metalaxyl + Mancozeb (Ridomil MZ)"
+      disease: "Potato Late Blight (Phytophthora infestans)",
+      severity: "HIGH",
+      remedy: "Mancozeb 75% WP @ 2.5g/L or Metalaxyl + Mancozeb (Ridomil MZ) @ 2g/L"
     };
 
     window.onload = () => {
@@ -1411,9 +1636,9 @@
       initKeyboard();
       startRealtimeTracking();
 
-      logEvent("SYSTEM", "Agrivision Operator Dashboard Online. GalaxyCore GC2145 linked at 10 MHz.", "safe");
-      logEvent("L298N", "Dual H-Bridge Motor Driver Ready. PWM set to 191/255 (75%).", "safe");
-      logEvent("GEO", "GPS fix locked at Anekal Rural, Alliance University Lot 3 (12.82580 N, 77.71260 E).", "safe");
+      logEvent("SYSTEM", "Agrivision Pro Workstation Online. GC2145 sensor linked at 10 MHz.", "safe");
+      logEvent("L298N", "Dual H-Bridge Driver Ready. PWM calibrated to 191/255 (75%).", "safe");
+      logEvent("GEO", "GPS fix locked at Alliance University Lot 3, Bengaluru (12.82580 N, 77.71260 E).", "safe");
 
       setInterval(() => {
         const dist = (40 + (Math.random() * 6 - 3)).toFixed(1);
@@ -1423,17 +1648,39 @@
       }, 1500);
     };
 
+    // THEME SWITCHER
+    function cycleTheme() {
+      document.body.classList.remove(...themes);
+      currentThemeIdx = (currentThemeIdx + 1) % themes.length;
+      document.body.classList.add(themes[currentThemeIdx]);
+      showToast(`🎨 Theme: ${themes[currentThemeIdx].replace('theme-', '').toUpperCase()}`);
+    }
+
+    // NOTIFICATION DROPDOWN TOGGLE
+    function toggleNotifDropdown() {
+      const dd = document.getElementById("notif-dropdown");
+      dd.style.display = dd.style.display === "flex" ? "none" : "flex";
+      document.getElementById("notif-badge").innerText = "0";
+      notificationCount = 0;
+    }
+
+    // CLOSE NOTIFICATION BANNER
+    function closeDashBanner() {
+      document.getElementById("dash-notif-banner").style.display = "none";
+    }
+
+    // SELECTIVE AUDIO SPEECH TOGGLE
     function toggleAutoSpeak(isEnabled) {
       autoSpeakEnabled = isEnabled;
       const label = document.getElementById("auto-speak-label");
       if (isEnabled) {
         label.innerText = "ON";
-        label.style.color = "var(--emerald-bright)";
+        label.style.color = "var(--brand-mint)";
         showToast("🔊 Auto-Voice Speech: ENABLED (Speaks on detection)");
         logEvent("AUDIO", "Auto-voice speech enabled by operator.", "safe");
       } else {
         label.innerText = "OFF";
-        label.style.color = "var(--text-slate)";
+        label.style.color = "var(--text-muted)";
         showToast("🔈 Auto-Voice Speech: OFF (Speaks only when requested)");
         logEvent("AUDIO", "Auto-voice speech muted. Will only speak on manual click.", "safe");
       }
@@ -1453,15 +1700,15 @@
       }
     }
 
-    // RENDER CURRENT CROP SCENE
+    // RENDER LIVE SIMULATED CROP SCENE
     function renderScene() {
       if (customUploaded) return;
       const s = samples[sampleIdx];
-      currentDiagnosis = { crop: s.crop, disease: s.disease, remedy: s.remedy };
+      currentDiagnosis = { crop: s.crop, disease: s.disease, severity: s.severity, remedy: s.remedy };
 
       const canvas = document.getElementById("cvCanvas");
       const ctx = canvas.getContext("2d");
-      ctx.fillStyle = "#07130a";
+      ctx.fillStyle = "#020604";
       ctx.fillRect(0, 0, 960, 540);
 
       // Draw leaf background
@@ -1474,18 +1721,18 @@
       ctx.fillStyle = s.color;
       ctx.fill();
       ctx.strokeStyle = "#10b981";
-      ctx.lineWidth = 4;
+      ctx.lineWidth = 3;
       ctx.stroke();
 
       // Veins
       ctx.beginPath();
       ctx.moveTo(0, -170); ctx.lineTo(0, 180);
-      ctx.strokeStyle = "rgba(52, 211, 153, 0.4)"; ctx.lineWidth = 3; ctx.stroke();
+      ctx.strokeStyle = "rgba(52, 211, 153, 0.35)"; ctx.lineWidth = 2.5; ctx.stroke();
       ctx.restore();
 
       // Lesions
       s.spots.forEach(sp => {
-        const g = ctx.createRadialGradient(sp.x, sp.y, 10, sp.x, sp.y, sp.r * 1.5);
+        const g = ctx.createRadialGradient(sp.x, sp.y, 8, sp.x, sp.y, sp.r * 1.5);
         g.addColorStop(0, sp.c);
         g.addColorStop(0.6, sp.h);
         g.addColorStop(1, "transparent");
@@ -1513,7 +1760,7 @@
 
       document.getElementById("pathology-title").innerText = `⚠️ PATHOLOGY DETECTED: ${s.disease}`;
       document.getElementById("pathology-desc").innerText = `Crop: ${s.crop} | Prescribed: ${s.remedy}`;
-      document.getElementById("sms-text").innerText = `[AGRIVISION ALERT]\nCrop: ${s.crop} (Alliance Lot 3)\nGPS: ${roverLat.toFixed(5)} N, ${roverLng.toFixed(5)} E\nPathology: ${s.disease}\nRemedy: ${s.remedy}\nTimestamp: ${new Date().toLocaleTimeString()} IST`;
+      updatePayloadPreview();
       logEvent("CV-YOLOv8", `Inference: ${s.disease} (${(s.box.conf*100).toFixed(1)}% conf) [9.4ms]`, "danger");
 
       if (autoSpeakEnabled) {
@@ -1521,7 +1768,7 @@
       }
     }
 
-    // PHOTO UPLOAD WITH CLEAN ASPECT-RATIO HANDLING
+    // PHOTO UPLOAD WITH CLEAN ASPECT-RATIO PRESERVATION
     function handlePhotoUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1535,11 +1782,11 @@
           const ctx = canvas.getContext("2d");
           ctx.clearRect(0, 0, 960, 540);
 
-          // Dark clean background
-          ctx.fillStyle = "#040906";
+          // Dark clean canvas
+          ctx.fillStyle = "#020604";
           ctx.fillRect(0, 0, 960, 540);
 
-          // Calculate aspect ratio fit (contain) so image is never distorted
+          // Scale proportionally without distortion (contain mode)
           const scale = Math.min(960 / img.width, 540 / img.height);
           const drawW = img.width * scale;
           const drawH = img.height * scale;
@@ -1548,8 +1795,8 @@
 
           ctx.drawImage(img, drawX, drawY, drawW, drawH);
 
-          // Simulated intelligent detection matching uploaded photo
-          const fileName = file.name.toLowerCase();
+          // Match disease based on file name or smart pattern
+          const fn = file.name.toLowerCase();
           let match = {
             crop: "Potato",
             disease: "Potato Late Blight (Phytophthora infestans)",
@@ -1557,21 +1804,21 @@
             remedy: "Spray Mancozeb 75% WP @ 2.5g/L or Metalaxyl + Mancozeb (Ridomil MZ) @ 2g/L immediately."
           };
 
-          if (fileName.includes("groundnut") || fileName.includes("peanut") || fileName.includes("spot")) {
+          if (fn.includes("groundnut") || fn.includes("peanut") || fn.includes("spot")) {
             match = {
               crop: "Groundnut",
               disease: "Groundnut Early Leaf Spot (Cercospora arachidicola)",
               severity: "MODERATE",
               remedy: "Spray Chlorothalonil 75% WP @ 2g/L or Mancozeb @ 2g/L."
             };
-          } else if (fileName.includes("chilli") || fileName.includes("pepper") || fileName.includes("anthracnose")) {
+          } else if (fn.includes("chilli") || fn.includes("pepper") || fn.includes("anthracnose")) {
             match = {
               crop: "Chilli",
               disease: "Chilli Anthracnose Fruit Rot (Colletotrichum capsici)",
               severity: "HIGH",
               remedy: "Apply Mancozeb 75% WP @ 2.5g/L or Azoxystrobin @ 1ml/L."
             };
-          } else if (fileName.includes("healthy") || fileName.includes("clean")) {
+          } else if (fn.includes("healthy") || fn.includes("clean")) {
             match = {
               crop: "Crop Foliage",
               disease: "Healthy Foliage (No Pathology Detected)",
@@ -1582,7 +1829,7 @@
 
           currentDiagnosis = match;
 
-          // Render uploaded bounding box
+          // Project bounding box
           const bboxBox = document.getElementById("bbox-container");
           bboxBox.innerHTML = "";
           const scaleX = bboxBox.clientWidth / 960;
@@ -1599,17 +1846,16 @@
             bboxBox.appendChild(div);
           }
 
-          document.getElementById("feed-status").innerText = `● USER PHOTO: ${file.name.substring(0, 22)}`;
+          document.getElementById("feed-status").innerText = `● USER PHOTO: ${file.name.substring(0, 20)}`;
           document.getElementById("pathology-title").innerText = match.severity === "HEALTHY" 
             ? `✅ HEALTHY LEAF: ${match.disease}` 
             : `⚠️ PATHOLOGY DETECTED: ${match.disease}`;
           document.getElementById("pathology-desc").innerText = `Crop: ${match.crop} | Prescribed: ${match.remedy}`;
-          document.getElementById("sms-text").innerText = `[AGRIVISION ALERT]\nUploaded Photo: ${file.name}\nCrop: ${match.crop}\nPathology: ${match.disease}\nPrescribed: ${match.remedy}\nGPS: ${roverLat.toFixed(5)} N, ${roverLng.toFixed(5)} E`;
 
+          updatePayloadPreview();
           logEvent("USER-UPLOAD", `Analyzed ${file.name}: ${match.disease} (Confidence: 94.2%).`, match.severity === "HEALTHY" ? "safe" : "danger");
           showToast(`📸 Analyzed: ${match.disease.split("(")[0]}`);
 
-          // Only speak if user has explicitly enabled Auto-Speak!
           if (autoSpeakEnabled) {
             speakCurrentDiagnosis();
           }
@@ -1617,6 +1863,24 @@
         img.src = e.target.result;
       };
       reader.readAsDataURL(file);
+    }
+
+    // UPDATE PAYLOAD PREVIEW IN MODAL
+    function updatePayloadPreview() {
+      const email = document.getElementById("dispatch-email-input") ? document.getElementById("dispatch-email-input").value : "harikant4880@gmail.com";
+      const preview = `[AGRIVISION CROP PATHOLOGY ALERT]
+To: ${email}
+Field Site: Alliance University Lot 3, Bengaluru, Karnataka
+Coordinates: ${roverLat.toFixed(5)}° N, ${roverLng.toFixed(5)}° E
+Crop: ${currentDiagnosis.crop}
+Detected Pathology: ${currentDiagnosis.disease}
+Severity Level: ${currentDiagnosis.severity || 'HIGH'}
+Prescribed Chemical: ${currentDiagnosis.remedy}
+Application Note: Spray in calm morning conditions with calibrated nozzle. Rotate chemical groups to arrest resistance.
+Timestamp: ${new Date().toLocaleString()} IST`;
+
+      const el = document.getElementById("sms-text");
+      if (el) el.innerText = preview;
     }
 
     // TEXT TO SPEECH (Only speaks when called or auto-speak is enabled)
@@ -1652,12 +1916,12 @@
         clearInterval(autoTimer);
         autoTimer = null;
         b.innerText = "Auto-Cycle";
-        b.style.color = "var(--text-primary)";
+        b.style.color = "var(--text-main)";
       } else {
         customUploaded = false;
         autoTimer = setInterval(() => cycleCrop(1), 3500);
         b.innerText = "Pause";
-        b.style.color = "var(--emerald-bright)";
+        b.style.color = "var(--brand-mint)";
       }
     }
 
@@ -1705,6 +1969,7 @@
       map.setView([roverLat, roverLng], 18);
       document.getElementById("gps-coords").innerText = `${roverLat.toFixed(5)}° N, ${roverLng.toFixed(5)}° E`;
       document.getElementById("gps-acc").innerText = `±${acc.toFixed(1)} m`;
+      updatePayloadPreview();
     }
 
     function initMap() {
@@ -1740,6 +2005,7 @@
         path.push([roverLat, roverLng]);
         pathLine.setLatLngs(path);
         document.getElementById("gps-coords").innerText = `${roverLat.toFixed(5)}° N, ${roverLng.toFixed(5)}° E`;
+        updatePayloadPreview();
       }
     }
 
@@ -1813,7 +2079,7 @@
       tbody.innerHTML = "";
       data.forEach(d => {
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${d.sno}</td><td style="color:#6ee7b7; font-weight:600;">${d.crop}</td><td><strong>${d.disease}</strong></td><td style="color:#a7f3d0;">${d.height}</td><td>${d.symptoms}</td><td class="pesticide-highlight">${d.pesticides}</td>`;
+        tr.innerHTML = `<td>${d.sno}</td><td style="color:var(--brand-mint); font-weight:600;">${d.crop}</td><td><strong>${d.disease}</strong></td><td style="color:#94a3b8;">${d.height}</td><td>${d.symptoms}</td><td class="pesticide-highlight">${d.pesticides}</td>`;
         tbody.appendChild(tr);
       });
     }
@@ -1829,18 +2095,77 @@
       renderAdvisory(filtered);
     }
 
-    function openSmsModal() { document.getElementById("sms-modal").style.display = "flex"; }
-    function closeSmsModal() { document.getElementById("sms-modal").style.display = "none"; }
-    function sendSms() {
-      closeSmsModal();
-      logEvent("SMS", `Dispatched agronomic alert to farm manager (+91 98450 12849)`, "danger");
-      showToast("✅ SMS Alert Dispatched to Field Manager!");
+    // MODAL & DISPATCH SYSTEM (WITH IN-APP NOTIFICATION & EMAIL TRIGGER)
+    function openSmsModal() {
+      updatePayloadPreview();
+      document.getElementById("sms-modal").style.display = "flex";
     }
+
+    function closeSmsModal() {
+      document.getElementById("sms-modal").style.display = "none";
+    }
+
+    // 1-Click Launch Email Client
+    function sendViaMailClient() {
+      const email = document.getElementById("dispatch-email-input").value || "harikant4880@gmail.com";
+      const subject = encodeURIComponent(`[AGRIVISION ALERT] ${currentDiagnosis.disease} at Alliance Lot 3`);
+      const body = encodeURIComponent(document.getElementById("sms-text").innerText);
+      window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+      sendSms();
+    }
+
+    // DISPATCH TO EMAIL & SMS WITH IN-DASHBOARD NOTIFICATION
+    function sendSms() {
+      const email = document.getElementById("dispatch-email-input").value || "harikant4880@gmail.com";
+      const phone = document.getElementById("dispatch-phone-input").value || "+91 98450 12849";
+      closeSmsModal();
+
+      // 1. Show In-App Dashboard Notification Banner
+      const banner = document.getElementById("dash-notif-banner");
+      document.getElementById("banner-title").innerText = `⚡ DISPATCHED: ${currentDiagnosis.disease}`;
+      document.getElementById("banner-body").innerHTML = `
+        Pathology alert successfully queued for <strong>${email}</strong> &amp; SMS gateway (${phone}).<br>
+        <strong>Issue:</strong> ${currentDiagnosis.crop} - ${currentDiagnosis.disease} (${currentDiagnosis.severity || 'HIGH'} severity)<br>
+        <strong>Prescribed:</strong> ${currentDiagnosis.remedy}<br>
+        <strong>GPS:</strong> ${roverLat.toFixed(5)}° N, ${roverLng.toFixed(5)}° E (Alliance Lot 3)
+      `;
+      banner.style.display = "flex";
+
+      // Auto hide banner after 8 seconds
+      setTimeout(() => {
+        banner.style.display = "none";
+      }, 8000);
+
+      // 2. Increment Notification Center Bell Badge & Add Item
+      notificationCount++;
+      document.getElementById("notif-badge").innerText = notificationCount;
+      document.getElementById("notif-header-count").innerText = `${notificationCount} Dispatched Alert${notificationCount > 1 ? 's' : ''}`;
+
+      const notifList = document.getElementById("notif-items-list");
+      const newItem = document.createElement("div");
+      newItem.className = "notif-item";
+      newItem.innerHTML = `
+        <div class="notif-item-top">
+          <span style="color: var(--brand-rose); font-weight:700;">${currentDiagnosis.disease.split("(")[0]}</span>
+          <span style="color: var(--text-dim);">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} IST</span>
+        </div>
+        <div style="color: #cbd5e1;">Prescribed: ${currentDiagnosis.remedy}</div>
+        <div style="color: var(--brand-mint); font-size:11px;">Target: ${email}</div>
+      `;
+      notifList.insertBefore(newItem, notifList.firstChild);
+
+      // 3. Log Telemetry Event
+      logEvent("DISPATCH", `Alert dispatched to ${email} & ${phone}: ${currentDiagnosis.disease} [Alliance Lot 3]`, "danger");
+
+      // 4. Toast
+      showToast(`✅ Alert Dispatched & Dashboard Notified! (${email})`);
+    }
+
     function showToast(m) {
       const t = document.getElementById("toast");
       t.innerText = m;
       t.style.display = "block";
-      setTimeout(() => t.style.display = "none", 3000);
+      setTimeout(() => t.style.display = "none", 3500);
     }
   </script>
 </body>
