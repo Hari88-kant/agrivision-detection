@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AGRIVISION PRO | Real-Time Foliar Crop Disease Detection & Autonomous Telemetry</title>
+  <title>AGRIVISION PRO | Foliar Pathology & Autonomous Telemetry Workstation</title>
   
-  <!-- Leaflet GIS & Fonts -->
+  <!-- Leaflet GIS & High-Performance Web Fonts -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   
@@ -14,85 +14,169 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    :root {
-      --bg-base: #0a0e17;
-      --bg-surface: #0f172a;
-      --bg-panel: rgba(17, 24, 39, 0.78);
-      --bg-panel-elevated: rgba(30, 41, 59, 0.88);
-      --bg-card: rgba(15, 23, 42, 0.65);
-      --bg-card-hover: rgba(30, 41, 59, 0.75);
+    /* ==========================================================================
+       THEME SYSTEM: 5 DISTINCT PREMIUM PALETTES
+       ========================================================================== */
+    
+    /* 1. OBSIDIAN MIDNIGHT (Default: Sleek Titanium & Slate SaaS) */
+    :root, body.theme-obsidian {
+      --bg-base: #070a12;
+      --bg-surface: #0c1220;
+      --bg-panel: rgba(15, 23, 42, 0.78);
+      --bg-panel-elevated: rgba(30, 41, 59, 0.9);
+      --bg-card: rgba(20, 32, 54, 0.65);
+      --bg-card-hover: rgba(30, 48, 80, 0.8);
+      --bg-input: #111a2e;
       
       --border-subtle: rgba(255, 255, 255, 0.08);
       --border-accent: rgba(16, 185, 129, 0.35);
-      --border-glow: rgba(16, 185, 129, 0.4);
+      --border-glow: rgba(16, 185, 129, 0.45);
       
-      --brand-emerald: #10b981;
-      --brand-mint: #34d399;
-      --brand-cyan: #06b6d4;
-      --brand-amber: #f59e0b;
-      --brand-rose: #ef4444;
+      --primary: #10b981;
+      --primary-bright: #34d399;
+      --primary-dark: #059669;
+      --accent-cyan: #06b6d4;
+      --accent-amber: #f59e0b;
+      --accent-rose: #ef4444;
       
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --text-dim: #64748b;
-      --text-emerald: #34d399;
-      
-      --font-ui: 'Plus Jakarta Sans', -apple-system, sans-serif;
-      --font-body: 'Inter', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-      
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --radius-full: 9999px;
-      
-      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255, 255, 255, 0.1);
-      --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.25);
-      --backdrop-blur: blur(20px);
+      --badge-bg: rgba(16, 185, 129, 0.14);
+      --badge-text: #34d399;
     }
 
-    body.theme-cyber {
-      --bg-base: #050f0a;
-      --bg-surface: #0a1f15;
-      --bg-panel: rgba(10, 31, 21, 0.82);
-      --border-subtle: rgba(52, 211, 153, 0.18);
+    /* 2. EMERALD BIOSPHERE (Lush Cyber-Agritech) */
+    body.theme-emerald {
+      --bg-base: #040d08;
+      --bg-surface: #07190f;
+      --bg-panel: rgba(10, 31, 20, 0.82);
+      --bg-panel-elevated: rgba(16, 46, 30, 0.92);
+      --bg-card: rgba(12, 38, 25, 0.7);
+      --bg-card-hover: rgba(18, 54, 36, 0.85);
+      --bg-input: #092416;
+      
+      --border-subtle: rgba(52, 211, 153, 0.16);
+      --border-accent: rgba(52, 211, 153, 0.45);
+      --border-glow: rgba(16, 185, 129, 0.55);
+      
+      --primary: #10b981;
+      --primary-bright: #4ade80;
+      --primary-dark: #047857;
+      --accent-cyan: #2dd4bf;
+      --accent-amber: #fbbf24;
+      --accent-rose: #f87171;
+      
+      --text-main: #f0fdf4;
+      --text-muted: #86efac;
+      --text-dim: #4ade80;
+      --badge-bg: rgba(16, 185, 129, 0.2);
+      --badge-text: #4ade80;
     }
 
+    /* 3. CYBERPUNK NEON (Futuristic Autonomous Robot) */
+    body.theme-cyberpunk {
+      --bg-base: #080614;
+      --bg-surface: #100c26;
+      --bg-panel: rgba(22, 17, 50, 0.82);
+      --bg-panel-elevated: rgba(35, 27, 78, 0.92);
+      --bg-card: rgba(28, 21, 64, 0.7);
+      --bg-card-hover: rgba(45, 34, 102, 0.85);
+      --bg-input: #1a133d;
+      
+      --border-subtle: rgba(168, 85, 247, 0.22);
+      --border-accent: rgba(236, 72, 153, 0.45);
+      --border-glow: rgba(6, 182, 212, 0.55);
+      
+      --primary: #06b6d4;
+      --primary-bright: #38bdf8;
+      --primary-dark: #0284c7;
+      --accent-cyan: #ec4899;
+      --accent-amber: #fb923c;
+      --accent-rose: #f43f5e;
+      
+      --text-main: #faf5ff;
+      --text-muted: #c084fc;
+      --text-dim: #9333ea;
+      --badge-bg: rgba(6, 182, 212, 0.2);
+      --badge-text: #38bdf8;
+    }
+
+    /* 4. NORDIC FROST (Minimalist Clean Steel Blue) */
+    body.theme-nordic {
+      --bg-base: #0b1118;
+      --bg-surface: #121c27;
+      --bg-panel: rgba(22, 33, 46, 0.8);
+      --bg-panel-elevated: rgba(32, 48, 66, 0.9);
+      --bg-card: rgba(26, 39, 54, 0.7);
+      --bg-card-hover: rgba(38, 57, 79, 0.85);
+      --bg-input: #172433;
+      
+      --border-subtle: rgba(148, 163, 184, 0.18);
+      --border-accent: rgba(56, 189, 248, 0.4);
+      --border-glow: rgba(56, 189, 248, 0.5);
+      
+      --primary: #38bdf8;
+      --primary-bright: #7dd3fc;
+      --primary-dark: #0284c7;
+      --accent-cyan: #818cf8;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      
+      --text-main: #f8fafc;
+      --text-muted: #cbd5e1;
+      --text-dim: #94a3b8;
+      --badge-bg: rgba(56, 189, 248, 0.18);
+      --badge-text: #7dd3fc;
+    }
+
+    /* 5. FIELD DAYLIGHT (High-Contrast Outdoor Sunlight Mode) */
     body.theme-light {
-      --bg-base: #f1f5f9;
+      --bg-base: #f8fafc;
       --bg-surface: #ffffff;
-      --bg-panel: rgba(255, 255, 255, 0.9);
-      --bg-card: rgba(241, 245, 249, 0.8);
+      --bg-panel: rgba(255, 255, 255, 0.95);
+      --bg-panel-elevated: #ffffff;
+      --bg-card: rgba(241, 245, 249, 0.9);
+      --bg-card-hover: rgba(226, 232, 240, 0.95);
+      --bg-input: #ffffff;
+      
       --border-subtle: rgba(0, 0, 0, 0.1);
+      --border-accent: rgba(16, 185, 129, 0.4);
+      --border-glow: rgba(16, 185, 129, 0.3);
+      
+      --primary: #059669;
+      --primary-bright: #10b981;
+      --primary-dark: #047857;
+      --accent-cyan: #0891b2;
+      --accent-amber: #d97706;
+      --accent-rose: #dc2626;
+      
       --text-main: #0f172a;
       --text-muted: #475569;
       --text-dim: #64748b;
+      --badge-bg: rgba(5, 150, 105, 0.12);
+      --badge-text: #059669;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background-color: var(--bg-base);
-      background-image: 
-        radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 90% 90%, rgba(6, 182, 212, 0.06) 0%, transparent 40%),
-        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
       color: var(--text-main);
-      font-family: var(--font-body);
+      font-family: 'Inter', -apple-system, sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     /* TOP NAVBAR */
     header.top-navbar {
-      background: rgba(10, 14, 23, 0.85);
-      backdrop-filter: var(--backdrop-blur);
-      -webkit-backdrop-filter: var(--backdrop-blur);
+      background: var(--bg-surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border-subtle);
       padding: 12px 28px;
       display: flex;
@@ -103,1370 +187,530 @@
       position: sticky;
       top: 0;
       z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
 
-    .brand-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-logo-badge {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, #10b981 0%, #064e3b 100%);
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .brand-wrap { display: flex; align-items: center; gap: 12px; }
+    .brand-icon-box {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
       font-size: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 0 15px rgba(16, 185, 129, 0.35);
+      box-shadow: 0 0 16px var(--border-glow);
     }
-
-    .brand-title-wrap {
-      display: flex;
-      flex-direction: column;
-    }
-
+    .brand-info { display: flex; flex-direction: column; }
     .brand-title {
-      font-family: var(--font-ui);
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: -0.2px;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 18px; font-weight: 800; letter-spacing: -0.2px;
+      display: flex; align-items: center; gap: 8px;
     }
-
     .brand-tag {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--brand-mint);
-      font-weight: 500;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--primary-bright); font-weight: 500;
     }
 
-    .telemetry-strip {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .pill-card {
+    .header-actions-group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .pill-telemetry {
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
       padding: 6px 12px;
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--font-mono);
+      border-radius: 8px;
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
       font-size: 11.5px;
-      transition: all 0.2s;
     }
-
-    .pill-card:hover {
-      border-color: var(--border-accent);
-    }
-
-    .pill-label {
-      color: var(--text-dim);
-      text-transform: uppercase;
-      font-weight: 600;
-      font-size: 10.5px;
-    }
-
-    .pill-val {
-      color: var(--text-main);
-      font-weight: 600;
-    }
+    .pill-label { color: var(--text-dim); text-transform: uppercase; font-size: 10px; font-weight: 600; }
+    .pill-val { font-weight: 600; color: var(--text-main); }
 
     .pulse-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--brand-mint);
-      box-shadow: 0 0 8px var(--brand-mint);
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--primary-bright);
+      box-shadow: 0 0 8px var(--primary-bright);
       animation: pulse 1.8s infinite;
     }
+    @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(0.85); } 100% { opacity: 1; transform: scale(1); } }
 
-    @keyframes pulse {
-      0% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.3; transform: scale(0.85); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    .segmented-control {
-      display: flex;
-      align-items: center;
-      background: rgba(14, 30, 22, 0.8);
+    .theme-select-wrap {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--bg-card);
       border: 1px solid var(--border-subtle);
-      padding: 3px;
-      border-radius: var(--radius-sm);
-      gap: 2px;
+      padding: 4px 10px; border-radius: 8px;
     }
-
-    .segmented-btn {
-      padding: 5px 12px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-family: var(--font-mono);
-      font-weight: 700;
-      cursor: pointer;
-      border: none;
-      background: transparent;
-      color: var(--text-slate);
-      transition: all 0.2s;
+    .theme-select {
+      background: transparent; border: none;
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12px; font-weight: 600; outline: none; cursor: pointer;
     }
+    .theme-select option { background: var(--bg-surface); color: var(--text-main); }
 
-    .segmented-btn.active {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: #02261a;
-      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
-    }
-
-    .nav-actions-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .btn-icon-nav {
+    .btn-icon-header {
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
       color: var(--text-muted);
-      width: 36px;
-      height: 36px;
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      position: relative;
-      transition: all 0.2s;
-      font-size: 16px;
+      width: 36px; height: 36px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; position: relative; transition: all 0.2s; font-size: 16px;
     }
-
-    .btn-icon-nav:hover {
-      color: var(--text-main);
-      border-color: var(--border-accent);
-      background: var(--bg-card-hover);
-    }
-
-    .notif-badge-count {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      background: var(--brand-rose);
-      color: #fff;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 800;
-      width: 17px;
-      height: 17px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .btn-icon-header:hover { color: var(--text-main); border-color: var(--border-accent); }
+    .notif-badge-pill {
+      position: absolute; top: -4px; right: -4px;
+      background: var(--accent-rose); color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; font-weight: 800;
+      width: 17px; height: 17px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
       border: 2px solid var(--bg-base);
-      box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
     }
 
-    /* NOTIFICATION DROPDOWN POPUP */
-    .notif-dropdown {
-      position: absolute;
-      top: 58px;
-      right: 28px;
-      width: 400px;
-      max-width: 90vw;
-      background: #0f172a;
+    .notif-drawer {
+      position: absolute; top: 58px; right: 28px;
+      width: 400px; max-width: 90vw;
+      background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.7), 0 0 20px rgba(16, 185, 129, 0.15);
-      z-index: 2000;
-      display: none;
-      flex-direction: column;
-      overflow: hidden;
-      animation: fadeIn 0.2s ease-out;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+      z-index: 2000; display: none; flex-direction: column; overflow: hidden;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .notif-header {
-      padding: 12px 16px;
-      background: rgba(15, 23, 42, 0.95);
-      border-bottom: 1px solid var(--border-subtle);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-family: var(--font-ui);
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .notif-list {
-      max-height: 320px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .notif-item {
-      padding: 12px 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 12px;
-      transition: background 0.15s;
-    }
-
-    .notif-item:hover {
-      background: rgba(255, 255, 255, 0.03);
-    }
-
-    .notif-item-top {
-      display: flex;
-      justify-content: space-between;
-      font-family: var(--font-mono);
-      font-size: 11px;
-    }
-
-    /* SUB-NAV TABS */
-    nav.subnav-tabs {
-      background: rgba(10, 14, 23, 0.6);
-      border-bottom: 1px solid var(--border-subtle);
-      padding: 8px 28px;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      backdrop-filter: blur(12px);
-      overflow-x: auto;
-    }
-
-    .nav-tab-btn {
-      background: transparent;
-      border: 1px solid transparent;
-      color: var(--text-muted);
-      font-family: var(--font-ui);
-      font-size: 13px;
-      font-weight: 600;
-      padding: 6px 14px;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-
-    .nav-tab-btn:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text-main);
-    }
-
-    .nav-tab-btn.active {
-      background: rgba(16, 185, 129, 0.15);
-      border-color: rgba(52, 211, 153, 0.35);
-      color: var(--brand-mint);
-    }
-
-    /* MAIN GRID LAYOUT */
-    main.dashboard-grid {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 20px;
-      padding: 24px 28px;
-      flex: 1;
-      max-width: 1920px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    @media (max-width: 1200px) {
-      main.dashboard-grid {
-        grid-template-columns: 1fr;
-        padding: 16px;
-      }
-    }
-
-    .panel {
+    .contact-banner-strip {
       background: var(--bg-panel);
-      backdrop-filter: var(--backdrop-blur);
-      -webkit-backdrop-filter: var(--backdrop-blur);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 28px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 14px; font-size: 12px;
+    }
+    .contact-display-item { display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; }
+    .btn-edit-contact {
+      background: var(--bg-card); border: 1px solid var(--border-accent);
+      color: var(--primary-bright); padding: 4px 10px; border-radius: 6px;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s;
+    }
+    .btn-edit-contact:hover { background: var(--border-accent); color: #fff; }
+
+    main.dashboard-bento {
+      display: grid; grid-template-columns: 1.22fr 0.78fr; gap: 22px;
+      padding: 24px 28px; flex: 1; max-width: 1920px; margin: 0 auto; width: 100%;
+    }
+    @media (max-width: 1200px) { main.dashboard-bento { grid-template-columns: 1fr; padding: 16px; } }
+
+    .card-panel {
+      background: var(--bg-panel);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      box-shadow: var(--shadow-card);
+      border-radius: 16px; padding: 20px;
+      display: flex; flex-direction: column; gap: 16px;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
       transition: border-color 0.2s ease;
     }
+    .card-panel:hover { border-color: var(--border-accent); }
 
-    .panel:hover {
-      border-color: var(--border-accent);
+    .panel-head {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;
+      flex-wrap: wrap; gap: 10px;
     }
-
-    .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--border-subtle);
-      padding-bottom: 12px;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
     .panel-title {
-      font-family: var(--font-ui);
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700;
+      color: var(--text-main); display: flex; align-items: center; gap: 8px;
+    }
+    .badge-tag {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600;
+      background: var(--badge-bg); color: var(--badge-text);
+      border: 1px solid var(--border-accent); padding: 3px 8px; border-radius: 9999px;
     }
 
-    .badge-pill {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 600;
-      background: rgba(16, 185, 129, 0.12);
-      color: var(--brand-mint);
-      border: 1px solid rgba(52, 211, 153, 0.3);
-      padding: 3px 8px;
-      border-radius: var(--radius-full);
-    }
-
-    /* 16:9 COMPUTER VISION VIEWPORT */
-    .viewport-container {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      background: #000000;
-      border-radius: var(--radius-md);
-      overflow: hidden;
+    .viewport-box {
+      position: relative; width: 100%; aspect-ratio: 16 / 9;
+      background: #020604; border-radius: 12px; overflow: hidden;
       border: 1px solid var(--border-subtle);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
     }
-
-    .viewport-canvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-      object-fit: contain;
+    .viewport-canvas { width: 100%; height: 100%; display: block; object-fit: contain; }
+    .laser-line {
+      position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+      background: linear-gradient(90deg, transparent 0%, var(--primary-bright) 50%, var(--accent-cyan) 80%, transparent 100%);
+      box-shadow: 0 0 12px var(--primary-bright);
+      animation: laserSweep 3.2s ease-in-out infinite alternate; pointer-events: none; z-index: 20;
     }
+    @keyframes laserSweep { 0% { top: 2%; opacity: 0.9; } 100% { top: 96%; opacity: 0.9; } }
 
-    .laser-scanner {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(90deg, transparent 0%, var(--brand-mint) 50%, var(--brand-cyan) 80%, transparent 100%);
-      box-shadow: 0 0 12px var(--brand-mint), 0 0 20px var(--brand-cyan);
-      animation: laserSweep 3.2s ease-in-out infinite alternate;
-      pointer-events: none;
-      z-index: 20;
-    }
-
-    @keyframes laserSweep {
-      0% { top: 2%; opacity: 0.9; }
-      100% { top: 96%; opacity: 0.9; }
-    }
-
-    .hud-overlay {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 15;
-    }
-
-    .hud-corner {
-      position: absolute;
-      width: 18px;
-      height: 18px;
-      border-color: rgba(52, 211, 153, 0.6);
-    }
-    .hud-tl { top: 12px; left: 12px; border-top: 2px solid; border-left: 2px solid; }
-    .hud-tr { top: 12px; right: 12px; border-top: 2px solid; border-right: 2px solid; }
-    .hud-bl { bottom: 12px; left: 12px; border-bottom: 2px solid; border-left: 2px solid; }
-    .hud-br { bottom: 12px; right: 12px; border-bottom: 2px solid; border-right: 2px solid; }
-
-    .hud-cam-meta {
-      position: absolute;
-      top: 12px;
-      left: 40px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: rgba(240, 253, 244, 0.9);
-      background: rgba(15, 23, 42, 0.85);
+    .hud-meta-chip {
+      position: absolute; top: 12px; left: 16px;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      color: rgba(255, 255, 255, 0.9);
+      background: rgba(10, 16, 26, 0.85);
       backdrop-filter: blur(8px);
-      padding: 4px 10px;
-      border-radius: 6px;
+      padding: 4px 10px; border-radius: 6px;
       border: 1px solid var(--border-subtle);
-      display: flex;
-      gap: 12px;
+      display: flex; gap: 12px; z-index: 25;
     }
 
-    /* BOUNDING BOXES */
     .bbox {
-      position: absolute;
-      border: 2px solid var(--brand-rose);
-      background: rgba(239, 68, 68, 0.16);
-      border-radius: 4px;
+      position: absolute; border: 2px solid var(--accent-rose);
+      background: rgba(239, 68, 68, 0.16); border-radius: 4px;
       box-shadow: 0 0 14px rgba(239, 68, 68, 0.5);
-      z-index: 25;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      z-index: 25; cursor: pointer; transition: all 0.2s ease;
     }
-
-    .bbox.moderate {
-      border-color: var(--brand-amber);
-      background: rgba(245, 158, 11, 0.16);
-      box-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
-    }
-
     .bbox-tag {
-      position: absolute;
-      top: -24px;
-      left: -2px;
-      background: var(--brand-rose);
-      color: #fff;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 4px 4px 0 0;
-      white-space: nowrap;
+      position: absolute; top: -24px; left: -2px;
+      background: var(--accent-rose); color: #fff;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+      padding: 2px 8px; border-radius: 4px 4px 0 0; white-space: nowrap;
     }
 
-    /* ACTION TOOLBAR: UPLOAD & MULTI-CHANNEL REAL-TIME NOTIFICATIONS */
-    .action-toolbar-box {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 14px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
+    .action-control-card {
+      background: var(--bg-card); border: 1px solid var(--border-subtle);
+      border-radius: 12px; padding: 14px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; flex-wrap: wrap;
+    }
+    .upload-desc-group { display: flex; align-items: center; gap: 12px; }
+
+    .switch-wrap {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-subtle);
+      padding: 4px 10px; border-radius: 9999px;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      color: var(--text-muted); user-select: none;
+    }
+    .toggle-ui { position: relative; display: inline-block; width: 32px; height: 18px; }
+    .toggle-ui input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #334155; transition: .25s; border-radius: 20px;
+    }
+    .toggle-track:before {
+      position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px;
+      background-color: #94a3b8; transition: .25s; border-radius: 50%;
+    }
+    input:checked + .toggle-track { background-color: var(--primary); }
+    input:checked + .toggle-track:before { transform: translateX(14px); background-color: #ffffff; }
+
+    .btn-solid-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #02261a; border: none; padding: 8px 16px; border-radius: 8px;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; gap: 6px;
+      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.25); transition: all 0.2s;
+    }
+    .btn-solid-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4); }
+
+    .btn-outline-action {
+      background: var(--bg-card); border: 1px solid var(--border-subtle);
+      color: var(--text-main); padding: 8px 14px; border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+    }
+    .btn-outline-action:hover {
+      background: rgba(255, 255, 255, 0.08); border-color: var(--primary-bright); color: var(--primary-bright);
     }
 
-    .upload-label-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    .pathology-banner-card {
+      background: linear-gradient(90deg, rgba(239, 68, 68, 0.16) 0%, rgba(185, 28, 28, 0.08) 100%);
+      border: 1px solid rgba(239, 68, 68, 0.4); border-left: 5px solid var(--accent-rose);
+      border-radius: 12px; padding: 14px 18px;
+      display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap;
     }
 
-    .upload-icon {
-      font-size: 24px;
-      color: var(--brand-mint);
+    .hardware-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    @media (max-width: 650px) { .hardware-grid { grid-template-columns: 1fr; } }
+    .hw-card {
+      background: var(--bg-card); border: 1px solid var(--border-subtle);
+      border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 6px;
+      position: relative; overflow: hidden;
     }
+    .hw-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--primary); }
 
-    .upload-text-title {
-      font-family: var(--font-ui);
-      font-size: 13.5px;
-      font-weight: 700;
-      color: var(--text-main);
+    .dpad-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+    @media (max-width: 600px) { .dpad-layout { grid-template-columns: 1fr; } }
+    .dpad-cluster {
+      display: grid; grid-template-columns: repeat(3, 52px); grid-template-rows: repeat(3, 52px);
+      gap: 8px; justify-content: center; margin: 0 auto;
     }
-
-    .upload-text-desc {
-      font-size: 11.5px;
-      color: var(--text-muted);
-      font-family: var(--font-mono);
+    .btn-dir {
+      background: var(--bg-card); border: 1px solid var(--border-subtle);
+      border-radius: 8px; color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 16px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; transition: all 0.15s;
     }
+    .btn-dir:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--primary-bright); }
+    .btn-dir:active, .btn-dir.pressed { background: var(--primary-bright); color: #02261a; transform: scale(0.95); }
 
-    .audio-speech-controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    /* TOGGLE SWITCHES */
-    .toggle-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid var(--border-subtle);
-      padding: 4px 10px;
-      border-radius: var(--radius-full);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-muted);
-      user-select: none;
-    }
-
-    .toggle-switch {
-      position: relative;
-      display: inline-block;
-      width: 32px;
-      height: 18px;
-    }
-
-    .toggle-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .toggle-slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #334155;
-      transition: .25s;
-      border-radius: 20px;
-    }
-
-    .toggle-slider:before {
-      position: absolute;
-      content: "";
-      height: 12px;
-      width: 12px;
-      left: 3px;
-      bottom: 3px;
-      background-color: #94a3b8;
-      transition: .25s;
-      border-radius: 50%;
-    }
-
-    input:checked + .toggle-slider {
-      background-color: var(--brand-emerald);
-    }
-
-    input:checked + .toggle-slider:before {
-      transform: translateX(14px);
-      background-color: #ffffff;
-    }
-
-    .btn-action-primary {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: #02261a;
-      border: none;
-      padding: 8px 16px;
-      border-radius: var(--radius-sm);
-      font-family: var(--font-ui);
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.25);
-      transition: all 0.2s;
-    }
-
-    .btn-action-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
-    }
-
-    .btn-action-outline {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-main);
-      padding: 8px 14px;
-      border-radius: var(--radius-sm);
-      font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
-    }
-
-    .btn-action-outline:hover {
-      background: rgba(255, 255, 255, 0.06);
-      border-color: var(--brand-mint);
-      color: var(--brand-mint);
-    }
-
-    /* PATHOLOGY WARNING BANNER */
-    .pathology-banner {
-      background: linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, rgba(185, 28, 28, 0.08) 100%);
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      border-left: 4px solid var(--brand-rose);
-      border-radius: var(--radius-md);
-      padding: 12px 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .pathology-title {
-      font-family: var(--font-ui);
-      font-size: 15px;
-      font-weight: 700;
-      color: #fca5a5;
-    }
-
-    .pathology-desc {
-      font-size: 12px;
-      color: #cbd5e1;
-      font-family: var(--font-mono);
-      margin-top: 3px;
-    }
-
-    .btn-dispatch-sms {
-      background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
-      color: #fff;
-      border: none;
-      padding: 8px 16px;
-      border-radius: var(--radius-sm);
-      font-family: var(--font-ui);
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-      box-shadow: 0 0 12px rgba(239, 68, 68, 0.35);
-      transition: all 0.2s;
-    }
-
-    .btn-dispatch-sms:hover {
-      background: #dc2626;
-      box-shadow: 0 0 18px rgba(239, 68, 68, 0.55);
-    }
-
-    /* CV CONTROLS TOOLBAR */
-    .cv-controls-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      background: var(--bg-card);
-      padding: 10px 14px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border-subtle);
-    }
-
-    .slider-control-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .slider-control-group strong {
-      color: var(--brand-mint);
-    }
-
-    input[type=range] {
-      accent-color: var(--brand-emerald);
-      cursor: pointer;
-    }
-
-    .model-select {
-      background: var(--bg-surface);
-      color: var(--text-main);
-      border: 1px solid var(--border-subtle);
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      outline: none;
-    }
-
-    /* REAL-TIME NOTIFICATION STATUS BAR */
-    .realtime-alert-strip {
-      background: linear-gradient(90deg, rgba(16, 185, 129, 0.12) 0%, rgba(6, 182, 212, 0.08) 100%);
-      border: 1px solid var(--border-accent);
-      border-radius: var(--radius-md);
-      padding: 10px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      font-size: 12px;
-    }
-
-    .rt-status-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-family: var(--font-mono);
-    }
-
-    /* HARDWARE TELEMETRY TILES */
-    .hardware-tiles-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-
-    @media (max-width: 650px) {
-      .hardware-tiles-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .hw-tile {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hw-tile::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: var(--brand-emerald);
-    }
-
-    .hw-tile-head {
-      display: flex;
-      justify-content: space-between;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-
-    .hw-main-val {
-      font-family: var(--font-mono);
-      font-size: 24px;
-      font-weight: 700;
-      color: #fff;
-      display: flex;
-      align-items: baseline;
-      gap: 4px;
-    }
-
-    .hw-main-val span.unit {
-      font-size: 13px;
-      color: var(--text-dim);
-      font-weight: 400;
-    }
-
-    .hw-tile-sub {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-muted);
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .badge-status {
-      font-size: 10px;
-      padding: 2px 7px;
-      border-radius: var(--radius-full);
-      font-weight: 700;
-    }
-    .badge-status.safe { background: rgba(16, 185, 129, 0.15); color: var(--brand-mint); }
-    .badge-status.warn { background: rgba(245, 158, 11, 0.15); color: var(--brand-amber); }
-    .badge-status.danger { background: rgba(239, 68, 68, 0.15); color: var(--brand-rose); }
-
-    /* D-PAD HUB */
-    .dpad-hub-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      align-items: center;
-    }
-
-    @media (max-width: 600px) {
-      .dpad-hub-grid { grid-template-columns: 1fr; }
-    }
-
-    .dpad-matrix {
-      display: grid;
-      grid-template-columns: repeat(3, 52px);
-      grid-template-rows: repeat(3, 52px);
-      gap: 8px;
-      justify-content: center;
-      margin: 0 auto;
-    }
-
-    .dpad-btn {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      color: var(--text-main);
-      font-family: var(--font-ui);
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      user-select: none;
-      transition: all 0.15s;
-    }
-
-    .dpad-btn span.key-label {
-      font-family: var(--font-mono);
-      font-size: 9px;
-      color: var(--text-dim);
-    }
-
-    .dpad-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--brand-mint); }
-    .dpad-btn:active, .dpad-btn.pressed { background: var(--brand-mint); color: #02261a; transform: scale(0.95); }
-
-    .dpad-empty { background: transparent; border: none; }
-    .dpad-stop { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.35); color: #f87171; }
-    .dpad-stop:hover { background: rgba(239, 68, 68, 0.25); }
-    .dpad-stop:active, .dpad-stop.pressed { background: var(--brand-rose); color: #fff; }
-
-    .btn-emergency-halt {
+    .btn-halt {
       background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
-      color: #fff;
-      border: 2px solid #f87171;
-      border-radius: var(--radius-md);
-      padding: 12px;
-      font-family: var(--font-ui);
-      font-size: 15px;
-      font-weight: 800;
-      cursor: pointer;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 0 16px rgba(239, 68, 68, 0.35);
-      transition: all 0.2s;
+      color: #fff; border: 2px solid #f87171; border-radius: 12px; padding: 14px;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 800;
+      cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center;
+      gap: 8px; box-shadow: 0 0 18px rgba(239, 68, 68, 0.35); transition: all 0.2s;
     }
 
-    .btn-emergency-halt:hover {
-      box-shadow: 0 0 25px rgba(239, 68, 68, 0.6);
-      transform: translateY(-1px);
-    }
-
-    .throttle-box {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 10px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-top: 10px;
-    }
-
-    .throttle-presets { display: flex; gap: 6px; }
-    .throttle-chip {
-      flex: 1;
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-muted);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      padding: 4px 0;
-      border-radius: 4px;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.2s;
-    }
-    .throttle-chip.active {
-      border-color: var(--brand-mint);
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--brand-mint);
-      font-weight: 700;
-    }
-
-    /* REAL-TIME LOCATION & MAP */
-    .location-hud-strip {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--bg-card);
-      padding: 8px 14px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-subtle);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .map-container {
-      width: 100%;
-      height: 240px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border-subtle);
-    }
-
-    .btn-realtime-loc {
-      background: linear-gradient(135deg, #059669 0%, #047857 100%);
-      color: #fff;
-      border: 1px solid var(--brand-mint);
-      padding: 5px 12px;
-      border-radius: 6px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* TERMINAL AUDIT TRAIL */
-    .terminal-container {
-      background: #060a12;
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 10px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .terminal-log-window {
-      height: 140px;
-      overflow-y: auto;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      line-height: 1.6;
-      color: #a7f3d0;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .log-line { display: flex; gap: 6px; word-break: break-all; }
-    .log-time { color: var(--text-dim); }
-    .log-subsys { color: var(--brand-cyan); font-weight: 600; }
-    .log-line.danger .log-msg { color: var(--brand-rose); font-weight: 600; }
-    .log-line.warn .log-msg { color: var(--brand-amber); }
-
-    /* ADVISORY CARD */
-    .advisory-table-wrapper {
-      max-height: 220px;
-      overflow-y: auto;
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      margin-top: 10px;
-    }
-
-    table.advisory-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
-      text-align: left;
-    }
-
-    table.advisory-table th {
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-muted);
-      font-family: var(--font-mono);
-      padding: 8px 12px;
-      position: sticky;
-      top: 0;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-
-    table.advisory-table td {
-      padding: 8px 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      color: #cbd5e1;
-    }
-
-    .pesticide-highlight {
-      color: var(--brand-mint);
-      font-family: var(--font-mono);
-      font-weight: 600;
-    }
-
-    /* IN-APP DASHBOARD NOTIFICATION BANNER */
-    .dashboard-notif-banner {
-      position: fixed;
-      top: 76px;
-      right: 28px;
-      width: 440px;
-      max-width: 90vw;
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.98) 100%);
-      border: 1px solid var(--border-accent);
-      border-left: 5px solid var(--brand-emerald);
-      border-radius: var(--radius-md);
-      padding: 14px 18px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 25px rgba(16, 185, 129, 0.3);
-      z-index: 3000;
-      display: none;
-      flex-direction: column;
-      gap: 6px;
-      animation: slideIn 0.3s ease-out;
-    }
-
-    @keyframes slideIn {
-      from { transform: translateX(50px); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    .notif-banner-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-family: var(--font-ui);
-      font-size: 13.5px;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    .notif-banner-body {
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      line-height: 1.5;
-      color: #cbd5e1;
-    }
-
-    /* MODAL FOR DISPATCH SMS / EMAIL */
-    .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.75);
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8);
       display: none; align-items: center; justify-content: center;
-      z-index: 2500; backdrop-filter: blur(6px);
+      z-index: 3000; backdrop-filter: blur(8px);
     }
-
-    .modal-card {
-      background: #0f172a;
-      border: 1px solid var(--border-subtle);
-      border-top: 3px solid var(--brand-emerald);
-      border-radius: var(--radius-lg);
-      width: 90%; max-width: 560px;
-      padding: 24px;
-      display: flex; flex-direction: column; gap: 16px;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.7);
+    .modal-box {
+      background: var(--bg-surface); border: 1px solid var(--border-accent);
+      border-radius: 16px; width: 90%; max-width: 520px; padding: 24px;
+      display: flex; flex-direction: column; gap: 16px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
     }
-
-    .modal-input-field {
-      width: 100%;
-      background: #1e293b;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #fff;
-      padding: 9px 14px;
-      border-radius: var(--radius-sm);
-      font-family: var(--font-mono);
-      font-size: 12px;
-      outline: none;
+    .input-field {
+      width: 100%; background: var(--bg-input); border: 1px solid var(--border-subtle);
+      color: var(--text-main); padding: 10px 14px; border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace; font-size: 12px; outline: none;
     }
-    .modal-input-field:focus { border-color: var(--brand-emerald); }
+    .input-field:focus { border-color: var(--primary); }
 
-    .sms-preview-bubble {
-      background: #020617;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: var(--radius-sm);
-      padding: 12px 14px;
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      line-height: 1.5;
-      color: #e2e8f0;
-      white-space: pre-wrap;
-    }
-
-    .toast {
+    .toast-msg {
       position: fixed; bottom: 24px; right: 24px;
-      background: #064e3b; border: 1px solid var(--brand-mint);
-      color: #fff; padding: 12px 20px; border-radius: var(--radius-md);
-      font-family: var(--font-mono); font-size: 12.5px;
+      background: var(--primary-dark); border: 1px solid var(--primary-bright);
+      color: #fff; padding: 12px 20px; border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace; font-size: 12px;
       display: none; z-index: 4000; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
   </style>
 </head>
 <body class="theme-obsidian">
 
-  <!-- [TOP NAVBAR] -->
   <header class="top-navbar">
-    <div class="brand-group">
-      <div class="brand-logo-badge">🌿</div>
-      <div class="brand-title-wrap">
-        <div class="brand-title">
-          AGRIVISION OPERATOR DASHBOARD
-        </div>
-        <div class="brand-tag">
-          REAL-TIME CROP HEALTH NOTIFICATIONS • ALLIANCE LOT 3
-        </div>
+    <div class="brand-wrap">
+      <div class="brand-icon-box">🌿</div>
+      <div class="brand-info">
+        <div class="brand-title">AGRIVISION PRO</div>
+        <div class="brand-tag">FOLIAR PATHOLOGY EDGE WORKSTATION • ALLIANCE LOT 3</div>
       </div>
     </div>
 
-    <!-- Live Telemetry Strip -->
-    <div class="telemetry-strip">
-      <div class="pill-card">
+    <div class="header-actions-group">
+      <div class="pill-telemetry">
         <div class="pulse-dot"></div>
         <span class="pill-label">Wi-Fi:</span>
-        <span class="pill-val" id="wifi-rssi" style="color: var(--brand-mint);">-58 dBm</span>
+        <span class="pill-val" id="wifi-rssi" style="color: var(--primary-bright);">-58 dBm</span>
       </div>
-      <div class="pill-card">
+
+      <div class="pill-telemetry">
         <span class="pill-label">Camera:</span>
-        <span class="pill-val" style="color: var(--brand-cyan);">GC2145 (10 MHz)</span>
+        <span class="pill-val" style="color: var(--accent-cyan);">GC2145 (10 MHz)</span>
       </div>
-      <div class="pill-card">
+
+      <div class="pill-telemetry">
         <span class="pill-label">Battery:</span>
-        <span class="pill-val" id="power-rail" style="color: var(--brand-mint);">7.42V Rail (82%)</span>
+        <span class="pill-val" id="power-rail" style="color: var(--primary-bright);">7.42V Rail (82%)</span>
       </div>
-      <div class="segmented-control" style="display:flex; background:rgba(255,255,255,0.05); padding:2px; border-radius:6px;">
-        <button class="segmented-btn active" id="btn-manual" onclick="setMode('manual')">MANUAL</button>
-        <button class="segmented-btn" id="btn-auto" onclick="setMode('auto')">AUTO</button>
-      </div>
-    </div>
 
-    <!-- Actions: Notifications Bell & Theme Toggle -->
-    <div class="nav-actions-right">
-      <button class="btn-icon-nav" id="btn-notif-bell" onclick="toggleNotifDropdown()" title="View In-Dashboard Dispatch Alerts">
+      <div class="theme-select-wrap">
+        <span style="font-size: 14px;">🎨</span>
+        <select class="theme-select" id="theme-selector" onchange="applySelectedTheme(this.value)">
+          <option value="theme-obsidian">Obsidian Midnight (Slate SaaS)</option>
+          <option value="theme-emerald">Emerald Biosphere (Cyber-Agri)</option>
+          <option value="theme-cyberpunk">Cyberpunk Neon (Futuristic)</option>
+          <option value="theme-nordic">Nordic Frost (Steel Blue)</option>
+          <option value="theme-light">Field Daylight (Clean Light Mode)</option>
+        </select>
+      </div>
+
+      <button class="btn-icon-header" onclick="toggleNotificationDrawer()" title="View In-Dashboard Dispatch History">
         🔔
-        <div class="notif-badge-count" id="notif-badge">1</div>
-      </button>
-
-      <button class="btn-icon-nav" onclick="cycleTheme()" title="Switch Theme (Obsidian / Cyber Emerald / Light)">
-        🎨
+        <div class="notif-badge-pill" id="notif-badge">1</div>
       </button>
     </div>
   </header>
 
-  <!-- NOTIFICATION DROPDOWN POPUP -->
-  <div class="notif-dropdown" id="notif-dropdown">
-    <div class="notif-header">
+  <div class="notif-drawer" id="notif-drawer">
+    <div style="padding: 12px 16px; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 13px;">
       <span>🔔 In-Dashboard Alert Manifest</span>
-      <span style="font-family: var(--font-mono); font-size: 11px; color: var(--brand-mint);" id="notif-header-count">1 Dispatched Alert</span>
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--primary-bright);" id="notif-counter">1 Dispatched Alert</span>
     </div>
-    <div class="notif-list" id="notif-items-list">
-      <div class="notif-item">
-        <div class="notif-item-top">
-          <span style="color: var(--brand-rose); font-weight:700;">POTATO LATE BLIGHT</span>
+    <div id="notif-drawer-list" style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column;">
+      <div style="padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); font-size: 12px;">
+        <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:11px;">
+          <strong style="color: var(--accent-rose);">POTATO LATE BLIGHT</strong>
           <span style="color: var(--text-dim);">16:25 IST</span>
         </div>
-        <div style="color: #cbd5e1;">Prescribed: Mancozeb 75% WP @ 2.5g/L</div>
-        <div style="color: var(--brand-mint); font-size:11px;">Target: harikant4880@gmail.com &amp; Mobile SMS</div>
+        <div style="color: var(--text-muted); margin-top:2px;">Prescribed: Mancozeb 75% WP @ 2.5g/L</div>
+        <div style="color: var(--primary-bright); font-size: 11px; margin-top: 2px;" id="notif-first-target">Target: harikant4880@gmail.com</div>
       </div>
     </div>
   </div>
 
-  <!-- IN-APP DASHBOARD NOTIFICATION BANNER -->
-  <div class="dashboard-notif-banner" id="dash-notif-banner">
-    <div class="notif-banner-header">
-      <span id="banner-title">⚡ REAL-TIME ALERT: Potato Late Blight</span>
-      <button onclick="closeDashBanner()" style="background:transparent; border:none; color:#94a3b8; font-size:16px; cursor:pointer;">&times;</button>
-    </div>
-    <div class="notif-banner-body" id="banner-body">
-      Disease alert dispatched in real-time to <strong>harikant4880@gmail.com</strong> and Mobile Push.<br>
-      GPS: 12.82580° N, 77.71260° E | Alliance Lot 3.<br>
-      Prescribed: Mancozeb 75% WP @ 2.5g/L or Ridomil MZ @ 2g/L.
-    </div>
-  </div>
-
-  <!-- REAL-TIME DISPATCH SETTINGS BAR -->
-  <div class="realtime-alert-strip">
-    <div class="rt-status-item">
-      <span>📡 Real-Time Dispatch:</span>
-      <strong style="color: var(--brand-mint);">ACTIVE</strong>
-      <span>→ Mail:</span>
-      <strong style="color: #fff;" id="bar-target-email">harikant4880@gmail.com</strong>
-      <span>| Mobile:</span>
-      <strong style="color: #fff;" id="bar-target-phone">+91 98450 12849</strong>
+  <div class="contact-banner-strip">
+    <div class="contact-display-item">
+      <span>📡 Real-Time Alert Target:</span>
+      <span>Email:</span>
+      <strong style="color: #fff;" id="curr-email-display">harikant4880@gmail.com</strong>
+      <span style="margin-left: 8px;">| Mobile:</span>
+      <strong style="color: #fff;" id="curr-phone-display">+91 98450 12849</strong>
     </div>
 
     <div style="display: flex; gap: 10px; align-items: center;">
-      <!-- Auto-Dispatch on Detection Toggle -->
-      <div class="toggle-wrapper" title="When ON, any detected disease automatically sends real-time alerts to harikant4880@gmail.com and mobile push!">
-        <span>⚡ Auto-Dispatch on Detection:</span>
-        <label class="toggle-switch">
-          <input type="checkbox" id="auto-dispatch-toggle" checked onchange="toggleAutoDispatch(this.checked)">
-          <span class="toggle-slider"></span>
-        </label>
-        <span id="auto-dispatch-label" style="font-weight: 700; color: var(--brand-mint);">ON</span>
-      </div>
-
-      <!-- Request Mobile Browser Push Permission -->
-      <button class="btn-action-outline" style="padding: 4px 10px; font-size: 11px;" onclick="enableMobilePush()">
-        📲 Enable Mobile Push
+      <button class="btn-edit-contact" onclick="openContactModal()">
+        ✏️ Change Mail &amp; Phone
       </button>
+
+      <div class="switch-wrap">
+        <span>⚡ Auto-Dispatch:</span>
+        <label class="toggle-ui">
+          <input type="checkbox" id="auto-dispatch-toggle" checked onchange="toggleAutoDispatch(this.checked)">
+          <span class="toggle-track"></span>
+        </label>
+        <span id="auto-dispatch-label" style="font-weight: 700; color: var(--primary-bright);">ON</span>
+      </div>
     </div>
   </div>
 
-  <!-- SUB-NAV TABS -->
-  <nav class="subnav-tabs">
-    <button class="nav-tab-btn active" onclick="switchTab('teleop')">⚡ Operator Workstation</button>
-    <button class="nav-tab-btn" onclick="switchTab('diagnostics')">🔬 AI Pathology Lab</button>
-    <button class="nav-tab-btn" onclick="switchTab('gis')">🗺️ Satellite Field GIS</button>
-    <button class="nav-tab-btn" onclick="switchTab('advisory')">📋 Curated 113 Crop Formulary</button>
-  </nav>
-
-  <!-- MAIN OPERATOR GRID -->
-  <main class="dashboard-grid">
-
-    <!-- LEFT COLUMN -->
-    <div style="display: flex; flex-direction: column; gap: 18px;">
-
-      <!-- [MODULES 3 & 4: COMPUTER VISION VIEWPORT] -->
-      <section class="panel">
-        <div class="panel-header">
+  <main class="dashboard-bento">
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <section class="card-panel">
+        <div class="panel-head">
           <div class="panel-title">
             <span>Modules 3 &amp; 4: Computer Vision Viewport</span>
-            <span class="badge-pill">YOLOv8 Edge Engine</span>
+            <span class="badge-tag">YOLOv8 Edge Engine</span>
           </div>
-          <div style="font-family: var(--font-mono); font-size: 11.5px; color: var(--brand-mint);" id="feed-status">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--primary-bright);" id="feed-status">
             ● LIVE STREAM | 15.2 FPS (DVP 10MHz)
           </div>
         </div>
 
-        <!-- 16:9 Viewport Canvas -->
-        <div class="viewport-container" id="viewport">
+        <div class="viewport-box" id="viewport">
           <canvas id="cvCanvas" class="viewport-canvas" width="960" height="540"></canvas>
-          <div class="laser-scanner"></div>
-          <div class="hud-overlay">
-            <div class="hud-corner hud-tl"></div>
-            <div class="hud-corner hud-tr"></div>
-            <div class="hud-corner hud-bl"></div>
-            <div class="hud-corner hud-br"></div>
-            <div class="hud-cam-meta">
-              <span>GC2145 @ 10MHz DVP</span>
-              <span id="hud-location-tag">Anekal Rural, Alliance Lot 3</span>
-            </div>
+          <div class="laser-line"></div>
+          <div class="hud-meta-chip">
+            <span>GC2145 @ 10MHz DVP</span>
+            <span>Alliance Lot 3, Bengaluru</span>
           </div>
           <div id="bbox-container"></div>
         </div>
 
-        <!-- PHOTO UPLOAD & SELECTIVE AUDIO SPEECH CONTROL BAR -->
-        <div class="action-toolbar-box">
-          <div class="upload-label-group">
-            <div class="upload-icon">📷</div>
+        <div class="action-control-card">
+          <div class="upload-desc-group">
+            <span style="font-size: 24px; color: var(--primary-bright);">📷</span>
             <div>
-              <div class="upload-text-title">
+              <div style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13.5px; font-weight: 700;">
                 Upload Leaf Photo for Instant Pathology Diagnosis
               </div>
-              <div class="upload-text-desc">
-                Select field crop photos to run instant bounding-box lesion detection
+              <div style="font-size: 11.5px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">
+                Proportional scaling ensures no image stretching or distortion
               </div>
             </div>
           </div>
 
-          <div class="audio-speech-controls">
-            <!-- Selective Speech Toggle Switch: Only speaks when enabled or clicked! -->
-            <div class="toggle-wrapper" title="When OFF, speech only plays when you click 'Speak Diagnosis'. When ON, it automatically announces on upload.">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <div class="switch-wrap" title="When OFF, speech only plays when you click Speak Diagnosis. When ON, it automatically announces on upload.">
               <span>Auto-Speak:</span>
-              <label class="toggle-switch">
+              <label class="toggle-ui">
                 <input type="checkbox" id="auto-speak-toggle" onchange="toggleAutoSpeak(this.checked)">
-                <span class="toggle-slider"></span>
+                <span class="toggle-track"></span>
               </label>
               <span id="auto-speak-label" style="font-weight: 600; color: var(--text-muted);">OFF</span>
             </div>
 
             <input type="file" id="leaf-photo-input" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
-            <button class="btn-action-primary" onclick="document.getElementById('leaf-photo-input').click()">
+            <button class="btn-solid-primary" onclick="document.getElementById('leaf-photo-input').click()">
               📂 Upload Leaf Photo
             </button>
-            <button class="btn-action-outline" id="btn-speak" onclick="speakCurrentDiagnosis()">
+            <button class="btn-outline-action" id="btn-speak" onclick="speakCurrentDiagnosis()">
               🔊 Speak Diagnosis
             </button>
           </div>
         </div>
 
-        <!-- Pathology Warning Banner with Direct Email / SMS Dispatch Button -->
-        <div class="pathology-banner" id="pathology-banner">
+        <div class="pathology-banner-card" id="pathology-banner">
           <div>
-            <div class="pathology-title" id="pathology-title">⚠️ PATHOLOGY DETECTED: Potato Late Blight</div>
-            <div class="pathology-desc" id="pathology-desc">Prescribed Remedy: Mancozeb 75% WP @ 2.5g/L or Metalaxyl + Mancozeb (Ridomil MZ) @ 2g/L</div>
+            <div style="font-family:'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700; color: #fca5a5;" id="pathology-title">
+              ⚠️ PATHOLOGY DETECTED: Potato Late Blight
+            </div>
+            <div style="font-size: 12px; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; margin-top: 3px;" id="pathology-desc">
+              Prescribed Remedy: Mancozeb 75% WP @ 2.5g/L or Metalaxyl + Mancozeb (Ridomil MZ) @ 2g/L
+            </div>
           </div>
-          <button class="btn-dispatch-sms" onclick="openSmsModal()">
-            📱 Dispatch to Email &amp; Mobile
+          <button class="btn-solid-primary" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color:#fff;" onclick="openDispatchModal()">
+            📱 Dispatch to Mail &amp; Mobile
           </button>
         </div>
 
-        <!-- CV Controls Toolbar -->
-        <div class="cv-controls-bar">
-          <div class="slider-control-group">
-            <span>Confidence: <strong id="conf-val">85%</strong></span>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; background: var(--bg-card); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-subtle);">
+          <div style="display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+            <span>Confidence: <strong id="conf-val" style="color: var(--primary-bright);">85%</strong></span>
             <input type="range" id="conf-slider" min="50" max="98" value="85" oninput="updateConfidence(this.value)">
           </div>
-          <div>
-            <span style="font-family: var(--font-mono); font-size: 11.5px; color: var(--text-muted);">Model: </span>
-            <select class="model-select" onchange="logEvent('MODEL', 'Model switched to ' + this.value, 'safe')">
-              <option value="YOLOv8n">YOLOv8n-Foliar (3.2MB Nano)</option>
-              <option value="YOLOv8s">YOLOv8s-CropDisease (11.2MB Standard)</option>
-              <option value="YOLOv8m">YOLOv8m-AllianceAgri (25.9MB)</option>
-            </select>
-          </div>
           <div style="display: flex; gap: 6px;">
-            <button class="btn-action-outline" onclick="cycleCrop(-1)">◀ Prev</button>
-            <button class="btn-action-outline" onclick="cycleCrop(1)">Next ▶</button>
-            <button class="btn-action-outline" onclick="toggleAutoCycle()" id="btn-autocycle">Auto-Cycle</button>
-            <button class="btn-action-outline" onclick="captureSnapshot()">📸 Snapshot</button>
+            <button class="btn-outline-action" onclick="cycleCrop(-1)">◀ Prev</button>
+            <button class="btn-outline-action" onclick="cycleCrop(1)">Next ▶</button>
+            <button class="btn-outline-action" onclick="toggleAutoCycle()" id="btn-autocycle">Auto-Cycle</button>
+            <button class="btn-outline-action" onclick="captureSnapshot()">📸 Snapshot</button>
           </div>
         </div>
       </section>
 
-      <!-- [MODULES 1, 2 & 5: REAL-TIME HARDWARE TILES] -->
-      <section class="panel">
-        <div class="panel-header">
+      <section class="card-panel">
+        <div class="panel-head">
           <div class="panel-title">
-            <span>Modules 1, 2 &amp; 5: Real-Time Hardware Tiles</span>
-            <span class="badge-pill">ESP32 &amp; Actuators</span>
-          </div>
-          <div style="font-family: var(--font-mono); font-size: 11.5px; color: var(--brand-mint);">
-            Telemetry Rate: 30 Hz
+            <span>Modules 1, 2 &amp; 5: Hardware Telemetry</span>
+            <span class="badge-tag">Sensors &amp; Actuators</span>
           </div>
         </div>
 
-        <div class="hardware-tiles-grid">
-          <div class="hw-tile">
-            <div class="hw-tile-head">
+        <div class="hardware-grid">
+          <div class="hw-card">
+            <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dim); text-transform:uppercase;">
               <span>HC-SR04 Sonar</span>
-              <span class="badge-status safe" id="sonar-badge">CLEAR</span>
+              <span class="badge-tag" style="background:rgba(16,185,129,0.15); color:var(--primary-bright);" id="sonar-badge">CLEAR</span>
             </div>
-            <div class="hw-main-val"><span id="sonar-dist">42.4</span><span class="unit">cm</span></div>
-            <div class="hw-tile-sub"><span>Auto-Stop: &lt; 20 cm</span><span style="color: var(--brand-mint);">Safe Range</span></div>
+            <div style="font-family:'JetBrains Mono', monospace; font-size:24px; font-weight:700; color:#fff;">
+              <span id="sonar-dist">42.4</span><span style="font-size:13px; color:var(--text-dim); font-weight:400;"> cm</span>
+            </div>
+            <div style="font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-muted); display:flex; justify-content:space-between;">
+              <span>Auto-Stop: &lt; 20 cm</span>
+              <span style="color:var(--primary-bright);">Safe Range</span>
+            </div>
           </div>
 
-          <div class="hw-tile">
-            <div class="hw-tile-head">
-              <span>L298N Drive State</span>
-              <span class="badge-status safe" id="motor-badge">ACTIVE</span>
+          <div class="hw-card">
+            <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dim); text-transform:uppercase;">
+              <span>L298N Drive</span>
+              <span class="badge-tag" style="background:rgba(16,185,129,0.15); color:var(--primary-bright);" id="motor-badge">ACTIVE</span>
             </div>
-            <div class="hw-main-val"><span id="pwm-val">191</span><span class="unit">/ 255 (75%)</span></div>
-            <div class="hw-tile-sub"><span>Dual H-Bridge</span><span>0.84 A | 36.2°C</span></div>
+            <div style="font-family:'JetBrains Mono', monospace; font-size:24px; font-weight:700; color:#fff;">
+              <span id="pwm-val">191</span><span style="font-size:13px; color:var(--text-dim); font-weight:400;"> / 255 (75%)</span>
+            </div>
+            <div style="font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-muted); display:flex; justify-content:space-between;">
+              <span>Dual H-Bridge</span>
+              <span>0.84 A | 36.2°C</span>
+            </div>
           </div>
 
-          <div class="hw-tile">
-            <div class="hw-tile-head">
+          <div class="hw-card">
+            <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dim); text-transform:uppercase;">
               <span>Edge Companion</span>
-              <span class="badge-status safe">OPTIMAL</span>
+              <span class="badge-tag" style="background:rgba(16,185,129,0.15); color:var(--primary-bright);">OPTIMAL</span>
             </div>
-            <div class="hw-main-val"><span id="edge-lat">21.8</span><span class="unit">ms</span></div>
-            <div class="hw-tile-sub"><span>Roundtrip Ping</span><span>30 Hz | 0% Loss</span></div>
+            <div style="font-family:'JetBrains Mono', monospace; font-size:24px; font-weight:700; color:#fff;">
+              <span id="edge-lat">21.8</span><span style="font-size:13px; color:var(--text-dim); font-weight:400;"> ms</span>
+            </div>
+            <div style="font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-muted); display:flex; justify-content:space-between;">
+              <span>Roundtrip Ping</span>
+              <span>30 Hz | 0% Loss</span>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- [AGRONOMIC PRESCRIPTION ADVISORY CARD] -->
-      <section class="panel" id="section-advisory">
-        <div class="panel-header">
+      <section class="card-panel">
+        <div class="panel-head">
           <div class="panel-title">
             <span>Agronomic Prescription Advisory Card</span>
-            <span class="badge-pill">113 Low-Height Crop Remedies</span>
+            <span class="badge-tag">113 Low-Height Crop Remedies</span>
           </div>
         </div>
+
         <div style="display: flex; gap: 8px;">
-          <input type="text" id="advisory-search" placeholder="Search crop, disease or fungicide (e.g. Mancozeb, Potato, Rust)..." style="flex:1; background: var(--bg-card); border: 1px solid var(--border-subtle); color:#fff; padding:8px 14px; border-radius:var(--radius-sm); font-size:12px;" oninput="filterAdvisory()">
-          <select id="advisory-cat" style="background: var(--bg-card); border: 1px solid var(--border-subtle); color:#fff; padding:8px 14px; border-radius:var(--radius-sm); font-size:12px;" onchange="filterAdvisory()">
-            <option value="ALL">All Categories</option>
+          <input type="text" id="advisory-search" placeholder="Search crop, disease or fungicide (e.g. Mancozeb, Potato, Rust)..." class="input-field" oninput="filterAdvisory()">
+          <select id="advisory-cat" class="input-field" style="width: 220px;" onchange="filterAdvisory()">
+            <option value="ALL">All Categories (113 entries)</option>
             <option value="Vegetables">Vegetables</option>
             <option value="Pulses & Oilseeds">Pulses &amp; Oilseeds</option>
             <option value="Cereals">Cereals</option>
@@ -1475,158 +719,167 @@
             <option value="Flowers">Flowers</option>
           </select>
         </div>
-        <div class="advisory-table-wrapper">
-          <table class="advisory-table">
+
+        <div style="max-height: 220px; overflow-y: auto; border: 1px solid var(--border-subtle); border-radius: 10px; margin-top: 10px;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
             <thead>
-              <tr>
-                <th style="width: 45px;">S.No</th>
-                <th style="width: 100px;">Crop</th>
-                <th style="width: 150px;">Disease</th>
-                <th style="width: 85px;">Height</th>
-                <th>Visible Symptoms</th>
-                <th>Prescribed Chemical / Measures</th>
+              <tr style="background: var(--bg-card); position: sticky; top: 0; border-bottom: 1px solid var(--border-subtle);">
+                <th style="padding: 8px 12px; width: 45px; font-family:'JetBrains Mono', monospace; color:var(--text-dim);">S.No</th>
+                <th style="padding: 8px 12px; width: 100px; color:var(--primary-bright);">Crop</th>
+                <th style="padding: 8px 12px; width: 150px;">Disease</th>
+                <th style="padding: 8px 12px; width: 85px; color:var(--text-dim);">Height</th>
+                <th style="padding: 8px 12px;">Visible Symptoms</th>
+                <th style="padding: 8px 12px; color:var(--primary-bright);">Prescribed Chemical / Measures</th>
               </tr>
             </thead>
             <tbody id="advisory-tbody"></tbody>
           </table>
         </div>
       </section>
-
     </div>
 
-    <!-- RIGHT COLUMN -->
-    <div style="display: flex; flex-direction: column; gap: 18px;">
-
-      <!-- [MODULE 1: NAVIGATION & D-PAD HUB] -->
-      <section class="panel">
-        <div class="panel-header">
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <section class="card-panel">
+        <div class="panel-head">
           <div class="panel-title">
             <span>Module 1: Navigation &amp; D-Pad Hub</span>
-            <span class="badge-pill">WASD + Spacebar</span>
+            <span class="badge-tag">WASD + Spacebar</span>
           </div>
         </div>
 
-        <div class="dpad-hub-grid">
-          <div class="dpad-matrix">
-            <div class="dpad-btn dpad-empty"></div>
-            <button class="dpad-btn" id="dpad-up" onmousedown="drive('FWD')" onmouseup="drive('COAST')">▲<span class="key-label">W</span></button>
-            <div class="dpad-btn dpad-empty"></div>
+        <div class="dpad-layout">
+          <div class="dpad-cluster">
+            <div></div>
+            <button class="btn-dir" id="dpad-up" onmousedown="drive('FWD')" onmouseup="drive('COAST')">▲<span style="font-size:9px; color:var(--text-dim);">W</span></button>
+            <div></div>
 
-            <button class="dpad-btn" id="dpad-left" onmousedown="drive('LEFT')" onmouseup="drive('COAST')">◀<span class="key-label">A</span></button>
-            <button class="dpad-btn dpad-stop" id="dpad-stop" onclick="drive('STOP')">STOP<span class="key-label">SPACE</span></button>
-            <button class="dpad-btn" id="dpad-right" onmousedown="drive('RIGHT')" onmouseup="drive('COAST')">▶<span class="key-label">D</span></button>
+            <button class="btn-dir" id="dpad-left" onmousedown="drive('LEFT')" onmouseup="drive('COAST')">◀<span style="font-size:9px; color:var(--text-dim);">A</span></button>
+            <button class="btn-dir" id="dpad-stop" style="color:var(--accent-rose);" onclick="drive('STOP')">STOP<span style="font-size:8px;">SPACE</span></button>
+            <button class="btn-dir" id="dpad-right" onmousedown="drive('RIGHT')" onmouseup="drive('COAST')">▶<span style="font-size:9px; color:var(--text-dim);">D</span></button>
 
-            <div class="dpad-btn dpad-empty"></div>
-            <button class="dpad-btn" id="dpad-down" onmousedown="drive('REV')" onmouseup="drive('COAST')">▼<span class="key-label">S</span></button>
-            <div class="dpad-btn dpad-empty"></div>
+            <div></div>
+            <button class="btn-dir" id="dpad-down" onmousedown="drive('REV')" onmouseup="drive('COAST')">▼<span style="font-size:9px; color:var(--text-dim);">S</span></button>
+            <div></div>
           </div>
 
           <div>
-            <button class="btn-emergency-halt" onclick="triggerHalt()">🛑 EMERGENCY HALT</button>
-            <div class="throttle-box">
-              <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11.5px; color:var(--text-muted);">
-                <span>PWM Throttle:</span><span id="throttle-label" style="color: var(--brand-mint);">75% (191 PWM)</span>
+            <button class="btn-halt" onclick="triggerHalt()">🛑 EMERGENCY HALT</button>
+            <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:10px; padding:10px 14px; margin-top:10px;">
+              <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:11.5px; color:var(--text-muted);">
+                <span>PWM Throttle:</span><span id="throttle-label" style="color:var(--primary-bright);">75% (191 PWM)</span>
               </div>
-              <input type="range" min="30" max="100" value="75" oninput="setThrottle(this.value)">
-              <div class="throttle-presets">
-                <button class="throttle-chip" onclick="setThrottle(30)">30%</button>
-                <button class="throttle-chip" onclick="setThrottle(50)">50%</button>
-                <button class="throttle-chip active" onclick="setThrottle(75)">75%</button>
-                <button class="throttle-chip" onclick="setThrottle(100)">100%</button>
-              </div>
+              <input type="range" min="30" max="100" value="75" oninput="setThrottle(this.value)" style="width:100%; margin-top:6px;">
             </div>
           </div>
         </div>
       </section>
 
-      <!-- [MODULE 7: REAL-TIME SPATIAL LOCATION MONITORING] -->
-      <section class="panel" id="section-map">
-        <div class="panel-header">
+      <section class="card-panel">
+        <div class="panel-head">
           <div class="panel-title">
-            <span>Module 7: Real-Time Location Monitoring</span>
-            <span class="badge-pill">Live Field GPS</span>
+            <span>Module 7: Real-Time Field Location</span>
+            <span class="badge-tag">Alliance Lot 3 GPS</span>
           </div>
-          <button class="btn-realtime-loc" onclick="startRealtimeTracking()">
+          <button class="btn-solid-primary" style="padding:5px 12px; font-size:11px;" onclick="startRealtimeTracking()">
             📍 Live GPS Lock
           </button>
         </div>
 
-        <div class="location-hud-strip">
-          <div>GPS: <strong style="color: var(--brand-mint);" id="gps-coords">12.82580° N, 77.71260° E</strong></div>
-          <div>Loc: <span style="color: #cbd5e1;" id="loc-name">Alliance Lot 3, Bengaluru</span></div>
-          <div>Accuracy: <span style="color: var(--brand-cyan);" id="gps-acc">±2.4 m</span></div>
+        <div style="display:flex; justify-content:space-between; background:var(--bg-card); padding:8px 14px; border-radius:8px; border:1px solid var(--border-subtle); font-family:'JetBrains Mono', monospace; font-size:11px;">
+          <div>GPS: <strong style="color:var(--primary-bright);" id="gps-coords">12.82580° N, 77.71260° E</strong></div>
+          <div>Accuracy: <span style="color:var(--accent-cyan);" id="gps-acc">±2.4 m</span></div>
         </div>
 
-        <div id="map" class="map-container"></div>
+        <div id="map" style="width:100%; height:240px; border-radius:12px; border:1px solid var(--border-subtle);"></div>
       </section>
 
-      <!-- [MODULE 7: TELEMETRY AUDIT TRAIL] -->
-      <section class="panel">
-        <div class="panel-header">
+      <section class="card-panel">
+        <div class="panel-head">
           <div class="panel-title">
             <span>Module 7: Telemetry Audit Trail</span>
-            <span class="badge-pill">Terminal Stream</span>
+            <span class="badge-tag">Millisecond Stream</span>
           </div>
-          <div style="display: flex; gap: 6px;">
-            <button class="btn-action-outline" onclick="clearLogs()">Clear</button>
-            <button class="btn-action-outline" style="color: var(--brand-mint);" onclick="exportCSV()">1-Click CSV Export</button>
+          <div style="display:flex; gap:6px;">
+            <button class="btn-outline-action" onclick="clearLogs()">Clear</button>
+            <button class="btn-outline-action" style="color:var(--primary-bright);" onclick="exportCSV()">1-Click CSV</button>
           </div>
         </div>
-        <div class="terminal-container">
-          <div class="terminal-log-window" id="terminal-logs"></div>
+
+        <div style="background:#030705; border:1px solid var(--border-subtle); border-radius:10px; padding:10px 14px;">
+          <div id="terminal-logs" style="height:140px; overflow-y:auto; font-family:'JetBrains Mono', monospace; font-size:11px; line-height:1.6; color:#a7f3d0; display:flex; flex-direction:column; gap:2px;"></div>
         </div>
       </section>
-
     </div>
   </main>
 
-  <!-- MODAL: DISPATCH SMS & EMAIL TO HARIKANT4880@GMAIL.COM -->
-  <div class="modal-overlay" id="sms-modal">
-    <div class="modal-card">
+  <!-- MODAL: CHANGE EMAIL & PHONE NUMBER -->
+  <div class="modal-backdrop" id="contact-modal">
+    <div class="modal-box">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h3 style="color:#fca5a5; font-family:var(--font-ui); font-size:17px; font-weight:700;">
+        <h3 style="font-family:'Plus Jakarta Sans', sans-serif; font-size:17px; font-weight:700;">
+          ⚙️ Update Alert Contact Settings
+        </h3>
+        <button onclick="closeContactModal()" style="background:transparent; border:none; color:var(--text-muted); font-size:20px; cursor:pointer;">&times;</button>
+      </div>
+
+      <div style="font-size:12px; color:var(--text-muted);">
+        All real-time crop disease alerts and prescriptions will be automatically transmitted to these targets.
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <label style="font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dim);">Target Email Address:</label>
+        <input type="email" id="edit-email-input" class="input-field" value="harikant4880@gmail.com">
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <label style="font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dim);">Target Mobile Number (SMS / WhatsApp):</label>
+        <input type="text" id="edit-phone-input" class="input-field" value="+91 98450 12849">
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
+        <button class="btn-outline-action" onclick="closeContactModal()">Cancel</button>
+        <button class="btn-solid-primary" onclick="saveContactSettings()">💾 Save &amp; Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DISPATCH ALERT TO EMAIL & MOBILE -->
+  <div class="modal-backdrop" id="dispatch-modal">
+    <div class="modal-box" style="max-width:540px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="color:#fca5a5; font-family:'Plus Jakarta Sans', sans-serif; font-size:17px; font-weight:700;">
           📲 DISPATCH REAL-TIME PATHOLOGY ALERT
         </h3>
-        <button onclick="closeSmsModal()" style="background:transparent; border:none; color:#94a3b8; font-size:18px; cursor:pointer;">&times;</button>
+        <button onclick="closeDispatchModal()" style="background:transparent; border:none; color:var(--text-muted); font-size:20px; cursor:pointer;">&times;</button>
       </div>
 
-      <!-- Recipient Inputs -->
-      <div style="display:flex; flex-direction:column; gap:8px;">
-        <label style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">Recipient Email ID (Real-Time Inbound):</label>
-        <input type="email" id="dispatch-email-input" class="modal-input-field" value="harikant4880@gmail.com" placeholder="Enter recipient email">
+      <div style="font-size:12px; color:var(--text-muted);">
+        Recipient: <strong style="color:var(--primary-bright);" id="modal-target-email">harikant4880@gmail.com</strong> | Phone: <strong style="color:#fff;" id="modal-target-phone">+91 98450 12849</strong>
       </div>
 
-      <div style="display:flex; flex-direction:column; gap:8px;">
-        <label style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">Mobile Number (SMS / WhatsApp / Push):</label>
-        <input type="text" id="dispatch-phone-input" class="modal-input-field" value="+91 98450 12849" placeholder="Enter mobile number">
+      <div style="display:flex; flex-direction:column; gap:4px;">
+        <label style="font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dim);">Payload Preview:</label>
+        <div id="modal-payload-text" style="background:rgba(0,0,0,0.4); border:1px solid var(--border-subtle); border-radius:8px; padding:12px; font-family:'JetBrains Mono', monospace; font-size:11.5px; line-height:1.5; color:#e2e8f0; white-space:pre-wrap;"></div>
       </div>
 
-      <!-- Preview -->
-      <div style="display:flex; flex-direction:column; gap:6px;">
-        <label style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">Real-Time Alert Payload Preview:</label>
-        <div class="sms-preview-bubble" id="sms-text"></div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div style="display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; margin-top:4px;">
-        <button class="btn-action-outline" onclick="closeSmsModal()">Cancel</button>
-        <button class="btn-action-outline" style="border-color:#25d366; color:#25d366;" onclick="sendViaWhatsApp()">
+      <div style="display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; margin-top:6px;">
+        <button class="btn-outline-action" onclick="closeDispatchModal()">Cancel</button>
+        <button class="btn-outline-action" style="border-color:#25d366; color:#25d366;" onclick="dispatchWhatsApp()">
           💬 WhatsApp
         </button>
-        <button class="btn-action-outline" style="border-color:var(--brand-cyan); color:var(--brand-cyan);" onclick="sendViaMailClient()">
-          ✉️ Open Mail Client
+        <button class="btn-outline-action" style="border-color:var(--accent-cyan); color:var(--accent-cyan);" onclick="dispatchMailClient()">
+          ✉️ Email Client
         </button>
-        <button class="btn-dispatch-sms" onclick="sendSms()">
-          ⚡ Transmit Alert Now
+        <button class="btn-solid-primary" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color:#fff;" onclick="executeTransmission()">
+          ⚡ Transmit Now
         </button>
       </div>
     </div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <div class="toast-msg" id="toast"></div>
 
   <script>
-    // 113 Crop Disease Dataset (Embedded from crop_diseases_low_height_no_paddy.xlsx)
     const diseases = [
       {sno: 1, category: "Cereals", crop: "Wheat", disease: "Yellow rust", pathogen: "Fungal", height: "2-3 ft", symptoms: "Yellow stripes of pustules along leaves", pesticides: "Propiconazole; Tebuconazole; Mancozeb"},
       {sno: 2, category: "Cereals", crop: "Wheat", disease: "Brown rust", pathogen: "Fungal", height: "2-3 ft", symptoms: "Scattered orange-brown pustules on leaves", pesticides: "Propiconazole; Tebuconazole; Mancozeb"},
@@ -1680,19 +933,19 @@
       }
     ];
 
+    let userEmail = localStorage.getItem("agri_user_email") || "harikant4880@gmail.com";
+    let userPhone = localStorage.getItem("agri_user_phone") || "+91 98450 12849";
     let sampleIdx = 0;
     let confidence = 0.85;
     let currentPWM = 191;
     let roverLat = 12.8258, roverLng = 77.7126;
-    let map, marker, accCircle, pathLine;
+    let map, marker, pathLine;
     let path = [[roverLat, roverLng]];
     let logs = [];
     let customUploaded = false;
-    let autoSpeakEnabled = false; // Muted by default per user request
-    let autoDispatchEnabled = true; // Auto-dispatch alerts on detection
+    let autoSpeakEnabled = false;
+    let autoDispatchEnabled = true;
     let notificationCount = 1;
-    let currentThemeIdx = 0;
-    const themes = ["theme-obsidian", "theme-cyber", "theme-light"];
 
     let currentDiagnosis = {
       crop: "Potato",
@@ -1702,6 +955,11 @@
     };
 
     window.onload = () => {
+      updateContactDisplay();
+      const savedTheme = localStorage.getItem("agri_theme") || "theme-obsidian";
+      document.body.className = savedTheme;
+      document.getElementById("theme-selector").value = savedTheme;
+
       renderAdvisory(diseases);
       initMap();
       renderScene();
@@ -1709,8 +967,7 @@
       startRealtimeTracking();
 
       logEvent("SYSTEM", "Agrivision Pro Workstation Online. GC2145 sensor linked at 10 MHz.", "safe");
-      logEvent("DISPATCH", "Real-time alert engine active. Configured target: harikant4880@gmail.com", "safe");
-      logEvent("L298N", "Dual H-Bridge Driver Ready. PWM calibrated to 191/255 (75%).", "safe");
+      logEvent("CONFIG", `Real-time destination: ${userEmail} | ${userPhone}`, "safe");
 
       setInterval(() => {
         const dist = (40 + (Math.random() * 6 - 3)).toFixed(1);
@@ -1720,95 +977,175 @@
       }, 1500);
     };
 
-    // THEME SWITCHER
-    function cycleTheme() {
-      document.body.classList.remove(...themes);
-      currentThemeIdx = (currentThemeIdx + 1) % themes.length;
-      document.body.classList.add(themes[currentThemeIdx]);
-      showToast(`🎨 Theme: ${themes[currentThemeIdx].replace('theme-', '').toUpperCase()}`);
+    function applySelectedTheme(themeClass) {
+      document.body.className = themeClass;
+      localStorage.setItem("agri_theme", themeClass);
+      showToast(`🎨 Theme Applied: ${themeClass.replace("theme-", "").toUpperCase()}`);
     }
 
-    // NOTIFICATION DROPDOWN TOGGLE
-    function toggleNotifDropdown() {
-      const dd = document.getElementById("notif-dropdown");
-      dd.style.display = dd.style.display === "flex" ? "none" : "flex";
+    function updateContactDisplay() {
+      document.getElementById("curr-email-display").innerText = userEmail;
+      document.getElementById("curr-phone-display").innerText = userPhone;
+      const elModalEmail = document.getElementById("modal-target-email");
+      const elModalPhone = document.getElementById("modal-target-phone");
+      if (elModalEmail) elModalEmail.innerText = userEmail;
+      if (elModalPhone) elModalPhone.innerText = userPhone;
+      const firstTarget = document.getElementById("notif-first-target");
+      if (firstTarget) firstTarget.innerText = `Target: ${userEmail}`;
+    }
+
+    function openContactModal() {
+      document.getElementById("edit-email-input").value = userEmail;
+      document.getElementById("edit-phone-input").value = userPhone;
+      document.getElementById("contact-modal").style.display = "flex";
+    }
+
+    function closeContactModal() {
+      document.getElementById("contact-modal").style.display = "none";
+    }
+
+    function saveContactSettings() {
+      const newMail = document.getElementById("edit-email-input").value.trim();
+      const newPhone = document.getElementById("edit-phone-input").value.trim();
+      if (!newMail || !newPhone) {
+        alert("Please enter a valid email and phone number.");
+        return;
+      }
+      userEmail = newMail;
+      userPhone = newPhone;
+      localStorage.setItem("agri_user_email", userEmail);
+      localStorage.setItem("agri_user_phone", userPhone);
+      updateContactDisplay();
+      closeContactModal();
+      logEvent("CONFIG", `Alert targets updated: ${userEmail} & ${userPhone}`, "safe");
+      showToast("✅ Contact targets updated successfully!");
+    }
+
+    function openDispatchModal() {
+      updatePayloadPreview();
+      document.getElementById("modal-target-email").innerText = userEmail;
+      document.getElementById("modal-target-phone").innerText = userPhone;
+      document.getElementById("dispatch-modal").style.display = "flex";
+    }
+
+    function closeDispatchModal() {
+      document.getElementById("dispatch-modal").style.display = "none";
+    }
+
+    function updatePayloadPreview() {
+      const preview = `[AGRIVISION REAL-TIME CROP HEALTH ALERT]
+Recipient: ${userEmail}
+Mobile Gateway: ${userPhone}
+Location: Alliance University Lot 3, Bengaluru, Karnataka
+Coordinates: ${roverLat.toFixed(5)}° N, ${roverLng.toFixed(5)}° E
+Crop: ${currentDiagnosis.crop}
+Pathology: ${currentDiagnosis.disease}
+Severity: ${currentDiagnosis.severity || "HIGH"}
+Prescribed Chemical: ${currentDiagnosis.remedy}
+Timestamp: ${new Date().toLocaleString()} IST`;
+
+      const el = document.getElementById("modal-payload-text");
+      if (el) el.innerText = preview;
+    }
+
+    function dispatchWhatsApp() {
+      const cleanPhone = userPhone.replace(/[^0-9]/g, "");
+      const text = encodeURIComponent(document.getElementById("modal-payload-text").innerText);
+      window.open(`https://api.whatsapp.com/send?phone=${cleanPhone}&text=${text}`, "_blank");
+      executeTransmission();
+    }
+
+    function dispatchMailClient() {
+      const subject = encodeURIComponent(`[AGRIVISION ALERT] ${currentDiagnosis.disease} at Alliance Lot 3`);
+      const body = encodeURIComponent(document.getElementById("modal-payload-text").innerText);
+      window.location.href = `mailto:${userEmail}?subject=${subject}&body=${body}`;
+      executeTransmission();
+    }
+
+    function executeTransmission() {
+      closeDispatchModal();
+      
+      fetch("/api/send-alert", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          crop: currentDiagnosis.crop,
+          disease: currentDiagnosis.disease,
+          severity: currentDiagnosis.severity,
+          remedy: currentDiagnosis.remedy,
+          gps: `${roverLat.toFixed(5)}° N, ${roverLng.toFixed(5)}° E (Alliance Lot 3)`,
+          recipient_email: userEmail,
+          recipient_phone: userPhone,
+          timestamp: new Date().toISOString()
+        })
+      }).catch(() => {});
+
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification(`🌿 Crop Alert: ${currentDiagnosis.crop}`, {
+          body: `⚠️ ${currentDiagnosis.disease} detected.\nPrescribed: ${currentDiagnosis.remedy}`,
+          icon: "🌿"
+        });
+      }
+
+      notificationCount++;
+      document.getElementById("notif-badge").innerText = notificationCount;
+      document.getElementById("notif-counter").innerText = `${notificationCount} Dispatched Alerts`;
+      
+      const list = document.getElementById("notif-drawer-list");
+      const item = document.createElement("div");
+      item.style.padding = "12px 16px";
+      item.style.borderBottom = "1px solid var(--border-subtle)";
+      item.style.fontSize = "12px";
+      item.innerHTML = `
+        <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:11px;">
+          <strong style="color: var(--accent-rose);">${currentDiagnosis.disease.split("(")[0]}</strong>
+          <span style="color: var(--text-dim);">${new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"})} IST</span>
+        </div>
+        <div style="color: var(--text-muted); margin-top:2px;">Prescribed: ${currentDiagnosis.remedy}</div>
+        <div style="color: var(--primary-bright); font-size: 11px; margin-top: 2px;">Target: ${userEmail} &amp; ${userPhone}</div>
+      `;
+      list.insertBefore(item, list.firstChild);
+
+      logEvent("DISPATCH", `Real-time alert transmitted to ${userEmail} & ${userPhone}`, "danger");
+      showToast(`⚡ Real-time alert dispatched to ${userEmail}!`);
+    }
+
+    function toggleNotificationDrawer() {
+      const d = document.getElementById("notif-drawer");
+      d.style.display = d.style.display === "flex" ? "none" : "flex";
       document.getElementById("notif-badge").innerText = "0";
       notificationCount = 0;
     }
 
-    function closeDashBanner() {
-      document.getElementById("dash-notif-banner").style.display = "none";
+    function toggleAutoSpeak(val) {
+      autoSpeakEnabled = val;
+      const el = document.getElementById("auto-speak-label");
+      el.innerText = val ? "ON" : "OFF";
+      el.style.color = val ? "var(--primary-bright)" : "var(--text-muted)";
+      showToast(val ? "🔊 Auto-Speak Enabled" : "🔈 Auto-Speak Muted");
     }
 
-    // AUTO-SPEAK TOGGLE
-    function toggleAutoSpeak(isEnabled) {
-      autoSpeakEnabled = isEnabled;
-      const label = document.getElementById("auto-speak-label");
-      if (isEnabled) {
-        label.innerText = "ON";
-        label.style.color = "var(--brand-mint)";
-        showToast("🔊 Auto-Voice Speech: ENABLED (Speaks on detection)");
-        logEvent("AUDIO", "Auto-voice speech enabled by operator.", "safe");
-      } else {
-        label.innerText = "OFF";
-        label.style.color = "var(--text-muted)";
-        showToast("🔈 Auto-Voice Speech: OFF (Speaks only when requested)");
-        logEvent("AUDIO", "Auto-voice speech muted. Will only speak on manual click.", "safe");
+    function speakCurrentDiagnosis() {
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+        const text = currentDiagnosis.disease.includes("Healthy")
+          ? `Crop scan complete on ${currentDiagnosis.crop}. Foliage is healthy.`
+          : `Attention. Pathology detected: ${currentDiagnosis.disease} on ${currentDiagnosis.crop}. Prescribed chemical remedy: ${currentDiagnosis.remedy}`;
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 0.95;
+        window.speechSynthesis.speak(u);
+        showToast("🔊 Speaking Diagnosis...");
       }
     }
 
-    // AUTO-DISPATCH TOGGLE
-    function toggleAutoDispatch(isEnabled) {
-      autoDispatchEnabled = isEnabled;
-      const label = document.getElementById("auto-dispatch-label");
-      if (isEnabled) {
-        label.innerText = "ON";
-        label.style.color = "var(--brand-mint)";
-        showToast("⚡ Auto-Dispatch: ACTIVE (Sends real-time alerts on detection)");
-        logEvent("DISPATCH", "Automated alert dispatch enabled.", "safe");
-      } else {
-        label.innerText = "OFF";
-        label.style.color = "var(--text-muted)";
-        showToast("⏸ Auto-Dispatch: PAUSED (Manual dispatch only)");
-        logEvent("DISPATCH", "Automated alert dispatch paused.", "safe");
-      }
+    function toggleAutoDispatch(val) {
+      autoDispatchEnabled = val;
+      const el = document.getElementById("auto-dispatch-label");
+      el.innerText = val ? "ON" : "OFF";
+      el.style.color = val ? "var(--primary-bright)" : "var(--text-muted)";
+      showToast(val ? "⚡ Auto-Dispatch Active" : "⏸ Auto-Dispatch Paused");
     }
 
-    // REQUEST MOBILE DEVICE BROWSER NOTIFICATIONS
-    function enableMobilePush() {
-      if ("Notification" in window) {
-        Notification.requestPermission().then((permission) => {
-          if (permission === "granted") {
-            showToast("📲 Mobile Push Notifications Enabled!");
-            new Notification("🌿 Agrivision Crop Health Online", {
-              body: "Real-time crop health notifications are now enabled on this device.",
-              icon: "🌿"
-            });
-            logEvent("PUSH", "Device push notification permission granted.", "safe");
-          } else {
-            showToast("⚠️ Push permission denied or dismissed.");
-          }
-        });
-      } else {
-        alert("Web Push notifications are not supported in this browser.");
-      }
-    }
-
-    function switchTab(tabId) {
-      document.querySelectorAll(".nav-tab-btn").forEach(b => b.classList.remove("active"));
-      event.target.classList.add("active");
-      if (tabId === "teleop") {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (tabId === "diagnostics") {
-        document.getElementById("leaf-photo-input").click();
-      } else if (tabId === "gis") {
-        document.getElementById("section-map").scrollIntoView({ behavior: 'smooth' });
-      } else if (tabId === "advisory") {
-        document.getElementById("section-advisory").scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-
-    // RENDER LIVE SIMULATED CROP SCENE
     function renderScene() {
       if (customUploaded) return;
       const s = samples[sampleIdx];
@@ -1819,7 +1156,6 @@
       ctx.fillStyle = "#020604";
       ctx.fillRect(0, 0, 960, 540);
 
-      // Draw leaf background
       ctx.save();
       ctx.translate(480, 270);
       ctx.beginPath();
@@ -1832,13 +1168,11 @@
       ctx.lineWidth = 3;
       ctx.stroke();
 
-      // Veins
       ctx.beginPath();
       ctx.moveTo(0, -170); ctx.lineTo(0, 180);
       ctx.strokeStyle = "rgba(52, 211, 153, 0.35)"; ctx.lineWidth = 2.5; ctx.stroke();
       ctx.restore();
 
-      // Lesions
       s.spots.forEach(sp => {
         const g = ctx.createRadialGradient(sp.x, sp.y, 8, sp.x, sp.y, sp.r * 1.5);
         g.addColorStop(0, sp.c);
@@ -1850,7 +1184,6 @@
         ctx.fill();
       });
 
-      // Bounding Box
       const bboxBox = document.getElementById("bbox-container");
       bboxBox.innerHTML = "";
       if (s.box.conf >= confidence) {
@@ -1868,21 +1201,17 @@
 
       document.getElementById("pathology-title").innerText = `⚠️ PATHOLOGY DETECTED: ${s.disease}`;
       document.getElementById("pathology-desc").innerText = `Crop: ${s.crop} | Prescribed: ${s.remedy}`;
-      updatePayloadPreview();
-      logEvent("CV-YOLOv8", `Inference: ${s.disease} (${(s.box.conf*100).toFixed(1)}% conf) [9.4ms]`, "danger");
+      logEvent("CV-YOLOv8", `Inference: ${s.disease} (${(s.box.conf*100).toFixed(1)}% conf)`, "danger");
 
-      if (autoSpeakEnabled) {
-        speakCurrentDiagnosis();
-      }
+      if (autoSpeakEnabled) speakCurrentDiagnosis();
     }
 
-    // PHOTO UPLOAD WITH CLEAN ASPECT RATIO & REAL-TIME DISPATCH
-    function handlePhotoUpload(event) {
-      const file = event.target.files[0];
+    function handlePhotoUpload(e) {
+      const file = e.target.files[0];
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = (event) => {
         const img = new Image();
         img.onload = () => {
           customUploaded = true;
@@ -1923,18 +1252,17 @@
               severity: "HIGH",
               remedy: "Apply Mancozeb 75% WP @ 2.5g/L or Azoxystrobin @ 1ml/L."
             };
-          } else if (fn.includes("healthy") || fn.includes("clean")) {
+          } else if (fn.includes("healthy")) {
             match = {
               crop: "Crop Foliage",
               disease: "Healthy Foliage (No Pathology Detected)",
               severity: "HEALTHY",
-              remedy: "No fungicide required. Maintain standard irrigation and prophylactic monitoring."
+              remedy: "No fungicide required. Maintain standard irrigation."
             };
           }
 
           currentDiagnosis = match;
 
-          // Project bounding box
           const bboxBox = document.getElementById("bbox-container");
           bboxBox.innerHTML = "";
           const scaleX = bboxBox.clientWidth / 960;
@@ -1957,63 +1285,19 @@
             : `⚠️ PATHOLOGY DETECTED: ${match.disease}`;
           document.getElementById("pathology-desc").innerText = `Crop: ${match.crop} | Prescribed: ${match.remedy}`;
 
-          updatePayloadPreview();
-          logEvent("USER-UPLOAD", `Analyzed ${file.name}: ${match.disease} (Confidence: 94.2%).`, match.severity === "HEALTHY" ? "safe" : "danger");
+          logEvent("USER-UPLOAD", `Analyzed ${file.name}: ${match.disease}`, match.severity === "HEALTHY" ? "safe" : "danger");
           showToast(`📸 Analyzed: ${match.disease.split("(")[0]}`);
 
-          if (autoSpeakEnabled) {
-            speakCurrentDiagnosis();
-          }
-
-          // Trigger automated real-time dispatch to email & mobile push if enabled!
-          if (autoDispatchEnabled && match.severity !== "HEALTHY") {
-            triggerRealtimeDispatch();
-          }
+          if (autoSpeakEnabled) speakCurrentDiagnosis();
+          if (autoDispatchEnabled && match.severity !== "HEALTHY") executeTransmission();
         };
-        img.src = e.target.result;
+        img.src = event.target.result;
       };
       reader.readAsDataURL(file);
     }
 
-    function updatePayloadPreview() {
-      const email = document.getElementById("dispatch-email-input") ? document.getElementById("dispatch-email-input").value : "harikant4880@gmail.com";
-      const preview = `[AGRIVISION REAL-TIME CROP HEALTH ALERT]
-Recipient: ${email}
-Mobile Gateway: +91 98450 12849
-Site: Alliance University Lot 3, Bengaluru, Karnataka
-Coordinates: ${roverLat.toFixed(5)}° N, ${roverLng.toFixed(5)}° E
-Crop: ${currentDiagnosis.crop}
-Detected Pathology: ${currentDiagnosis.disease}
-Severity: ${currentDiagnosis.severity || 'HIGH'}
-Prescribed Chemical: ${currentDiagnosis.remedy}
-Application Advisory: Calibrated foliar spray in calm weather. Rotate active ingredient groups.
-Timestamp: ${new Date().toLocaleString()} IST`;
-
-      const el = document.getElementById("sms-text");
-      if (el) el.innerText = preview;
-    }
-
-    function speakCurrentDiagnosis() {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const text = currentDiagnosis.disease.includes("Healthy")
-          ? `Crop scan complete on ${currentDiagnosis.crop}. The leaf is healthy with no foliar pathology detected.`
-          : `Attention. Foliar pathology detected: ${currentDiagnosis.disease} on ${currentDiagnosis.crop}. Severity is ${currentDiagnosis.severity || 'High'}. Prescribed chemical remedy: ${currentDiagnosis.remedy}`;
-        
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.95;
-        utterance.pitch = 1.0;
-        window.speechSynthesis.speak(utterance);
-        logEvent("AUDIO-TTS", `Spoken diagnosis: "${currentDiagnosis.disease.split("(")[0]}"`, "safe");
-        showToast("🔊 Speaking Diagnosis...");
-      } else {
-        alert("Speech Synthesis is not supported in this browser.");
-      }
-    }
-
     function cycleCrop(dir) {
       customUploaded = false;
-      document.getElementById("feed-status").innerText = "● LIVE STREAM | 15.2 FPS (DVP 10MHz)";
       sampleIdx = (sampleIdx + dir + samples.length) % samples.length;
       renderScene();
     }
@@ -2025,12 +1309,10 @@ Timestamp: ${new Date().toLocaleString()} IST`;
         clearInterval(autoTimer);
         autoTimer = null;
         b.innerText = "Auto-Cycle";
-        b.style.color = "var(--text-main)";
       } else {
         customUploaded = false;
         autoTimer = setInterval(() => cycleCrop(1), 3500);
         b.innerText = "Pause";
-        b.style.color = "var(--brand-mint)";
       }
     }
 
@@ -2041,89 +1323,76 @@ Timestamp: ${new Date().toLocaleString()} IST`;
     }
 
     function captureSnapshot() {
-      showToast("📸 Snapshot saved to local storage & logged.");
-      logEvent("STORAGE", `Snapshot taken for ${currentDiagnosis.crop} at Alliance Lot 3.`, "safe");
+      showToast("📸 Snapshot logged.");
+      logEvent("STORAGE", `Snapshot saved for ${currentDiagnosis.crop}`, "safe");
     }
 
-    // REAL-TIME LOCATION MONITORING
     function startRealtimeTracking() {
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
           (pos) => {
             roverLat = pos.coords.latitude;
             roverLng = pos.coords.longitude;
-            updateMapPosition(roverLat, roverLng, pos.coords.accuracy);
-            logEvent("REALTIME-GPS", `Acquired live browser location: ${roverLat.toFixed(5)}° N, ${roverLng.toFixed(5)}° E (±${pos.coords.accuracy.toFixed(1)}m)`, "safe");
+            updateMap(roverLat, roverLng, pos.coords.accuracy);
+            logEvent("GPS", `Browser location locked: ${roverLat.toFixed(5)}, ${roverLng.toFixed(5)}`, "safe");
             showToast("📍 Real-time Location Locked!");
           },
-          (err) => {
-            roverLat = 12.8258;
-            roverLng = 77.7126;
-            updateMapPosition(roverLat, roverLng, 3.5);
-            logEvent("GEO", "Using Alliance University Lot 3 test coordinates (12.8258° N, 77.7126° E).", "safe");
+          () => {
+            roverLat = 12.8258; roverLng = 77.7126;
+            updateMap(roverLat, roverLng, 3.5);
           },
-          { enableHighAccuracy: true, timeout: 6000 }
+          { enableHighAccuracy: true }
         );
-      } else {
-        updateMapPosition(roverLat, roverLng, 4.0);
       }
     }
 
-    function updateMapPosition(lat, lng, acc) {
+    function updateMap(lat, lng, acc) {
       roverLat = lat; roverLng = lng;
-      marker.setLatLng([roverLat, roverLng]);
-      if (accCircle) accCircle.setLatLng([roverLat, roverLng]);
-      path.push([roverLat, roverLng]);
+      marker.setLatLng([lat, lng]);
+      path.push([lat, lng]);
       pathLine.setLatLngs(path);
-      map.setView([roverLat, roverLng], 18);
-      document.getElementById("gps-coords").innerText = `${roverLat.toFixed(5)}° N, ${roverLng.toFixed(5)}° E`;
+      map.setView([lat, lng], 18);
+      document.getElementById("gps-coords").innerText = `${lat.toFixed(5)}° N, ${lng.toFixed(5)}° E`;
       document.getElementById("gps-acc").innerText = `±${acc.toFixed(1)} m`;
-      updatePayloadPreview();
     }
 
     function initMap() {
-      map = L.map('map').setView([roverLat, roverLng], 18);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'Alliance University Lot 3' }).addTo(map);
+      map = L.map("map").setView([roverLat, roverLng], 18);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "Alliance Lot 3" }).addTo(map);
 
       const roverIcon = L.divIcon({
-        className: 'custom-rover',
+        className: "custom-rover",
         html: `<div style="background: #10b981; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 14px #10b981;"></div>`,
         iconSize: [18, 18],
         iconAnchor: [9, 9]
       });
 
-      marker = L.marker([roverLat, roverLng], { icon: roverIcon }).addTo(map).bindPopup("<b>Agrivision Rover</b><br>Alliance Lot 3 Test Plot").openPopup();
-      accCircle = L.circle([roverLat, roverLng], { radius: 10, color: '#34d399', fillOpacity: 0.15 }).addTo(map);
-      pathLine = L.polyline(path, { color: '#06b6d4', weight: 3 }).addTo(map);
+      marker = L.marker([roverLat, roverLng], { icon: roverIcon }).addTo(map);
+      pathLine = L.polyline(path, { color: "#06b6d4", weight: 3 }).addTo(map);
     }
 
-    // MOTOR & D-PAD LOGIC
     function drive(cmd) {
-      document.querySelectorAll(".dpad-btn").forEach(b => b.classList.remove("pressed"));
+      document.querySelectorAll(".btn-dir").forEach(b => b.classList.remove("pressed"));
       let dLat = 0, dLng = 0;
-      if (cmd === "FWD") { document.getElementById("dpad-up").classList.add("pressed"); dLat = 0.00008; logEvent("L298N", `FORWARD engaged (PWM: ${currentPWM}/255)`, "safe"); }
-      else if (cmd === "REV") { document.getElementById("dpad-down").classList.add("pressed"); dLat = -0.00008; logEvent("L298N", `REVERSE engaged (PWM: ${currentPWM}/255)`, "warn"); }
+      if (cmd === "FWD") { document.getElementById("dpad-up").classList.add("pressed"); dLat = 0.00008; logEvent("L298N", "FORWARD", "safe"); }
+      else if (cmd === "REV") { document.getElementById("dpad-down").classList.add("pressed"); dLat = -0.00008; logEvent("L298N", "REVERSE", "warn"); }
       else if (cmd === "LEFT") { document.getElementById("dpad-left").classList.add("pressed"); dLng = -0.00008; logEvent("L298N", "STEER LEFT", "safe"); }
       else if (cmd === "RIGHT") { document.getElementById("dpad-right").classList.add("pressed"); dLng = 0.00008; logEvent("L298N", "STEER RIGHT", "safe"); }
-      else if (cmd === "STOP" || cmd === "COAST") { logEvent("L298N", "MOTORS COAST / STOP", "safe"); }
 
       if (dLat !== 0 || dLng !== 0) {
         roverLat += dLat; roverLng += dLng;
         marker.setLatLng([roverLat, roverLng]);
-        if (accCircle) accCircle.setLatLng([roverLat, roverLng]);
         path.push([roverLat, roverLng]);
         pathLine.setLatLngs(path);
         document.getElementById("gps-coords").innerText = `${roverLat.toFixed(5)}° N, ${roverLng.toFixed(5)}° E`;
-        updatePayloadPreview();
       }
     }
 
     function triggerHalt() {
       drive("STOP");
-      document.getElementById("motor-badge").className = "badge-status danger";
       document.getElementById("motor-badge").innerText = "HALTED";
       document.getElementById("pwm-val").innerText = "0";
-      logEvent("EMERGENCY", "🚨 EMERGENCY HALT TRIGGERED! Power cut to L298N motors.", "danger");
+      logEvent("EMERGENCY", "🚨 EMERGENCY HALT TRIGGERED!", "danger");
       showToast("🛑 EMERGENCY HALT ACTIVE");
     }
 
@@ -2131,14 +1400,6 @@ Timestamp: ${new Date().toLocaleString()} IST`;
       currentPWM = Math.round((val / 100) * 255);
       document.getElementById("throttle-label").innerText = `${val}% (${currentPWM} PWM)`;
       document.getElementById("pwm-val").innerText = currentPWM;
-      logEvent("PWM", `Throttle updated to ${val}% (${currentPWM}/255)`, "safe");
-    }
-
-    function setMode(m) {
-      document.getElementById("btn-manual").classList.toggle("active", m === "manual");
-      document.getElementById("btn-auto").classList.toggle("active", m === "auto");
-      logEvent("MODE", `Mode switched to ${m.toUpperCase()}`, "safe");
-      showToast(`Drive Mode: ${m.toUpperCase()}`);
     }
 
     function initKeyboard() {
@@ -2157,12 +1418,12 @@ Timestamp: ${new Date().toLocaleString()} IST`;
     }
 
     function logEvent(sys, msg, type) {
-      const time = new Date().toTimeString().split(" ")[0] + "." + String(Date.now() % 1000).padStart(3, '0');
+      const time = new Date().toTimeString().split(" ")[0];
       logs.push({ time, sys, msg, type });
       const el = document.getElementById("terminal-logs");
       const d = document.createElement("div");
       d.className = "log-line " + type;
-      d.innerHTML = `<span class="log-time">[${time}]</span> <span class="log-subsys">[${sys}]</span> <span class="log-msg">${msg}</span>`;
+      d.innerHTML = `<span class="log-time">[${time}]</span> <span class="log-subsys">[${sys}]</span> <span>${msg}</span>`;
       el.appendChild(d);
       el.scrollTop = el.scrollHeight;
     }
@@ -2174,13 +1435,12 @@ Timestamp: ${new Date().toLocaleString()} IST`;
 
     function exportCSV() {
       let csv = "Timestamp,Subsystem,Message,Type\n";
-      logs.forEach(l => csv += `"${l.time}","${l.sys}","${l.msg.replace(/"/g, '""')}","${l.type}"\n`);
-      const blob = new Blob([csv], { type: 'text/csv' });
+      logs.forEach(l => csv += `"${l.time}","${l.sys}","${l.msg}","${l.type}"\n`);
       const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `agrivision_telemetry_${Date.now()}.csv`;
+      a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+      a.download = `telemetry_${Date.now()}.csv`;
       a.click();
-      showToast("💾 Telemetry CSV Exported.");
+      showToast("💾 CSV Exported.");
     }
 
     function renderAdvisory(data) {
@@ -2188,7 +1448,14 @@ Timestamp: ${new Date().toLocaleString()} IST`;
       tbody.innerHTML = "";
       data.forEach(d => {
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${d.sno}</td><td style="color:var(--brand-mint); font-weight:600;">${d.crop}</td><td><strong>${d.disease}</strong></td><td style="color:#94a3b8;">${d.height}</td><td>${d.symptoms}</td><td class="pesticide-highlight">${d.pesticides}</td>`;
+        tr.innerHTML = `
+          <td style="padding:8px 12px; font-family:'JetBrains Mono', monospace; color:var(--text-dim);">${d.sno}</td>
+          <td style="padding:8px 12px; font-weight:600; color:var(--primary-bright);">${d.crop}</td>
+          <td style="padding:8px 12px;"><strong>${d.disease}</strong></td>
+          <td style="padding:8px 12px; color:var(--text-dim);">${d.height}</td>
+          <td style="padding:8px 12px;">${d.symptoms}</td>
+          <td style="padding:8px 12px; color:var(--primary-bright); font-weight:600;">${d.pesticides}</td>
+        `;
         tbody.appendChild(tr);
       });
     }
@@ -2202,104 +1469,6 @@ Timestamp: ${new Date().toLocaleString()} IST`;
         return mCat && mQ;
       });
       renderAdvisory(filtered);
-    }
-
-    // MODAL DIALOGS
-    function openSmsModal() {
-      updatePayloadPreview();
-      document.getElementById("sms-modal").style.display = "flex";
-    }
-
-    function closeSmsModal() {
-      document.getElementById("sms-modal").style.display = "none";
-    }
-
-    // REAL-TIME WHATSAPP DISPATCH TO MOBILE NUMBER
-    function sendViaWhatsApp() {
-      const phone = (document.getElementById("dispatch-phone-input").value || "919845012849").replace(/[^0-9]/g, '');
-      const text = encodeURIComponent(document.getElementById("sms-text").innerText);
-      window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${text}`, '_blank');
-      sendSms();
-    }
-
-    // REAL-TIME MAILTO INTENT
-    function sendViaMailClient() {
-      const email = document.getElementById("dispatch-email-input").value || "harikant4880@gmail.com";
-      const subject = encodeURIComponent(`[AGRIVISION REAL-TIME ALERT] ${currentDiagnosis.disease} at Alliance Lot 3`);
-      const body = encodeURIComponent(document.getElementById("sms-text").innerText);
-      window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-      sendSms();
-    }
-
-    // AUTOMATED REAL-TIME DISPATCH ENGINE
-    function triggerRealtimeDispatch() {
-      const email = "harikant4880@gmail.com";
-      const phone = "+91 98450 12849";
-
-      // 1. Send to serverless API endpoint
-      fetch('/api/send-alert', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          crop: currentDiagnosis.crop,
-          disease: currentDiagnosis.disease,
-          severity: currentDiagnosis.severity,
-          remedy: currentDiagnosis.remedy,
-          gps: `${roverLat.toFixed(5)}° N, ${roverLng.toFixed(5)}° E (Alliance Lot 3)`,
-          recipient_email: email,
-          recipient_phone: phone,
-          timestamp: new Date().toISOString()
-        })
-      }).catch(() => {
-        // Safe fallback in static mode
-      });
-
-      // 2. Trigger Mobile Browser Push Notification
-      if ("Notification" in window && Notification.permission === "granted") {
-        new Notification(`🌿 Crop Health Alert: ${currentDiagnosis.crop}`, {
-          body: `⚠️ ${currentDiagnosis.disease} detected at Alliance Lot 3.\nPrescribed: ${currentDiagnosis.remedy}`,
-          icon: "🌿"
-        });
-      }
-
-      // 3. Show In-App Banner
-      const banner = document.getElementById("dash-notif-banner");
-      document.getElementById("banner-title").innerText = `⚡ REAL-TIME ALERT: ${currentDiagnosis.disease.split("(")[0]}`;
-      document.getElementById("banner-body").innerHTML = `
-        Real-time notification dispatched to <strong>${email}</strong> &amp; Mobile Push.<br>
-        <strong>Issue:</strong> ${currentDiagnosis.crop} - ${currentDiagnosis.disease}<br>
-        <strong>Prescribed:</strong> ${currentDiagnosis.remedy}<br>
-        <strong>Location:</strong> ${roverLat.toFixed(5)}° N, ${roverLng.toFixed(5)}° E (Alliance Lot 3)
-      `;
-      banner.style.display = "flex";
-      setTimeout(() => banner.style.display = "none", 8000);
-
-      // 4. Update Notification Bell Badge
-      notificationCount++;
-      document.getElementById("notif-badge").innerText = notificationCount;
-      document.getElementById("notif-header-count").innerText = `${notificationCount} Dispatched Alert${notificationCount > 1 ? 's' : ''}`;
-
-      const notifList = document.getElementById("notif-items-list");
-      const newItem = document.createElement("div");
-      newItem.className = "notif-item";
-      newItem.innerHTML = `
-        <div class="notif-item-top">
-          <span style="color: var(--brand-rose); font-weight:700;">${currentDiagnosis.disease.split("(")[0]}</span>
-          <span style="color: var(--text-dim);">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} IST</span>
-        </div>
-        <div style="color: #cbd5e1;">Prescribed: ${currentDiagnosis.remedy}</div>
-        <div style="color: var(--brand-mint); font-size:11px;">Target: ${email} &amp; Mobile Push</div>
-      `;
-      notifList.insertBefore(newItem, notifList.firstChild);
-
-      // 5. Audit Log
-      logEvent("AUTO-DISPATCH", `Real-time alert transmitted to ${email} and mobile push for ${currentDiagnosis.disease}`, "danger");
-      showToast(`⚡ Real-Time Alert Sent to ${email}!`);
-    }
-
-    function sendSms() {
-      closeSmsModal();
-      triggerRealtimeDispatch();
     }
 
     function showToast(m) {
