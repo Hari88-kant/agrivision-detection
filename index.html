@@ -3,60 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AGRIVISION | Real-Time Foliar Crop Disease Detection & Operator Workstation</title>
+  <title>AGRIVISION | Real-Time Foliar Crop Disease Detection</title>
   
-  <!-- Leaflet GIS & Fonts -->
+  <!-- Leaflet GIS & Modern Typography -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg-darkest: #030805;
-      --bg-base: #06110a;
-      --bg-panel: rgba(10, 24, 16, 0.75);
-      --bg-card: rgba(16, 36, 25, 0.65);
-      --bg-card-hover: rgba(22, 50, 35, 0.85);
-      --bg-tile: #0e2419;
-      --border-subtle: rgba(52, 211, 153, 0.15);
+      --bg-surface: #09110d;
+      --bg-panel: rgba(13, 25, 19, 0.82);
+      --bg-panel-hover: rgba(18, 36, 27, 0.9);
+      --bg-card: rgba(20, 39, 30, 0.6);
+      --bg-card-subtle: rgba(25, 48, 38, 0.5);
+      --bg-elevated: #162c21;
+      
+      --border-light: rgba(52, 211, 153, 0.15);
+      --border-accent: rgba(52, 211, 153, 0.35);
       --border-glow: rgba(16, 185, 129, 0.45);
-      --border-active: #10b981;
       
-      --accent-emerald: #059669;
-      --accent-green: #10b981;
-      --accent-mint: #34d399;
-      --accent-cyan: #06b6d4;
-      --accent-amber: #f59e0b;
-      --accent-red: #ef4444;
+      --emerald-primary: #10b981;
+      --emerald-bright: #34d399;
+      --emerald-dark: #059669;
+      --cyan-accent: #06b6d4;
+      --amber-accent: #f59e0b;
+      --rose-accent: #ef4444;
       
-      --text-main: #f0fdf4;
-      --text-muted: #86efac;
+      --text-white: #ffffff;
+      --text-primary: #f2fbf6;
+      --text-secondary: #a7f3d0;
+      --text-muted: #6ee7b7;
       --text-dim: #4ade80;
       --text-slate: #94a3b8;
       
-      --font-display: 'Rajdhani', sans-serif;
+      --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
-      --font-sans: 'Plus Jakarta Sans', sans-serif;
       
-      --glass-blur: blur(20px);
-      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.7), 0 0 15px rgba(16, 185, 129, 0.08);
-      --shadow-glow: 0 0 25px rgba(16, 185, 129, 0.35);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --radius-full: 9999px;
+      
+      --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.6), 0 0 1px rgba(52, 211, 153, 0.2);
+      --shadow-glow: 0 0 25px rgba(16, 185, 129, 0.25);
+      --backdrop-blur: blur(24px);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background-color: var(--bg-base);
+      background-color: var(--bg-surface);
       background-image: 
-        radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.12) 0%, transparent 45%),
-        radial-gradient(circle at 90% 90%, rgba(5, 150, 105, 0.12) 0%, transparent 45%),
-        linear-gradient(to right, rgba(30, 69, 51, 0.12) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(30, 69, 51, 0.12) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
-      color: var(--text-main);
-      font-family: var(--font-sans);
+        radial-gradient(circle at 12% 8%, rgba(16, 185, 129, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 88% 92%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
+        linear-gradient(to right, rgba(52, 211, 153, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(52, 211, 153, 0.04) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 28px 28px, 28px 28px;
+      color: var(--text-primary);
+      font-family: var(--font-body);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -64,22 +73,21 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* TOP STATUS BAR */
+    /* TOP BRAND & TELEMETRY NAVBAR */
     header.status-bar {
-      background: rgba(6, 17, 10, 0.85);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border-bottom: 1px solid var(--border-subtle);
-      padding: 12px 24px;
+      background: rgba(8, 18, 13, 0.88);
+      backdrop-filter: var(--backdrop-blur);
+      -webkit-backdrop-filter: var(--backdrop-blur);
+      border-bottom: 1px solid var(--border-light);
+      padding: 12px 28px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 14px;
+      gap: 16px;
       position: sticky;
       top: 0;
       z-index: 1000;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     }
 
     .brand-group {
@@ -88,47 +96,48 @@
       gap: 14px;
     }
 
-    .brand-logo-gem {
-      width: 44px;
-      height: 44px;
-      background: linear-gradient(135deg, #10b981 0%, #064e3b 100%);
-      border-radius: 12px;
+    .brand-icon-box {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+      border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
-      border: 1px solid #34d399;
-      box-shadow: var(--shadow-glow);
-      position: relative;
+      font-size: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
+    }
+
+    .brand-text-col {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
 
     .brand-title {
-      font-family: var(--font-display);
-      font-size: 24px;
+      font-family: var(--font-ui);
+      font-size: 20px;
       font-weight: 800;
-      letter-spacing: 1.5px;
-      color: #fff;
+      letter-spacing: -0.3px;
+      color: var(--text-white);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
-    .brand-title span.sub {
-      font-size: 11.5px;
+    .brand-subtitle {
       font-family: var(--font-mono);
-      background: rgba(16, 185, 129, 0.15);
-      color: #34d399;
-      padding: 3px 10px;
-      border-radius: 6px;
-      border: 1px solid rgba(52, 211, 153, 0.35);
-      font-weight: 600;
-      letter-spacing: 0.5px;
+      font-size: 11px;
+      color: var(--emerald-bright);
+      font-weight: 500;
+      letter-spacing: 0.4px;
     }
 
     .header-telemetry-strip {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       font-family: var(--font-mono);
       font-size: 12px;
       flex-wrap: wrap;
@@ -136,126 +145,124 @@
 
     .telemetry-chip {
       background: var(--bg-card);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border-subtle);
+      border: 1px solid var(--border-light);
       padding: 6px 12px;
-      border-radius: 8px;
+      border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       gap: 8px;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
       transition: all 0.2s ease;
     }
 
     .telemetry-chip:hover {
-      border-color: var(--accent-mint);
-      box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+      border-color: var(--border-accent);
+      background: var(--bg-card-subtle);
     }
 
     .chip-label {
-      color: #6ee7b7;
+      color: var(--text-slate);
       font-size: 11px;
       text-transform: uppercase;
       font-weight: 600;
     }
 
     .chip-val {
-      font-weight: 700;
-      color: #fff;
+      font-weight: 600;
+      color: var(--text-white);
     }
-
-    .chip-val.green { color: var(--accent-mint); text-shadow: 0 0 8px rgba(52, 211, 153, 0.4); }
-    .chip-val.cyan { color: var(--accent-cyan); text-shadow: 0 0 8px rgba(6, 182, 212, 0.4); }
 
     .pulse-dot {
       width: 8px;
       height: 8px;
-      border-radius: 50%;
-      background: var(--accent-mint);
-      box-shadow: 0 0 10px var(--accent-mint);
+      border-radius: var(--radius-full);
+      background: var(--emerald-bright);
+      box-shadow: 0 0 10px var(--emerald-bright);
       animation: pulse 1.8s infinite;
     }
 
     @keyframes pulse {
       0% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.35; transform: scale(0.85); }
+      50% { opacity: 0.3; transform: scale(0.85); }
       100% { opacity: 1; transform: scale(1); }
     }
 
-    .mode-toggle-group {
+    /* SEGMENTED DRIVE MODE */
+    .segmented-control {
       display: flex;
       align-items: center;
-      gap: 6px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      padding: 3px 6px;
-      border-radius: 8px;
+      background: rgba(14, 30, 22, 0.8);
+      border: 1px solid var(--border-light);
+      padding: 3px;
+      border-radius: var(--radius-sm);
+      gap: 2px;
     }
 
-    .mode-btn {
+    .segmented-btn {
       padding: 5px 12px;
-      border-radius: 5px;
+      border-radius: 6px;
       font-size: 11px;
       font-family: var(--font-mono);
       font-weight: 700;
       cursor: pointer;
       border: none;
       background: transparent;
-      color: #a7f3d0;
+      color: var(--text-slate);
       transition: all 0.2s;
     }
 
-    .mode-btn.active {
+    .segmented-btn.active {
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: #022c22;
-      box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+      color: #02261a;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
     }
 
-    /* TOP NAVIGATION TABS */
+    /* WORKSPACE SUB-NAV TABS */
     nav.subnav-tabs {
-      background: rgba(8, 22, 14, 0.65);
-      border-bottom: 1px solid var(--border-subtle);
-      padding: 8px 24px;
+      background: rgba(9, 20, 15, 0.7);
+      border-bottom: 1px solid var(--border-light);
+      padding: 8px 28px;
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(16px);
+      overflow-x: auto;
     }
 
     .nav-tab-btn {
       background: transparent;
       border: 1px solid transparent;
-      color: #a7f3d0;
-      font-family: var(--font-sans);
+      color: var(--text-slate);
+      font-family: var(--font-ui);
       font-size: 13px;
       font-weight: 600;
       padding: 6px 14px;
-      border-radius: 6px;
+      border-radius: var(--radius-sm);
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       transition: all 0.2s;
+      white-space: nowrap;
     }
 
     .nav-tab-btn:hover {
-      background: rgba(16, 185, 129, 0.1);
-      color: #fff;
+      background: rgba(52, 211, 153, 0.08);
+      color: var(--text-white);
     }
 
     .nav-tab-btn.active {
-      background: rgba(16, 185, 129, 0.18);
-      border-color: rgba(52, 211, 153, 0.4);
-      color: #34d399;
-      box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(52, 211, 153, 0.3);
+      color: var(--emerald-bright);
     }
 
-    /* MAIN OPERATOR GRID */
+    /* MAIN GRID LAYOUT */
     main.dashboard-grid {
       display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
+      grid-template-columns: 1.18fr 0.82fr;
       gap: 20px;
-      padding: 20px 24px;
+      padding: 24px 28px;
       flex: 1;
       max-width: 1920px;
       margin: 0 auto;
@@ -265,76 +272,83 @@
     @media (max-width: 1200px) {
       main.dashboard-grid {
         grid-template-columns: 1fr;
+        padding: 16px;
+        gap: 16px;
       }
     }
 
+    /* PANELS */
     .panel {
       background: var(--bg-panel);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border-subtle);
-      border-radius: 14px;
-      padding: 18px;
+      backdrop-filter: var(--backdrop-blur);
+      -webkit-backdrop-filter: var(--backdrop-blur);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 20px;
       display: flex;
       flex-direction: column;
       gap: 16px;
-      box-shadow: var(--shadow-card);
+      box-shadow: var(--shadow-soft);
       position: relative;
-      transition: all 0.2s ease;
+      transition: border-color 0.2s ease;
     }
 
     .panel:hover {
-      border-color: rgba(52, 211, 153, 0.3);
+      border-color: var(--border-accent);
     }
 
     .panel-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-light);
       padding-bottom: 12px;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     .panel-title {
-      font-family: var(--font-display);
-      font-size: 19px;
+      font-family: var(--font-ui);
+      font-size: 16px;
       font-weight: 700;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      color: #ecfdf5;
+      color: var(--text-white);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
-    .panel-title .badge {
+    .badge-pill {
       font-family: var(--font-mono);
       font-size: 11px;
       font-weight: 600;
       background: rgba(16, 185, 129, 0.15);
-      color: #34d399;
-      border: 1px solid rgba(52, 211, 153, 0.35);
+      color: var(--emerald-bright);
+      border: 1px solid rgba(52, 211, 153, 0.3);
       padding: 3px 8px;
-      border-radius: 5px;
+      border-radius: var(--radius-full);
+      white-space: nowrap;
     }
 
-    /* COMPUTER VISION VIEWPORT */
+    /* 16:9 COMPUTER VISION VIEWPORT */
     .viewport-container {
       position: relative;
       width: 100%;
       aspect-ratio: 16 / 9;
       background: #020604;
-      border-radius: 12px;
+      border-radius: var(--radius-md);
       overflow: hidden;
-      border: 2px solid var(--border-subtle);
-      box-shadow: inset 0 0 45px rgba(0,0,0,0.9);
+      border: 1px solid var(--border-light);
+      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .viewport-canvas {
       width: 100%;
       height: 100%;
       display: block;
-      object-fit: cover;
+      object-fit: contain;
     }
 
     .laser-scanner {
@@ -342,9 +356,9 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 3px;
-      background: linear-gradient(90deg, transparent 0%, #34d399 50%, #06b6d4 85%, transparent 100%);
-      box-shadow: 0 0 16px #34d399, 0 0 28px #06b6d4;
+      height: 2.5px;
+      background: linear-gradient(90deg, transparent 0%, var(--emerald-bright) 50%, var(--cyan-accent) 80%, transparent 100%);
+      box-shadow: 0 0 14px var(--emerald-bright), 0 0 24px var(--cyan-accent);
       animation: laserSweep 3.2s ease-in-out infinite alternate;
       pointer-events: none;
       z-index: 20;
@@ -364,9 +378,9 @@
 
     .hud-corner {
       position: absolute;
-      width: 22px;
-      height: 22px;
-      border-color: rgba(52, 211, 153, 0.7);
+      width: 20px;
+      height: 20px;
+      border-color: rgba(52, 211, 153, 0.65);
     }
     .hud-tl { top: 12px; left: 12px; border-top: 2px solid; border-left: 2px solid; }
     .hud-tr { top: 12px; right: 12px; border-top: 2px solid; border-right: 2px solid; }
@@ -376,41 +390,42 @@
     .hud-cam-meta {
       position: absolute;
       top: 12px;
-      left: 44px;
+      left: 40px;
       font-family: var(--font-mono);
       font-size: 11px;
-      color: rgba(236, 253, 245, 0.9);
-      background: rgba(4, 20, 13, 0.85);
-      backdrop-filter: blur(6px);
+      color: rgba(240, 253, 244, 0.9);
+      background: rgba(6, 17, 12, 0.85);
+      backdrop-filter: blur(8px);
       padding: 4px 10px;
       border-radius: 6px;
-      border: 1px solid rgba(52, 211, 153, 0.3);
+      border: 1px solid var(--border-light);
       display: flex;
-      gap: 14px;
+      gap: 12px;
     }
 
-    /* Bounding Boxes */
+    /* BOUNDING BOXES */
     .bbox {
       position: absolute;
-      border: 2px solid var(--accent-red);
-      background: rgba(239, 68, 68, 0.18);
+      border: 2px solid var(--rose-accent);
+      background: rgba(239, 68, 68, 0.16);
       border-radius: 4px;
-      box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+      box-shadow: 0 0 14px rgba(239, 68, 68, 0.5);
       z-index: 25;
       cursor: pointer;
-      transition: all 0.25s ease;
+      transition: all 0.2s ease;
     }
 
     .bbox.moderate {
-      border-color: var(--accent-amber);
-      background: rgba(245, 158, 11, 0.18);
+      border-color: var(--amber-accent);
+      background: rgba(245, 158, 11, 0.16);
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
     }
 
     .bbox-tag {
       position: absolute;
       top: -24px;
       left: -2px;
-      background: var(--accent-red);
+      background: var(--rose-accent);
       color: #fff;
       font-family: var(--font-mono);
       font-size: 11px;
@@ -421,107 +436,180 @@
     }
 
     .bbox.moderate .bbox-tag {
-      background: var(--accent-amber);
+      background: var(--amber-accent);
       color: #000;
     }
 
-    /* PHOTO UPLOAD & DIAGNOSTIC ACTION BAR */
-    .upload-action-box {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(5, 150, 105, 0.05) 100%);
-      border: 1.5px dashed var(--accent-green);
-      border-radius: 12px;
+    /* UPLOAD & AUDIO SPEECH CONTROL BAR */
+    .action-toolbar-box {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(6, 182, 212, 0.04) 100%);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
       padding: 14px 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
       flex-wrap: wrap;
-      transition: all 0.2s ease;
-    }
-
-    .upload-action-box:hover {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(5, 150, 105, 0.08) 100%);
-      border-color: var(--accent-mint);
     }
 
     .upload-label-group {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
     }
 
     .upload-icon {
-      font-size: 28px;
-      color: var(--accent-mint);
+      font-size: 24px;
+      color: var(--emerald-bright);
     }
 
-    .upload-btn-custom {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: #022c22;
-      border: none;
-      padding: 9px 18px;
-      border-radius: 8px;
-      font-family: var(--font-display);
-      font-size: 15px;
-      font-weight: 800;
-      cursor: pointer;
+    .upload-text-title {
+      font-family: var(--font-ui);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+
+    .upload-text-desc {
+      font-size: 11.5px;
+      color: var(--text-slate);
+      font-family: var(--font-mono);
+    }
+
+    .audio-speech-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* AUDIO TOGGLE SWITCH (Auto-Speak: ON/OFF) */
+    .toggle-wrapper {
       display: flex;
       align-items: center;
       gap: 8px;
-      box-shadow: 0 0 14px rgba(16, 185, 129, 0.35);
-      transition: all 0.2s;
-    }
-
-    .upload-btn-custom:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 0 20px rgba(16, 185, 129, 0.55);
-    }
-
-    .btn-speak {
-      background: var(--bg-card);
-      border: 1px solid var(--accent-mint);
-      color: #ecfdf5;
-      padding: 9px 16px;
-      border-radius: 8px;
+      background: rgba(8, 20, 14, 0.7);
+      border: 1px solid var(--border-light);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11px;
+      color: var(--text-slate);
+      user-select: none;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 34px;
+      height: 18px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #1e3a2b;
+      transition: .3s;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 12px;
+      width: 12px;
+      left: 2px;
+      bottom: 2px;
+      background-color: #94a3b8;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+      background-color: var(--emerald-primary);
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(16px);
+      background-color: #ffffff;
+    }
+
+    .btn-action-primary {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #02261a;
+      border: none;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-ui);
+      font-size: 13px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
+      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
       transition: all 0.2s;
     }
 
-    .btn-speak:hover {
-      background: rgba(16, 185, 129, 0.2);
-      color: #34d399;
-      box-shadow: 0 0 14px rgba(52, 211, 153, 0.35);
+    .btn-action-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.5);
+    }
+
+    .btn-action-outline {
+      background: rgba(16, 36, 25, 0.7);
+      border: 1px solid var(--border-accent);
+      color: var(--text-primary);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-action-outline:hover {
+      background: rgba(52, 211, 153, 0.15);
+      border-color: var(--emerald-bright);
+      color: var(--emerald-bright);
     }
 
     /* PATHOLOGY WARNING BANNER */
     .pathology-banner {
-      background: linear-gradient(90deg, rgba(239, 68, 68, 0.25) 0%, rgba(185, 28, 28, 0.15) 100%);
-      border: 1px solid var(--accent-red);
-      border-left: 6px solid var(--accent-red);
-      border-radius: 10px;
+      background: linear-gradient(90deg, rgba(239, 68, 68, 0.2) 0%, rgba(185, 28, 28, 0.1) 100%);
+      border: 1px solid rgba(239, 68, 68, 0.6);
+      border-left: 5px solid var(--rose-accent);
+      border-radius: var(--radius-md);
       padding: 12px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 14px;
-      box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+      flex-wrap: wrap;
     }
 
     .pathology-title {
-      font-family: var(--font-display);
-      font-size: 18px;
-      font-weight: 800;
+      font-family: var(--font-ui);
+      font-size: 16px;
+      font-weight: 700;
       color: #fca5a5;
     }
 
     .pathology-desc {
-      font-size: 12.5px;
+      font-size: 12px;
       color: #e2e8f0;
       font-family: var(--font-mono);
       margin-top: 3px;
@@ -531,23 +619,23 @@
       background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
       color: #fff;
       border: none;
-      padding: 9px 18px;
-      border-radius: 8px;
-      font-family: var(--font-display);
-      font-size: 14px;
-      font-weight: 800;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
-      box-shadow: 0 0 16px rgba(239, 68, 68, 0.4);
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.35);
       transition: all 0.2s;
     }
 
     .btn-dispatch-sms:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 0 22px rgba(239, 68, 68, 0.6);
+      background: #dc2626;
+      box-shadow: 0 0 18px rgba(239, 68, 68, 0.55);
     }
 
-    /* CONTROLS TOOLBAR */
+    /* CV CONTROLS TOOLBAR */
     .cv-controls-bar {
       display: flex;
       align-items: center;
@@ -555,55 +643,48 @@
       gap: 12px;
       flex-wrap: wrap;
       background: var(--bg-card);
-      padding: 10px 16px;
-      border-radius: 10px;
-      border: 1px solid var(--border-subtle);
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
     }
 
-    .slider-label {
+    .slider-control-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-family: var(--font-mono);
       font-size: 12px;
-      color: #a7f3d0;
+      color: var(--text-slate);
+    }
+
+    .slider-control-group strong {
+      color: var(--emerald-bright);
+    }
+
+    input[type=range] {
+      accent-color: var(--emerald-primary);
+      cursor: pointer;
     }
 
     .model-select {
       background: var(--bg-tile);
-      color: #e2e8f0;
-      border: 1px solid var(--border-subtle);
-      padding: 6px 12px;
+      color: var(--text-white);
+      border: 1px solid var(--border-light);
+      padding: 6px 10px;
       border-radius: 6px;
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11.5px;
       outline: none;
     }
 
-    .btn-secondary {
-      background: var(--bg-tile);
-      border: 1px solid var(--border-subtle);
-      color: #d1fae5;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-secondary:hover {
-      background: rgba(16, 185, 129, 0.2);
-      border-color: var(--accent-mint);
-      color: #fff;
-    }
-
-    /* HARDWARE TILES */
+    /* HARDWARE TELEMETRY TILES */
     .hardware-tiles-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
+      gap: 12px;
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 650px) {
       .hardware-tiles-grid {
         grid-template-columns: 1fr;
       }
@@ -611,12 +692,12 @@
 
     .hw-tile {
       background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: 10px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
       padding: 14px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
       position: relative;
       overflow: hidden;
     }
@@ -625,8 +706,8 @@
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 3px;
-      background: var(--accent-green);
+      height: 2.5px;
+      background: var(--emerald-primary);
     }
 
     .hw-tile-head {
@@ -634,14 +715,14 @@
       justify-content: space-between;
       font-family: var(--font-mono);
       font-size: 11px;
-      color: #6ee7b7;
+      color: var(--text-slate);
       text-transform: uppercase;
       font-weight: 600;
     }
 
     .hw-main-val {
       font-family: var(--font-mono);
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 700;
       color: #fff;
       display: flex;
@@ -651,14 +732,14 @@
 
     .hw-main-val span.unit {
       font-size: 13px;
-      color: var(--text-dim);
+      color: var(--text-slate);
       font-weight: 400;
     }
 
     .hw-tile-sub {
       font-family: var(--font-mono);
-      font-size: 11.5px;
-      color: #a7f3d0;
+      font-size: 11px;
+      color: var(--text-secondary);
       display: flex;
       justify-content: space-between;
     }
@@ -666,18 +747,18 @@
     .badge-status {
       font-size: 10px;
       padding: 2px 7px;
-      border-radius: 4px;
+      border-radius: var(--radius-full);
       font-weight: 700;
     }
-    .badge-status.safe { background: rgba(16, 185, 129, 0.25); color: #34d399; }
-    .badge-status.warn { background: rgba(245, 158, 11, 0.25); color: #fbbf24; }
-    .badge-status.danger { background: rgba(239, 68, 68, 0.25); color: #f87171; }
+    .badge-status.safe { background: rgba(16, 185, 129, 0.2); color: var(--emerald-bright); }
+    .badge-status.warn { background: rgba(245, 158, 11, 0.2); color: var(--amber-accent); }
+    .badge-status.danger { background: rgba(239, 68, 68, 0.2); color: var(--rose-accent); }
 
-    /* D-PAD HUB */
+    /* D-PAD HUB & ACTUATORS */
     .dpad-hub-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 18px;
+      gap: 16px;
       align-items: center;
     }
 
@@ -687,20 +768,20 @@
 
     .dpad-matrix {
       display: grid;
-      grid-template-columns: repeat(3, 56px);
-      grid-template-rows: repeat(3, 56px);
+      grid-template-columns: repeat(3, 54px);
+      grid-template-rows: repeat(3, 54px);
       gap: 8px;
       justify-content: center;
       margin: 0 auto;
     }
 
     .dpad-btn {
-      background: var(--bg-tile);
-      border: 1px solid var(--border-subtle);
-      border-radius: 10px;
-      color: #ecfdf5;
-      font-family: var(--font-display);
-      font-size: 17px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: var(--font-ui);
+      font-size: 16px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
@@ -708,76 +789,76 @@
       align-items: center;
       justify-content: center;
       user-select: none;
-      transition: all 0.1s;
+      transition: all 0.15s;
     }
 
     .dpad-btn span.key-label {
       font-family: var(--font-mono);
       font-size: 9.5px;
-      color: var(--text-dim);
+      color: var(--text-slate);
     }
 
-    .dpad-btn:hover { background: rgba(16, 185, 129, 0.2); border-color: var(--accent-mint); color: #fff; }
-    .dpad-btn:active, .dpad-btn.pressed { background: var(--accent-mint); color: #022c22; transform: scale(0.94); }
+    .dpad-btn:hover { background: rgba(52, 211, 153, 0.15); border-color: var(--emerald-bright); color: #fff; }
+    .dpad-btn:active, .dpad-btn.pressed { background: var(--emerald-bright); color: #02261a; transform: scale(0.95); }
 
     .dpad-empty { background: transparent; border: none; }
-    .dpad-stop { background: rgba(239, 68, 68, 0.18); border-color: rgba(239, 68, 68, 0.5); color: #f87171; }
-    .dpad-stop:hover { background: rgba(239, 68, 68, 0.35); }
-    .dpad-stop:active, .dpad-stop.pressed { background: var(--accent-red); color: #fff; }
+    .dpad-stop { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); color: #f87171; }
+    .dpad-stop:hover { background: rgba(239, 68, 68, 0.3); }
+    .dpad-stop:active, .dpad-stop.pressed { background: var(--rose-accent); color: #fff; }
 
     .btn-emergency-halt {
       background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
       color: #fff;
       border: 2px solid #f87171;
-      border-radius: 10px;
-      padding: 14px;
-      font-family: var(--font-display);
-      font-size: 18px;
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-family: var(--font-ui);
+      font-size: 16px;
       font-weight: 800;
       cursor: pointer;
       text-transform: uppercase;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      box-shadow: 0 0 20px rgba(239, 68, 68, 0.45);
+      gap: 8px;
+      box-shadow: 0 0 18px rgba(239, 68, 68, 0.35);
       transition: all 0.2s;
     }
 
     .btn-emergency-halt:hover {
-      box-shadow: 0 0 30px rgba(239, 68, 68, 0.7);
+      box-shadow: 0 0 28px rgba(239, 68, 68, 0.6);
       transform: translateY(-1px);
     }
 
     .throttle-box {
       background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: 10px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
       padding: 10px 14px;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      margin-top: 12px;
+      margin-top: 10px;
     }
 
     .throttle-presets { display: flex; gap: 6px; }
     .throttle-chip {
       flex: 1;
       background: var(--bg-tile);
-      border: 1px solid var(--border-subtle);
-      color: #a7f3d0;
+      border: 1px solid var(--border-light);
+      color: var(--text-slate);
       font-family: var(--font-mono);
       font-size: 11px;
-      padding: 5px 0;
-      border-radius: 5px;
+      padding: 4px 0;
+      border-radius: 4px;
       cursor: pointer;
       text-align: center;
       transition: all 0.2s;
     }
     .throttle-chip.active {
-      border-color: var(--accent-mint);
-      background: rgba(16, 185, 129, 0.25);
-      color: #34d399;
+      border-color: var(--emerald-bright);
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--emerald-bright);
       font-weight: 700;
     }
 
@@ -788,8 +869,8 @@
       align-items: center;
       background: var(--bg-card);
       padding: 8px 14px;
-      border-radius: 8px;
-      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
       font-family: var(--font-mono);
       font-size: 11px;
       flex-wrap: wrap;
@@ -798,15 +879,15 @@
 
     .map-container {
       width: 100%;
-      height: 250px;
-      border-radius: 10px;
-      border: 1px solid var(--border-subtle);
+      height: 240px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
     }
 
     .btn-realtime-loc {
       background: linear-gradient(135deg, #059669 0%, #047857 100%);
       color: #fff;
-      border: 1px solid #34d399;
+      border: 1px solid var(--emerald-bright);
       padding: 5px 12px;
       border-radius: 6px;
       font-family: var(--font-mono);
@@ -818,19 +899,19 @@
       gap: 6px;
     }
 
-    /* TERMINAL */
+    /* TERMINAL AUDIT TRAIL */
     .terminal-container {
       background: #030805;
-      border: 1px solid var(--border-subtle);
-      border-radius: 10px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
       padding: 10px 14px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
     .terminal-log-window {
-      height: 150px;
+      height: 140px;
       overflow-y: auto;
       font-family: var(--font-mono);
       font-size: 11px;
@@ -838,21 +919,21 @@
       color: #a7f3d0;
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 2px;
     }
 
     .log-line { display: flex; gap: 6px; word-break: break-all; }
-    .log-time { color: #059669; }
-    .log-subsys { color: var(--accent-mint); font-weight: 600; }
-    .log-line.danger .log-msg { color: var(--accent-red); font-weight: 600; }
-    .log-line.warn .log-msg { color: var(--accent-amber); }
+    .log-time { color: var(--emerald-dark); }
+    .log-subsys { color: var(--emerald-bright); font-weight: 600; }
+    .log-line.danger .log-msg { color: var(--rose-accent); font-weight: 600; }
+    .log-line.warn .log-msg { color: var(--amber-accent); }
 
-    /* ADVISORY TABLE */
+    /* ADVISORY CARD */
     .advisory-table-wrapper {
-      max-height: 240px;
+      max-height: 220px;
       overflow-y: auto;
-      border: 1px solid var(--border-subtle);
-      border-radius: 10px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
       margin-top: 10px;
     }
 
@@ -870,17 +951,17 @@
       padding: 8px 12px;
       position: sticky;
       top: 0;
-      border-bottom: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-light);
     }
 
     table.advisory-table td {
       padding: 8px 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
       color: #d1fae5;
     }
 
     .pesticide-highlight {
-      color: var(--accent-mint);
+      color: var(--emerald-bright);
       font-family: var(--font-mono);
       font-weight: 600;
     }
@@ -895,8 +976,8 @@
 
     .modal-card {
       background: #0d1e16;
-      border: 2px solid var(--accent-red);
-      border-radius: 14px;
+      border: 2px solid var(--rose-accent);
+      border-radius: var(--radius-lg);
       width: 90%; max-width: 520px;
       padding: 24px;
       display: flex; flex-direction: column; gap: 14px;
@@ -918,47 +999,50 @@
     .toast {
       position: fixed; bottom: 24px; right: 24px;
       background: #047857; border: 1px solid #34d399;
-      color: #fff; padding: 12px 20px; border-radius: 8px;
-      font-family: var(--font-mono); font-size: 13px;
+      color: #fff; padding: 12px 20px; border-radius: var(--radius-md);
+      font-family: var(--font-mono); font-size: 12.5px;
       display: none; z-index: 3000; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
   </style>
 </head>
 <body>
 
-  <!-- [HEADER STATUS BAR] -->
+  <!-- [TOP BRAND & TELEMETRY NAVBAR] -->
   <header class="status-bar">
     <div class="brand-group">
-      <div class="brand-logo-gem">🌿</div>
-      <div class="brand-title">
-        AGRIVISION OPERATOR DASHBOARD
-        <span class="sub">REAL-TIME FOLIAR CROP DISEASE DETECTION</span>
+      <div class="brand-icon-box">🌿</div>
+      <div class="brand-text-col">
+        <div class="brand-title">
+          AGRIVISION OPERATOR DASHBOARD
+        </div>
+        <div class="brand-subtitle">
+          REAL-TIME FOLIAR CROP DISEASE DETECTION &amp; AUTONOMOUS TELEMETRY
+        </div>
       </div>
     </div>
 
     <div class="header-telemetry-strip">
       <div class="telemetry-chip">
         <div class="pulse-dot"></div>
-        <span class="chip-label">Wi-Fi RSSI:</span>
-        <span class="chip-val green" id="wifi-rssi">-58 dBm</span>
+        <span class="chip-label">Wi-Fi:</span>
+        <span class="chip-val" id="wifi-rssi" style="color: var(--emerald-bright);">-58 dBm</span>
       </div>
       <div class="telemetry-chip">
         <span class="chip-label">Camera:</span>
-        <span class="chip-val cyan">GalaxyCore GC2145 (10 MHz)</span>
+        <span class="chip-val" style="color: var(--cyan-accent);">GalaxyCore GC2145 (10 MHz)</span>
       </div>
       <div class="telemetry-chip">
-        <span class="chip-label">Power:</span>
-        <span class="chip-val green" id="power-rail">7.42V Rail (82%)</span>
+        <span class="chip-label">Battery:</span>
+        <span class="chip-val" id="power-rail" style="color: var(--emerald-bright);">7.42V Rail (82%)</span>
       </div>
-      <div class="mode-toggle-group">
-        <span class="chip-label">Mode:</span>
-        <button class="mode-btn active" id="btn-manual" onclick="setMode('manual')">MANUAL</button>
-        <button class="mode-btn" id="btn-auto" onclick="setMode('auto')">AUTO</button>
+      <div class="segmented-control">
+        <button class="segmented-btn active" id="btn-manual" onclick="setMode('manual')">MANUAL</button>
+        <button class="segmented-btn" id="btn-auto" onclick="setMode('auto')">AUTO</button>
       </div>
     </div>
   </header>
 
-  <!-- SUB-NAV TAB BAR -->
+  <!-- SUB-NAV TABS -->
   <nav class="subnav-tabs">
     <button class="nav-tab-btn active" onclick="switchTab('teleop')">⚡ Operator Workstation</button>
     <button class="nav-tab-btn" onclick="switchTab('diagnostics')">🔬 AI Pathology Lab</button>
@@ -977,9 +1061,9 @@
         <div class="panel-header">
           <div class="panel-title">
             <span>Modules 3 &amp; 4: Computer Vision Viewport</span>
-            <span class="badge">YOLOv8 Edge Engine</span>
+            <span class="badge-pill">YOLOv8 Edge Engine</span>
           </div>
-          <div style="font-family: var(--font-mono); font-size: 12px; color: var(--accent-mint);" id="feed-status">
+          <div style="font-family: var(--font-mono); font-size: 11.5px; color: var(--emerald-bright);" id="feed-status">
             ● LIVE STREAM | 15.2 FPS (DVP 10MHz)
           </div>
         </div>
@@ -1001,25 +1085,36 @@
           <div id="bbox-container"></div>
         </div>
 
-        <!-- PHOTO UPLOAD & TEXT-TO-SPEECH ACTION BAR -->
-        <div class="upload-action-box">
+        <!-- PHOTO UPLOAD & SELECTIVE AUDIO SPEECH CONTROL BAR -->
+        <div class="action-toolbar-box">
           <div class="upload-label-group">
             <div class="upload-icon">📷</div>
             <div>
-              <div style="font-family: var(--font-display); font-size: 17px; font-weight: 700; color: #fff;">
+              <div class="upload-text-title">
                 Upload Leaf Photo for Instant Pathology Diagnosis
               </div>
-              <div style="font-size: 11.5px; color: #86efac; font-family: var(--font-mono);">
-                Upload field crop photos to detect foliar diseases and announce prescription with Audio Speech
+              <div class="upload-text-desc">
+                Drop crop photos here to run instant bounding-box lesion detection
               </div>
             </div>
           </div>
-          <div style="display: flex; gap: 10px; align-items: center;">
+
+          <div class="audio-speech-controls">
+            <!-- Selective Speech Toggle Switch: Only speaks when enabled or clicked! -->
+            <div class="toggle-wrapper" title="When OFF, speech only plays when you click 'Speak Diagnosis'. When ON, it automatically announces on upload.">
+              <span>Auto-Speak:</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="auto-speak-toggle" onchange="toggleAutoSpeak(this.checked)">
+                <span class="toggle-slider"></span>
+              </label>
+              <span id="auto-speak-label" style="font-weight: 600; color: var(--text-slate);">OFF</span>
+            </div>
+
             <input type="file" id="leaf-photo-input" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
-            <button class="upload-btn-custom" onclick="document.getElementById('leaf-photo-input').click()">
+            <button class="btn-action-primary" onclick="document.getElementById('leaf-photo-input').click()">
               📂 Upload Leaf Photo
             </button>
-            <button class="btn-speak" id="btn-speak" onclick="speakCurrentDiagnosis()">
+            <button class="btn-action-outline" id="btn-speak" onclick="speakCurrentDiagnosis()">
               🔊 Speak Diagnosis
             </button>
           </div>
@@ -1036,12 +1131,12 @@
 
         <!-- CV Controls Toolbar -->
         <div class="cv-controls-bar">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span class="slider-label">Confidence: <strong id="conf-val" style="color: var(--accent-mint);">85%</strong></span>
+          <div class="slider-control-group">
+            <span>Confidence: <strong id="conf-val">85%</strong></span>
             <input type="range" id="conf-slider" min="50" max="98" value="85" oninput="updateConfidence(this.value)">
           </div>
           <div>
-            <span class="slider-label">Model: </span>
+            <span style="font-family: var(--font-mono); font-size: 11.5px; color: var(--text-slate);">Model: </span>
             <select class="model-select" onchange="logEvent('MODEL', 'Model switched to ' + this.value, 'safe')">
               <option value="YOLOv8n">YOLOv8n-Foliar (3.2MB Nano)</option>
               <option value="YOLOv8s">YOLOv8s-CropDisease (11.2MB Standard)</option>
@@ -1049,10 +1144,10 @@
             </select>
           </div>
           <div style="display: flex; gap: 6px;">
-            <button class="btn-secondary" onclick="cycleCrop(-1)">◀ Prev</button>
-            <button class="btn-secondary" onclick="cycleCrop(1)">Next ▶</button>
-            <button class="btn-secondary" onclick="toggleAutoCycle()" id="btn-autocycle">Auto-Cycle</button>
-            <button class="btn-secondary" onclick="captureSnapshot()">📸 Snapshot</button>
+            <button class="btn-action-outline" onclick="cycleCrop(-1)">◀ Prev</button>
+            <button class="btn-action-outline" onclick="cycleCrop(1)">Next ▶</button>
+            <button class="btn-action-outline" onclick="toggleAutoCycle()" id="btn-autocycle">Auto-Cycle</button>
+            <button class="btn-action-outline" onclick="captureSnapshot()">📸 Snapshot</button>
           </div>
         </div>
       </section>
@@ -1062,9 +1157,9 @@
         <div class="panel-header">
           <div class="panel-title">
             <span>Modules 1, 2 &amp; 5: Real-Time Hardware Tiles</span>
-            <span class="badge">ESP32 &amp; Actuators</span>
+            <span class="badge-pill">ESP32 &amp; Actuators</span>
           </div>
-          <div style="font-family: var(--font-mono); font-size: 11.5px; color: #86efac;">
+          <div style="font-family: var(--font-mono); font-size: 11.5px; color: var(--emerald-bright);">
             Telemetry Rate: 30 Hz
           </div>
         </div>
@@ -1076,7 +1171,7 @@
               <span class="badge-status safe" id="sonar-badge">CLEAR</span>
             </div>
             <div class="hw-main-val"><span id="sonar-dist">42.4</span><span class="unit">cm</span></div>
-            <div class="hw-tile-sub"><span>Auto-Stop: &lt; 20 cm</span><span style="color: #34d399;">Safe Range</span></div>
+            <div class="hw-tile-sub"><span>Auto-Stop: &lt; 20 cm</span><span style="color: var(--emerald-bright);">Safe Range</span></div>
           </div>
 
           <div class="hw-tile">
@@ -1104,12 +1199,12 @@
         <div class="panel-header">
           <div class="panel-title">
             <span>Agronomic Prescription Advisory Card</span>
-            <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">113 Low-Height Crop Remedies</span>
+            <span class="badge-pill">113 Low-Height Crop Remedies</span>
           </div>
         </div>
         <div style="display: flex; gap: 8px;">
-          <input type="text" id="advisory-search" placeholder="Search crop, disease or fungicide (e.g. Mancozeb, Potato, Rust)..." style="flex:1; background: var(--bg-card); border: 1px solid var(--border-subtle); color:#fff; padding:8px 14px; border-radius:6px; font-size:12px;" oninput="filterAdvisory()">
-          <select id="advisory-cat" style="background: var(--bg-card); border: 1px solid var(--border-subtle); color:#fff; padding:8px 14px; border-radius:6px; font-size:12px;" onchange="filterAdvisory()">
+          <input type="text" id="advisory-search" placeholder="Search crop, disease or fungicide (e.g. Mancozeb, Potato, Rust)..." style="flex:1; background: var(--bg-card); border: 1px solid var(--border-light); color:#fff; padding:8px 14px; border-radius:var(--radius-sm); font-size:12px;" oninput="filterAdvisory()">
+          <select id="advisory-cat" style="background: var(--bg-card); border: 1px solid var(--border-light); color:#fff; padding:8px 14px; border-radius:var(--radius-sm); font-size:12px;" onchange="filterAdvisory()">
             <option value="ALL">All Categories</option>
             <option value="Vegetables">Vegetables</option>
             <option value="Pulses & Oilseeds">Pulses &amp; Oilseeds</option>
@@ -1146,7 +1241,7 @@
         <div class="panel-header">
           <div class="panel-title">
             <span>Module 1: Navigation &amp; D-Pad Hub</span>
-            <span class="badge">WASD + Spacebar</span>
+            <span class="badge-pill">WASD + Spacebar</span>
           </div>
         </div>
 
@@ -1168,7 +1263,7 @@
           <div>
             <button class="btn-emergency-halt" onclick="triggerHalt()">🛑 EMERGENCY HALT</button>
             <div class="throttle-box">
-              <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11.5px; color:#86efac;">
+              <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11.5px; color:var(--text-secondary);">
                 <span>PWM Throttle:</span><span id="throttle-label">75% (191 PWM)</span>
               </div>
               <input type="range" min="30" max="100" value="75" oninput="setThrottle(this.value)">
@@ -1188,7 +1283,7 @@
         <div class="panel-header">
           <div class="panel-title">
             <span>Module 7: Real-Time Location Monitoring</span>
-            <span class="badge">Live Field GPS</span>
+            <span class="badge-pill">Live Field GPS</span>
           </div>
           <button class="btn-realtime-loc" onclick="startRealtimeTracking()">
             📍 Live GPS Lock
@@ -1196,9 +1291,9 @@
         </div>
 
         <div class="location-hud-strip">
-          <div>GPS: <strong style="color: #34d399;" id="gps-coords">12.82580° N, 77.71260° E</strong></div>
+          <div>GPS: <strong style="color: var(--emerald-bright);" id="gps-coords">12.82580° N, 77.71260° E</strong></div>
           <div>Loc: <span style="color: #a7f3d0;" id="loc-name">Anekal Rural, Alliance Lot 3</span></div>
-          <div>Accuracy: <span style="color: #06b6d4;" id="gps-acc">±2.4 m</span></div>
+          <div>Accuracy: <span style="color: var(--cyan-accent);" id="gps-acc">±2.4 m</span></div>
         </div>
 
         <div id="map" class="map-container"></div>
@@ -1209,11 +1304,11 @@
         <div class="panel-header">
           <div class="panel-title">
             <span>Module 7: Telemetry Audit Trail</span>
-            <span class="badge">Terminal Stream</span>
+            <span class="badge-pill">Terminal Stream</span>
           </div>
           <div style="display: flex; gap: 6px;">
-            <button class="btn-secondary" onclick="clearLogs()">Clear</button>
-            <button class="btn-secondary" style="color: var(--accent-mint);" onclick="exportCSV()">1-Click CSV Export</button>
+            <button class="btn-action-outline" onclick="clearLogs()">Clear</button>
+            <button class="btn-action-outline" style="color: var(--emerald-bright);" onclick="exportCSV()">1-Click CSV Export</button>
           </div>
         </div>
         <div class="terminal-container">
@@ -1227,11 +1322,11 @@
   <!-- SMS MODAL -->
   <div class="modal-overlay" id="sms-modal">
     <div class="modal-card">
-      <h3 style="color:#fca5a5; font-family:var(--font-display); font-size:20px;">📲 DISPATCH AGRONOMIC SMS ADVISORY</h3>
-      <p style="font-size:12px; color:#86efac;">Target: Alliance University Agro Station (+91 98450 12849)</p>
+      <h3 style="color:#fca5a5; font-family:var(--font-ui); font-size:18px;">📲 DISPATCH AGRONOMIC SMS ADVISORY</h3>
+      <p style="font-size:12px; color:var(--text-secondary);">Target: Alliance University Agro Station (+91 98450 12849)</p>
       <div class="sms-preview-bubble" id="sms-text"></div>
       <div style="display:flex; justify-content:flex-end; gap:8px;">
-        <button class="btn-secondary" onclick="closeSmsModal()">Cancel</button>
+        <button class="btn-action-outline" onclick="closeSmsModal()">Cancel</button>
         <button class="btn-dispatch-sms" onclick="sendSms()">Confirm &amp; Send SMS</button>
       </div>
     </div>
@@ -1302,6 +1397,7 @@
     let path = [[roverLat, roverLng]];
     let logs = [];
     let customUploaded = false;
+    let autoSpeakEnabled = false; // By default: OFF (only speaks when user clicks "Speak Diagnosis")
     let currentDiagnosis = {
       crop: "Potato",
       disease: "Potato Late Blight",
@@ -1326,6 +1422,22 @@
         document.getElementById("edge-lat").innerText = (21.5 + (Math.random() * 0.7)).toFixed(1);
       }, 1500);
     };
+
+    function toggleAutoSpeak(isEnabled) {
+      autoSpeakEnabled = isEnabled;
+      const label = document.getElementById("auto-speak-label");
+      if (isEnabled) {
+        label.innerText = "ON";
+        label.style.color = "var(--emerald-bright)";
+        showToast("🔊 Auto-Voice Speech: ENABLED (Speaks on detection)");
+        logEvent("AUDIO", "Auto-voice speech enabled by operator.", "safe");
+      } else {
+        label.innerText = "OFF";
+        label.style.color = "var(--text-slate)";
+        showToast("🔈 Auto-Voice Speech: OFF (Speaks only when requested)");
+        logEvent("AUDIO", "Auto-voice speech muted. Will only speak on manual click.", "safe");
+      }
+    }
 
     function switchTab(tabId) {
       document.querySelectorAll(".nav-tab-btn").forEach(b => b.classList.remove("active"));
@@ -1403,9 +1515,13 @@
       document.getElementById("pathology-desc").innerText = `Crop: ${s.crop} | Prescribed: ${s.remedy}`;
       document.getElementById("sms-text").innerText = `[AGRIVISION ALERT]\nCrop: ${s.crop} (Alliance Lot 3)\nGPS: ${roverLat.toFixed(5)} N, ${roverLng.toFixed(5)} E\nPathology: ${s.disease}\nRemedy: ${s.remedy}\nTimestamp: ${new Date().toLocaleTimeString()} IST`;
       logEvent("CV-YOLOv8", `Inference: ${s.disease} (${(s.box.conf*100).toFixed(1)}% conf) [9.4ms]`, "danger");
+
+      if (autoSpeakEnabled) {
+        speakCurrentDiagnosis();
+      }
     }
 
-    // PHOTO UPLOAD & TEXT-TO-SPEECH
+    // PHOTO UPLOAD WITH CLEAN ASPECT-RATIO HANDLING
     function handlePhotoUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1418,16 +1534,52 @@
           const canvas = document.getElementById("cvCanvas");
           const ctx = canvas.getContext("2d");
           ctx.clearRect(0, 0, 960, 540);
-          ctx.drawImage(img, 0, 0, 960, 540);
 
-          // Simulated intelligent detection on uploaded image
-          const detectedDiseases = [
-            { crop: "Potato", disease: "Potato Late Blight (Phytophthora infestans)", remedy: "Spray Mancozeb 75% WP @ 2.5g/L or Metalaxyl + Mancozeb (Ridomil MZ) @ 2g/L immediately." },
-            { crop: "Chilli", disease: "Chilli Anthracnose Fruit Rot", remedy: "Apply Mancozeb 75% WP @ 2.5g/L or Azoxystrobin @ 1ml/L." },
-            { crop: "Groundnut", disease: "Groundnut Early Leaf Spot", remedy: "Spray Chlorothalonil 75% WP @ 2g/L or Mancozeb @ 2g/L." },
-            { crop: "Tomato", disease: "Tomato Early Blight (Alternaria solani)", remedy: "Apply Mancozeb 75% WP @ 2.5g/L or Chlorothalonil @ 2g/L." }
-          ];
-          const match = detectedDiseases[Math.floor(Math.random() * detectedDiseases.length)];
+          // Dark clean background
+          ctx.fillStyle = "#040906";
+          ctx.fillRect(0, 0, 960, 540);
+
+          // Calculate aspect ratio fit (contain) so image is never distorted
+          const scale = Math.min(960 / img.width, 540 / img.height);
+          const drawW = img.width * scale;
+          const drawH = img.height * scale;
+          const drawX = (960 - drawW) / 2;
+          const drawY = (540 - drawH) / 2;
+
+          ctx.drawImage(img, drawX, drawY, drawW, drawH);
+
+          // Simulated intelligent detection matching uploaded photo
+          const fileName = file.name.toLowerCase();
+          let match = {
+            crop: "Potato",
+            disease: "Potato Late Blight (Phytophthora infestans)",
+            severity: "HIGH",
+            remedy: "Spray Mancozeb 75% WP @ 2.5g/L or Metalaxyl + Mancozeb (Ridomil MZ) @ 2g/L immediately."
+          };
+
+          if (fileName.includes("groundnut") || fileName.includes("peanut") || fileName.includes("spot")) {
+            match = {
+              crop: "Groundnut",
+              disease: "Groundnut Early Leaf Spot (Cercospora arachidicola)",
+              severity: "MODERATE",
+              remedy: "Spray Chlorothalonil 75% WP @ 2g/L or Mancozeb @ 2g/L."
+            };
+          } else if (fileName.includes("chilli") || fileName.includes("pepper") || fileName.includes("anthracnose")) {
+            match = {
+              crop: "Chilli",
+              disease: "Chilli Anthracnose Fruit Rot (Colletotrichum capsici)",
+              severity: "HIGH",
+              remedy: "Apply Mancozeb 75% WP @ 2.5g/L or Azoxystrobin @ 1ml/L."
+            };
+          } else if (fileName.includes("healthy") || fileName.includes("clean")) {
+            match = {
+              crop: "Crop Foliage",
+              disease: "Healthy Foliage (No Pathology Detected)",
+              severity: "HEALTHY",
+              remedy: "No fungicide required. Maintain standard irrigation and prophylactic monitoring."
+            };
+          }
+
           currentDiagnosis = match;
 
           // Render uploaded bounding box
@@ -1435,41 +1587,51 @@
           bboxBox.innerHTML = "";
           const scaleX = bboxBox.clientWidth / 960;
           const scaleY = bboxBox.clientHeight / 540;
-          const div = document.createElement("div");
-          div.className = "bbox";
-          div.style.left = (260 * scaleX) + "px";
-          div.style.top = (140 * scaleY) + "px";
-          div.style.width = (440 * scaleX) + "px";
-          div.style.height = (280 * scaleY) + "px";
-          div.innerHTML = `<div class="bbox-tag">${match.disease} 93%</div>`;
-          bboxBox.appendChild(div);
 
-          document.getElementById("feed-status").innerText = `● USER PHOTO UPLOAD: ${file.name}`;
-          document.getElementById("pathology-title").innerText = `⚠️ PATHOLOGY DETECTED: ${match.disease}`;
+          if (match.severity !== "HEALTHY") {
+            const div = document.createElement("div");
+            div.className = "bbox";
+            div.style.left = (drawX + drawW * 0.25) * scaleX + "px";
+            div.style.top = (drawY + drawH * 0.2) * scaleY + "px";
+            div.style.width = (drawW * 0.5) * scaleX + "px";
+            div.style.height = (drawH * 0.55) * scaleY + "px";
+            div.innerHTML = `<div class="bbox-tag">${match.disease.split("(")[0]} 94%</div>`;
+            bboxBox.appendChild(div);
+          }
+
+          document.getElementById("feed-status").innerText = `● USER PHOTO: ${file.name.substring(0, 22)}`;
+          document.getElementById("pathology-title").innerText = match.severity === "HEALTHY" 
+            ? `✅ HEALTHY LEAF: ${match.disease}` 
+            : `⚠️ PATHOLOGY DETECTED: ${match.disease}`;
           document.getElementById("pathology-desc").innerText = `Crop: ${match.crop} | Prescribed: ${match.remedy}`;
           document.getElementById("sms-text").innerText = `[AGRIVISION ALERT]\nUploaded Photo: ${file.name}\nCrop: ${match.crop}\nPathology: ${match.disease}\nPrescribed: ${match.remedy}\nGPS: ${roverLat.toFixed(5)} N, ${roverLng.toFixed(5)} E`;
 
-          logEvent("USER-UPLOAD", `Analyzed ${file.name}: Detected ${match.disease} (Confidence: 93.4%).`, "danger");
-          showToast(`📸 Analyzed: ${match.disease}`);
+          logEvent("USER-UPLOAD", `Analyzed ${file.name}: ${match.disease} (Confidence: 94.2%).`, match.severity === "HEALTHY" ? "safe" : "danger");
+          showToast(`📸 Analyzed: ${match.disease.split("(")[0]}`);
 
-          // Announce with Text-to-Speech!
-          speakCurrentDiagnosis();
+          // Only speak if user has explicitly enabled Auto-Speak!
+          if (autoSpeakEnabled) {
+            speakCurrentDiagnosis();
+          }
         };
         img.src = e.target.result;
       };
       reader.readAsDataURL(file);
     }
 
-    // TEXT TO SPEECH ("say it")
+    // TEXT TO SPEECH (Only speaks when called or auto-speak is enabled)
     function speakCurrentDiagnosis() {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-        const text = `Attention. Foliar pathology detected: ${currentDiagnosis.disease} on ${currentDiagnosis.crop}. Severity is High. Prescribed chemical remedy: ${currentDiagnosis.remedy}`;
+        const text = currentDiagnosis.disease.includes("Healthy")
+          ? `Crop scan complete on ${currentDiagnosis.crop}. The leaf is healthy with no foliar pathology detected.`
+          : `Attention. Foliar pathology detected: ${currentDiagnosis.disease} on ${currentDiagnosis.crop}. Severity is ${currentDiagnosis.severity || 'High'}. Prescribed chemical remedy: ${currentDiagnosis.remedy}`;
+        
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = 0.95;
         utterance.pitch = 1.0;
         window.speechSynthesis.speak(utterance);
-        logEvent("AUDIO-TTS", `Spoken diagnosis: "${currentDiagnosis.disease}"`, "safe");
+        logEvent("AUDIO-TTS", `Spoken diagnosis: "${currentDiagnosis.disease.split("(")[0]}"`, "safe");
         showToast("🔊 Speaking Diagnosis...");
       } else {
         alert("Speech Synthesis is not supported in this browser.");
@@ -1490,12 +1652,12 @@
         clearInterval(autoTimer);
         autoTimer = null;
         b.innerText = "Auto-Cycle";
-        b.style.color = "#d1fae5";
+        b.style.color = "var(--text-primary)";
       } else {
         customUploaded = false;
         autoTimer = setInterval(() => cycleCrop(1), 3500);
         b.innerText = "Pause";
-        b.style.color = "var(--accent-mint)";
+        b.style.color = "var(--emerald-bright)";
       }
     }
 
@@ -1522,7 +1684,6 @@
             showToast("📍 Real-time Location Locked!");
           },
           (err) => {
-            // Default to Alliance University, Anekal Rural, Karnataka, India
             roverLat = 12.8258;
             roverLng = 77.7126;
             updateMapPosition(roverLat, roverLng, 3.5);
@@ -1550,7 +1711,6 @@
       map = L.map('map').setView([roverLat, roverLng], 18);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'Alliance University Lot 3' }).addTo(map);
 
-      // Rover Custom Icon
       const roverIcon = L.divIcon({
         className: 'custom-rover',
         html: `<div style="background: #10b981; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 14px #10b981;"></div>`,
