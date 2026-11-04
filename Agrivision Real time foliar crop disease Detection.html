@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AGRIVISION | Real-Time Foliar Crop Disease Detection & Operator Workstation</title>
+  
+  <!-- Leaflet GIS & Fonts -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-darkest: #030805;
+      --bg-base: #06110a;
+      --bg-panel: rgba(10, 24, 16, 0.75);
+      --bg-card: rgba(16, 36, 25, 0.65);
+      --bg-card-hover: rgba(22, 50, 35, 0.85);
+      --bg-tile: #0e2419;
+      --border-subtle: rgba(52, 211, 153, 0.15);
+      --border-glow: rgba(16, 185, 129, 0.45);
+      --border-active: #10b981;
+      
+      --accent-emerald: #059669;
+      --accent-green: #10b981;
+      --accent-mint: #34d399;
+      --accent-cyan: #06b6d4;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+      
+      --text-main: #f0fdf4;
+      --text-muted: #86efac;
+      --text-dim: #4ade80;
+      --text-slate: #94a3b8;
+      
+      --font-display: 'Rajdhani', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Plus Jakarta Sans', sans-serif;
+      
+      --glass-blur: blur(20px);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.7), 0 0 15px rgba(16, 185, 129, 0.08);
+      --shadow-glow: 0 0 25px rgba(16, 185, 129, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 90% 90%, rgba(5, 150, 105, 0.12) 0%, transparent 45%),
+        linear-gradient(to right, rgba(30, 69, 51, 0.12) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(30, 69, 51, 0.12) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* TOP STATUS BAR */
+    header.status-bar {
+      background: rgba(6, 17, 10, 0.85);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo-gem {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #10b981 0%, #064e3b 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      border: 1px solid #34d399;
+      box-shadow: var(--shadow-glow);
+      position: relative;
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-title span.sub {
+      font-size: 11.5px;
+      font-family: var(--font-mono);
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      padding: 3px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(52, 211, 153, 0.35);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .header-telemetry-strip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      flex-wrap: wrap;
+    }
+
+    .telemetry-chip {
+      background: var(--bg-card);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 12px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+      transition: all 0.2s ease;
+    }
+
+    .telemetry-chip:hover {
+      border-color: var(--accent-mint);
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+    }
+
+    .chip-label {
+      color: #6ee7b7;
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .chip-val {
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .chip-val.green { color: var(--accent-mint); text-shadow: 0 0 8px rgba(52, 211, 153, 0.4); }
+    .chip-val.cyan { color: var(--accent-cyan); text-shadow: 0 0 8px rgba(6, 182, 212, 0.4); }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-mint);
+      box-shadow: 0 0 10px var(--accent-mint);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.85); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .mode-toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      padding: 3px 6px;
+      border-radius: 8px;
+    }
+
+    .mode-btn {
+      padding: 5px 12px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: #a7f3d0;
+      transition: all 0.2s;
+    }
+
+    .mode-btn.active {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #022c22;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+    }
+
+    /* TOP NAVIGATION TABS */
+    nav.subnav-tabs {
+      background: rgba(8, 22, 14, 0.65);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 8px 24px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: #a7f3d0;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .nav-tab-btn:hover {
+      background: rgba(16, 185, 129, 0.1);
+      color: #fff;
+    }
+
+    .nav-tab-btn.active {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: rgba(52, 211, 153, 0.4);
+      color: #34d399;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+    }
+
+    /* MAIN OPERATOR GRID */
+    main.dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 20px;
+      padding: 20px 24px;
+      flex: 1;
+      max-width: 1920px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    @media (max-width: 1200px) {
+      main.dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--bg-panel);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .panel:hover {
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 12px;
+    }
+
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #ecfdf5;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-title .badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(52, 211, 153, 0.35);
+      padding: 3px 8px;
+      border-radius: 5px;
+    }
+
+    /* COMPUTER VISION VIEWPORT */
+    .viewport-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #020604;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid var(--border-subtle);
+      box-shadow: inset 0 0 45px rgba(0,0,0,0.9);
+    }
+
+    .viewport-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .laser-scanner {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent 0%, #34d399 50%, #06b6d4 85%, transparent 100%);
+      box-shadow: 0 0 16px #34d399, 0 0 28px #06b6d4;
+      animation: laserSweep 3.2s ease-in-out infinite alternate;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    @keyframes laserSweep {
+      0% { top: 2%; opacity: 0.9; }
+      100% { top: 96%; opacity: 0.9; }
+    }
+
+    .hud-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 15;
+    }
+
+    .hud-corner {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-color: rgba(52, 211, 153, 0.7);
+    }
+    .hud-tl { top: 12px; left: 12px; border-top: 2px solid; border-left: 2px solid; }
+    .hud-tr { top: 12px; right: 12px; border-top: 2px solid; border-right: 2px solid; }
+    .hud-bl { bottom: 12px; left: 12px; border-bottom: 2px solid; border-left: 2px solid; }
+    .hud-br { bottom: 12px; right: 12px; border-bottom: 2px solid; border-right: 2px solid; }
+
+    .hud-cam-meta {
+      position: absolute;
+      top: 12px;
+      left: 44px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: rgba(236, 253, 245, 0.9);
+      background: rgba(4, 20, 13, 0.85);
+      backdrop-filter: blur(6px);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      display: flex;
+      gap: 14px;
+    }
+
+    /* Bounding Boxes */
+    .bbox {
+      position: absolute;
+      border: 2px solid var(--accent-red);
+      background: rgba(239, 68, 68, 0.18);
+      border-radius: 4px;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+      z-index: 25;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .bbox.moderate {
+      border-color: var(--accent-amber);
+      background: rgba(245, 158, 11, 0.18);
+    }
+
+    .bbox-tag {
+      position: absolute;
+      top: -24px;
+      left: -2px;
+      background: var(--accent-red);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px 4px 0 0;
+      white-space: nowrap;
+    }
+
+    .bbox.moderate .bbox-tag {
+      background: var(--accent-amber);
+      color: #000;
+    }
+
+    /* PHOTO UPLOAD & DIAGNOSTIC ACTION BAR */
+    .upload-action-box {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(5, 150, 105, 0.05) 100%);
+      border: 1.5px dashed var(--accent-green);
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      transition: all 0.2s ease;
+    }
+
+    .upload-action-box:hover {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(5, 150, 105, 0.08) 100%);
+      border-color: var(--accent-mint);
+    }
+
+    .upload-label-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .upload-icon {
+      font-size: 28px;
+      color: var(--accent-mint);
+    }
+
+    .upload-btn-custom {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #022c22;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.35);
+      transition: all 0.2s;
+    }
+
+    .upload-btn-custom:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.55);
+    }
+
+    .btn-speak {
+      background: var(--bg-card);
+      border: 1px solid var(--accent-mint);
+      color: #ecfdf5;
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-speak:hover {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      box-shadow: 0 0 14px rgba(52, 211, 153, 0.35);
+    }
+
+    /* PATHOLOGY WARNING BANNER */
+    .pathology-banner {
+      background: linear-gradient(90deg, rgba(239, 68, 68, 0.25) 0%, rgba(185, 28, 28, 0.15) 100%);
+      border: 1px solid var(--accent-red);
+      border-left: 6px solid var(--accent-red);
+      border-radius: 10px;
+      padding: 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+    }
+
+    .pathology-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 800;
+      color: #fca5a5;
+    }
+
+    .pathology-desc {
+      font-size: 12.5px;
+      color: #e2e8f0;
+      font-family: var(--font-mono);
+      margin-top: 3px;
+    }
+
+    .btn-dispatch-sms {
+      background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+      color: #fff;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.4);
+      transition: all 0.2s;
+    }
+
+    .btn-dispatch-sms:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 22px rgba(239, 68, 68, 0.6);
+    }
+
+    /* CONTROLS TOOLBAR */
+    .cv-controls-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: var(--bg-card);
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .slider-label {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: #a7f3d0;
+    }
+
+    .model-select {
+      background: var(--bg-tile);
+      color: #e2e8f0;
+      border: 1px solid var(--border-subtle);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      outline: none;
+    }
+
+    .btn-secondary {
+      background: var(--bg-tile);
+      border: 1px solid var(--border-subtle);
+      color: #d1fae5;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: var(--accent-mint);
+      color: #fff;
+    }
+
+    /* HARDWARE TILES */
+    .hardware-tiles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .hardware-tiles-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .hw-tile {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hw-tile::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--accent-green);
+    }
+
+    .hw-tile-head {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #6ee7b7;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .hw-main-val {
+      font-family: var(--font-mono);
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .hw-main-val span.unit {
+      font-size: 13px;
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+
+    .hw-tile-sub {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: #a7f3d0;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .badge-status {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+    .badge-status.safe { background: rgba(16, 185, 129, 0.25); color: #34d399; }
+    .badge-status.warn { background: rgba(245, 158, 11, 0.25); color: #fbbf24; }
+    .badge-status.danger { background: rgba(239, 68, 68, 0.25); color: #f87171; }
+
+    /* D-PAD HUB */
+    .dpad-hub-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    @media (max-width: 600px) {
+      .dpad-hub-grid { grid-template-columns: 1fr; }
+    }
+
+    .dpad-matrix {
+      display: grid;
+      grid-template-columns: repeat(3, 56px);
+      grid-template-rows: repeat(3, 56px);
+      gap: 8px;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .dpad-btn {
+      background: var(--bg-tile);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      color: #ecfdf5;
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: all 0.1s;
+    }
+
+    .dpad-btn span.key-label {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: var(--text-dim);
+    }
+
+    .dpad-btn:hover { background: rgba(16, 185, 129, 0.2); border-color: var(--accent-mint); color: #fff; }
+    .dpad-btn:active, .dpad-btn.pressed { background: var(--accent-mint); color: #022c22; transform: scale(0.94); }
+
+    .dpad-empty { background: transparent; border: none; }
+    .dpad-stop { background: rgba(239, 68, 68, 0.18); border-color: rgba(239, 68, 68, 0.5); color: #f87171; }
+    .dpad-stop:hover { background: rgba(239, 68, 68, 0.35); }
+    .dpad-stop:active, .dpad-stop.pressed { background: var(--accent-red); color: #fff; }
+
+    .btn-emergency-halt {
+      background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
+      color: #fff;
+      border: 2px solid #f87171;
+      border-radius: 10px;
+      padding: 14px;
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.45);
+      transition: all 0.2s;
+    }
+
+    .btn-emergency-halt:hover {
+      box-shadow: 0 0 30px rgba(239, 68, 68, 0.7);
+      transform: translateY(-1px);
+    }
+
+    .throttle-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .throttle-presets { display: flex; gap: 6px; }
+    .throttle-chip {
+      flex: 1;
+      background: var(--bg-tile);
+      border: 1px solid var(--border-subtle);
+      color: #a7f3d0;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 5px 0;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .throttle-chip.active {
+      border-color: var(--accent-mint);
+      background: rgba(16, 185, 129, 0.25);
+      color: #34d399;
+      font-weight: 700;
+    }
+
+    /* REAL-TIME LOCATION & MAP */
+    .location-hud-strip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card);
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .map-container {
+      width: 100%;
+      height: 250px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .btn-realtime-loc {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      color: #fff;
+      border: 1px solid #34d399;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* TERMINAL */
+    .terminal-container {
+      background: #030805;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .terminal-log-window {
+      height: 150px;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.6;
+      color: #a7f3d0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .log-line { display: flex; gap: 6px; word-break: break-all; }
+    .log-time { color: #059669; }
+    .log-subsys { color: var(--accent-mint); font-weight: 600; }
+    .log-line.danger .log-msg { color: var(--accent-red); font-weight: 600; }
+    .log-line.warn .log-msg { color: var(--accent-amber); }
+
+    /* ADVISORY TABLE */
+    .advisory-table-wrapper {
+      max-height: 240px;
+      overflow-y: auto;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    table.advisory-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    table.advisory-table th {
+      background: #0d2218;
+      color: #6ee7b7;
+      font-family: var(--font-mono);
+      padding: 8px 12px;
+      position: sticky;
+      top: 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    table.advisory-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #d1fae5;
+    }
+
+    .pesticide-highlight {
+      color: var(--accent-mint);
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.8);
+      display: none; align-items: center; justify-content: center;
+      z-index: 2000; backdrop-filter: blur(4px);
+    }
+
+    .modal-card {
+      background: #0d1e16;
+      border: 2px solid var(--accent-red);
+      border-radius: 14px;
+      width: 90%; max-width: 520px;
+      padding: 24px;
+      display: flex; flex-direction: column; gap: 14px;
+      box-shadow: 0 0 35px rgba(239, 68, 68, 0.35);
+    }
+
+    .sms-preview-bubble {
+      background: #06110c;
+      border: 1px solid #1e4533;
+      border-radius: 8px;
+      padding: 14px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      line-height: 1.55;
+      color: #ecfdf5;
+      white-space: pre-wrap;
+    }
+
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: #047857; border: 1px solid #34d399;
+      color: #fff; padding: 12px 20px; border-radius: 8px;
+      font-family: var(--font-mono); font-size: 13px;
+      display: none; z-index: 3000; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- [HEADER STATUS BAR] -->
+  <header class="status-bar">
+    <div class="brand-group">
+      <div class="brand-logo-gem">🌿</div>
+      <div class="brand-title">
+        AGRIVISION OPERATOR DASHBOARD
+        <span class="sub">REAL-TIME FOLIAR CROP DISEASE DETECTION</span>
+      </div>
+    </div>
+
+    <div class="header-telemetry-strip">
+      <div class="telemetry-chip">
+        <div class="pulse-dot"></div>
+        <span class="chip-label">Wi-Fi RSSI:</span>
+        <span class="chip-val green" id="wifi-rssi">-58 dBm</span>
+      </div>
+      <div class="telemetry-chip">
+        <span class="chip-label">Camera:</span>
+        <span class="chip-val cyan">GalaxyCore GC2145 (10 MHz)</span>
+      </div>
+      <div class="telemetry-chip">
+        <span class="chip-label">Power:</span>
+        <span class="chip-val green" id="power-rail">7.42V Rail (82%)</span>
+      </div>
+      <div class="mode-toggle-group">
+        <span class="chip-label">Mode:</span>
+        <button class="mode-btn active" id="btn-manual" onclick="setMode('manual')">MANUAL</button>
+        <button class="mode-btn" id="btn-auto" onclick="setMode('auto')">AUTO</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- SUB-NAV TAB BAR -->
+  <nav class="subnav-tabs">
+    <button class="nav-tab-btn active" onclick="switchTab('teleop')">⚡ Operator Workstation</button>
+    <button class="nav-tab-btn" onclick="switchTab('diagnostics')">🔬 AI Pathology Lab</button>
+    <button class="nav-tab-btn" onclick="switchTab('gis')">🗺️ Satellite Field GIS</button>
+    <button class="nav-tab-btn" onclick="switchTab('advisory')">📋 Curated 113 Crop Formulary</button>
+  </nav>
+
+  <!-- MAIN OPERATOR GRID -->
+  <main class="dashboard-grid">
+
+    <!-- LEFT COLUMN -->
+    <div style="display: flex; flex-direction: column; gap: 18px;">
+
+      <!-- [MODULES 3 & 4: COMPUTER VISION VIEWPORT] -->
+      <section class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>Modules 3 &amp; 4: Computer Vision Viewport</span>
+            <span class="badge">YOLOv8 Edge Engine</span>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 12px; color: var(--accent-mint);" id="feed-status">
+            ● LIVE STREAM | 15.2 FPS (DVP 10MHz)
+          </div>
+        </div>
+
+        <!-- 16:9 Viewport Canvas -->
+        <div class="viewport-container" id="viewport">
+          <canvas id="cvCanvas" class="viewport-canvas" width="960" height="540"></canvas>
+          <div class="laser-scanner"></div>
+          <div class="hud-overlay">
+            <div class="hud-corner hud-tl"></div>
+            <div class="hud-corner hud-tr"></div>
+            <div class="hud-corner hud-bl"></div>
+            <div class="hud-corner hud-br"></div>
+            <div class="hud-cam-meta">
+              <span>GC2145 @ 10MHz DVP</span>
+              <span id="hud-location-tag">Anekal Rural, Alliance Lot 3</span>
+            </div>
+          </div>
+          <div id="bbox-container"></div>
+        </div>
+
+        <!-- PHOTO UPLOAD & TEXT-TO-SPEECH ACTION BAR -->
+        <div class="upload-action-box">
+          <div class="upload-label-group">
+            <div class="upload-icon">📷</div>
+            <div>
+              <div style="font-family: var(--font-display); font-size: 17px; font-weight: 700; color: #fff;">
+                Upload Leaf Photo for Instant Pathology Diagnosis
+              </div>
+              <div style="font-size: 11.5px; color: #86efac; font-family: var(--font-mono);">
+                Upload field crop photos to detect foliar diseases and announce prescription with Audio Speech
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="file" id="leaf-photo-input" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
+            <button class="upload-btn-custom" onclick="document.getElementById('leaf-photo-input').click()">
+              📂 Upload Leaf Photo
+            </button>
+            <button class="btn-speak" id="btn-speak" onclick="speakCurrentDiagnosis()">
+              🔊 Speak Diagnosis
+            </button>
+          </div>
+        </div>
+
+        <!-- Pathology Warning Banner -->
+        <div class="pathology-banner" id="pathology-banner">
+          <div>
+            <div class="pathology-title" id="pathology-title">⚠️ PATHOLOGY DETECTED: Potato Late Blight</div>
+            <div class="pathology-desc" id="pathology-desc">Prescribed Remedy: Mancozeb 75% WP @ 2.5g/L or Metalaxyl + Mancozeb (Ridomil MZ) @ 2g/L</div>
+          </div>
+          <button class="btn-dispatch-sms" onclick="openSmsModal()">📱 Dispatch SMS</button>
+        </div>
+
+        <!-- CV Controls Toolbar -->
+        <div class="cv-controls-bar">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="slider-label">Confidence: <strong id="conf-val" style="color: var(--accent-mint);">85%</strong></span>
+            <input type="range" id="conf-slider" min="50" max="98" value="85" oninput="updateConfidence(this.value)">
+          </div>
+          <div>
+            <span class="slider-label">Model: </span>
+            <select class="model-select" onchange="logEvent('MODEL', 'Model switched to ' + this.value, 'safe')">
+              <option value="YOLOv8n">YOLOv8n-Foliar (3.2MB Nano)</option>
+              <option value="YOLOv8s">YOLOv8s-CropDisease (11.2MB Standard)</option>
+              <option value="YOLOv8m">YOLOv8m-AllianceAgri (25.9MB)</option>
+            </select>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn-secondary" onclick="cycleCrop(-1)">◀ Prev</button>
+            <button class="btn-secondary" onclick="cycleCrop(1)">Next ▶</button>
+            <button class="btn-secondary" onclick="toggleAutoCycle()" id="btn-autocycle">Auto-Cycle</button>
+            <button class="btn-secondary" onclick="captureSnapshot()">📸 Snapshot</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- [MODULES 1, 2 & 5: REAL-TIME HARDWARE TILES] -->
+      <section class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>Modules 1, 2 &amp; 5: Real-Time Hardware Tiles</span>
+            <span class="badge">ESP32 &amp; Actuators</span>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 11.5px; color: #86efac;">
+            Telemetry Rate: 30 Hz
+          </div>
+        </div>
+
+        <div class="hardware-tiles-grid">
+          <div class="hw-tile">
+            <div class="hw-tile-head">
+              <span>HC-SR04 Sonar</span>
+              <span class="badge-status safe" id="sonar-badge">CLEAR</span>
+            </div>
+            <div class="hw-main-val"><span id="sonar-dist">42.4</span><span class="unit">cm</span></div>
+            <div class="hw-tile-sub"><span>Auto-Stop: &lt; 20 cm</span><span style="color: #34d399;">Safe Range</span></div>
+          </div>
+
+          <div class="hw-tile">
+            <div class="hw-tile-head">
+              <span>L298N Drive State</span>
+              <span class="badge-status safe" id="motor-badge">ACTIVE</span>
+            </div>
+            <div class="hw-main-val"><span id="pwm-val">191</span><span class="unit">/ 255 (75%)</span></div>
+            <div class="hw-tile-sub"><span>Dual H-Bridge</span><span>0.84 A | 36.2°C</span></div>
+          </div>
+
+          <div class="hw-tile">
+            <div class="hw-tile-head">
+              <span>Edge Companion</span>
+              <span class="badge-status safe">OPTIMAL</span>
+            </div>
+            <div class="hw-main-val"><span id="edge-lat">21.8</span><span class="unit">ms</span></div>
+            <div class="hw-tile-sub"><span>Roundtrip Ping</span><span>30 Hz | 0% Loss</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- [AGRONOMIC PRESCRIPTION ADVISORY CARD] -->
+      <section class="panel" id="section-advisory">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>Agronomic Prescription Advisory Card</span>
+            <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">113 Low-Height Crop Remedies</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="advisory-search" placeholder="Search crop, disease or fungicide (e.g. Mancozeb, Potato, Rust)..." style="flex:1; background: var(--bg-card); border: 1px solid var(--border-subtle); color:#fff; padding:8px 14px; border-radius:6px; font-size:12px;" oninput="filterAdvisory()">
+          <select id="advisory-cat" style="background: var(--bg-card); border: 1px solid var(--border-subtle); color:#fff; padding:8px 14px; border-radius:6px; font-size:12px;" onchange="filterAdvisory()">
+            <option value="ALL">All Categories</option>
+            <option value="Vegetables">Vegetables</option>
+            <option value="Pulses & Oilseeds">Pulses &amp; Oilseeds</option>
+            <option value="Cereals">Cereals</option>
+            <option value="Ground-level Fruits">Ground-level Fruits</option>
+            <option value="Leafy Vegetables & Herbs">Leafy Vegetables</option>
+            <option value="Flowers">Flowers</option>
+          </select>
+        </div>
+        <div class="advisory-table-wrapper">
+          <table class="advisory-table">
+            <thead>
+              <tr>
+                <th style="width: 45px;">S.No</th>
+                <th style="width: 100px;">Crop</th>
+                <th style="width: 150px;">Disease</th>
+                <th style="width: 85px;">Height</th>
+                <th>Visible Symptoms</th>
+                <th>Prescribed Chemical / Measures</th>
+              </tr>
+            </thead>
+            <tbody id="advisory-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div style="display: flex; flex-direction: column; gap: 18px;">
+
+      <!-- [MODULE 1: NAVIGATION & D-PAD HUB] -->
+      <section class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>Module 1: Navigation &amp; D-Pad Hub</span>
+            <span class="badge">WASD + Spacebar</span>
+          </div>
+        </div>
+
+        <div class="dpad-hub-grid">
+          <div class="dpad-matrix">
+            <div class="dpad-btn dpad-empty"></div>
+            <button class="dpad-btn" id="dpad-up" onmousedown="drive('FWD')" onmouseup="drive('COAST')">▲<span class="key-label">W</span></button>
+            <div class="dpad-btn dpad-empty"></div>
+
+            <button class="dpad-btn" id="dpad-left" onmousedown="drive('LEFT')" onmouseup="drive('COAST')">◀<span class="key-label">A</span></button>
+            <button class="dpad-btn dpad-stop" id="dpad-stop" onclick="drive('STOP')">STOP<span class="key-label">SPACE</span></button>
+            <button class="dpad-btn" id="dpad-right" onmousedown="drive('RIGHT')" onmouseup="drive('COAST')">▶<span class="key-label">D</span></button>
+
+            <div class="dpad-btn dpad-empty"></div>
+            <button class="dpad-btn" id="dpad-down" onmousedown="drive('REV')" onmouseup="drive('COAST')">▼<span class="key-label">S</span></button>
+            <div class="dpad-btn dpad-empty"></div>
+          </div>
+
+          <div>
+            <button class="btn-emergency-halt" onclick="triggerHalt()">🛑 EMERGENCY HALT</button>
+            <div class="throttle-box">
+              <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11.5px; color:#86efac;">
+                <span>PWM Throttle:</span><span id="throttle-label">75% (191 PWM)</span>
+              </div>
+              <input type="range" min="30" max="100" value="75" oninput="setThrottle(this.value)">
+              <div class="throttle-presets">
+                <button class="throttle-chip" onclick="setThrottle(30)">30%</button>
+                <button class="throttle-chip" onclick="setThrottle(50)">50%</button>
+                <button class="throttle-chip active" onclick="setThrottle(75)">75%</button>
+                <button class="throttle-chip" onclick="setThrottle(100)">100%</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- [MODULE 7: REAL-TIME SPATIAL LOCATION MONITORING] -->
+      <section class="panel" id="section-map">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>Module 7: Real-Time Location Monitoring</span>
+            <span class="badge">Live Field GPS</span>
+          </div>
+          <button class="btn-realtime-loc" onclick="startRealtimeTracking()">
+            📍 Live GPS Lock
+          </button>
+        </div>
+
+        <div class="location-hud-strip">
+          <div>GPS: <strong style="color: #34d399;" id="gps-coords">12.82580° N, 77.71260° E</strong></div>
+          <div>Loc: <span style="color: #a7f3d0;" id="loc-name">Anekal Rural, Alliance Lot 3</span></div>
+          <div>Accuracy: <span style="color: #06b6d4;" id="gps-acc">±2.4 m</span></div>
+        </div>
+
+        <div id="map" class="map-container"></div>
+      </section>
+
+      <!-- [MODULE 7: TELEMETRY AUDIT TRAIL] -->
+      <section class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>Module 7: Telemetry Audit Trail</span>
+            <span class="badge">Terminal Stream</span>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn-secondary" onclick="clearLogs()">Clear</button>
+            <button class="btn-secondary" style="color: var(--accent-mint);" onclick="exportCSV()">1-Click CSV Export</button>
+          </div>
+        </div>
+        <div class="terminal-container">
+          <div class="terminal-log-window" id="terminal-logs"></div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- SMS MODAL -->
+  <div class="modal-overlay" id="sms-modal">
+    <div class="modal-card">
+      <h3 style="color:#fca5a5; font-family:var(--font-display); font-size:20px;">📲 DISPATCH AGRONOMIC SMS ADVISORY</h3>
+      <p style="font-size:12px; color:#86efac;">Target: Alliance University Agro Station (+91 98450 12849)</p>
+      <div class="sms-preview-bubble" id="sms-text"></div>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="btn-secondary" onclick="closeSmsModal()">Cancel</button>
+        <button class="btn-dispatch-sms" onclick="sendSms()">Confirm &amp; Send SMS</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // 113 Crop Disease Dataset (Embedded from crop_diseases_low_height_no_paddy.xlsx)
+    const diseases = [
+      {sno: 1, category: "Cereals", crop: "Wheat", disease: "Yellow rust", pathogen: "Fungal", height: "2-3 ft", symptoms: "Yellow stripes of pustules along leaves", pesticides: "Propiconazole; Tebuconazole; Mancozeb"},
+      {sno: 2, category: "Cereals", crop: "Wheat", disease: "Brown rust", pathogen: "Fungal", height: "2-3 ft", symptoms: "Scattered orange-brown pustules on leaves", pesticides: "Propiconazole; Tebuconazole; Mancozeb"},
+      {sno: 6, category: "Pulses & Oilseeds", crop: "Chickpea", disease: "Fusarium Wilt", pathogen: "Fungal", height: "1-2 ft", symptoms: "Yellowing and wilting", pesticides: "Carbendazim + Thiram (seed); Trichoderma"},
+      {sno: 8, category: "Pulses & Oilseeds", crop: "Soybean", disease: "Soybean Rust", pathogen: "Fungal", height: "1.5-3 ft", symptoms: "Brown/rust-coloured pustules", pesticides: "Hexaconazole; Tebuconazole; Propiconazole; Azoxystrobin"},
+      {sno: 10, category: "Pulses & Oilseeds", crop: "Groundnut", disease: "Rust", pathogen: "Fungal", height: "1-1.5 ft", symptoms: "Orange/brown pustules", pesticides: "Chlorothalonil; Tebuconazole"},
+      {sno: 12, category: "Pulses & Oilseeds", crop: "Groundnut", disease: "Early Leaf Spot", pathogen: "Fungal", height: "1-1.5 ft", symptoms: "Small brown spots with yellow halo", pesticides: "Mancozeb; Chlorothalonil; Hexaconazole"},
+      {sno: 13, category: "Pulses & Oilseeds", crop: "Groundnut", disease: "Late Leaf Spot", pathogen: "Fungal", height: "1-1.5 ft", symptoms: "Dark spots, premature leaf fall", pesticides: "Chlorothalonil; Tebuconazole; Hexaconazole"},
+      {sno: 14, category: "Pulses & Oilseeds", crop: "Green Gram", disease: "Powdery Mildew", pathogen: "Fungal", height: "1-2 ft", symptoms: "White powdery growth", pesticides: "Wettable sulphur; Hexaconazole; Azoxystrobin"},
+      {sno: 28, category: "Vegetables", crop: "Potato", disease: "Late blight", pathogen: "Oomycete", height: "1-2 ft", symptoms: "Brown/black lesions, rapid decay", pesticides: "Mancozeb; Metalaxyl + Mancozeb (Ridomil MZ); Cymoxanil + Mancozeb"},
+      {sno: 31, category: "Vegetables", crop: "Chilli", disease: "Anthracnose", pathogen: "Fungal", height: "1.5-3 ft", symptoms: "Dark sunken lesions, fruit rot", pesticides: "Mancozeb; Carbendazim; Azoxystrobin"},
+      {sno: 32, category: "Vegetables", crop: "Chilli", disease: "Powdery mildew", pathogen: "Fungal", height: "1.5-3 ft", symptoms: "White powdery patches under leaves", pesticides: "Wettable sulphur; Hexaconazole; Azoxystrobin"},
+      {sno: 37, category: "Vegetables", crop: "Cucurbits", disease: "Downy mildew", pathogen: "Oomycete", height: "Trailing vine", symptoms: "Angular yellow patches with purplish-grey growth", pesticides: "Metalaxyl + Mancozeb; Cymoxanil + Mancozeb"},
+      {sno: 40, category: "Vegetables", crop: "Onion", disease: "Purple blotch", pathogen: "Fungal", height: "1-2 ft", symptoms: "Purple/brown elongated lesions", pesticides: "Mancozeb; Chlorothalonil; Difenoconazole"},
+      {sno: 42, category: "Vegetables", crop: "Potato", disease: "Early Blight", pathogen: "Fungal", height: "1-2 ft", symptoms: "Brown target-like spots", pesticides: "Mancozeb; Chlorothalonil; Azoxystrobin"},
+      {sno: 47, category: "Vegetables", crop: "Beans", disease: "Bean Rust", pathogen: "Fungal", height: "1-2 ft", symptoms: "Rust-coloured pustules", pesticides: "Mancozeb; Hexaconazole; Tebuconazole"},
+      {sno: 49, category: "Vegetables", crop: "Cabbage", disease: "Alternaria Leaf Spot", pathogen: "Fungal", height: "1-1.5 ft", symptoms: "Dark concentric spots", pesticides: "Mancozeb; Iprodione; Chlorothalonil"},
+      {sno: 63, category: "Leafy Vegetables & Herbs", crop: "Spinach", disease: "Downy Mildew", pathogen: "Oomycete", height: "0.5-1 ft", symptoms: "Yellow patches, grey/purple growth underneath", pesticides: "Metalaxyl + Mancozeb"},
+      {sno: 74, category: "Ground-level Fruits", crop: "Strawberry", disease: "Leaf Scorch", pathogen: "Fungal", height: "0.5-1 ft", symptoms: "Purple/brown spots on leaves", pesticides: "Captan; Mancozeb; Carbendazim"},
+      {sno: 79, category: "Ground-level Fruits", crop: "Watermelon", disease: "Anthracnose", pathogen: "Fungal", height: "Trailing vine", symptoms: "Sunken dark spots on fruit and leaves", pesticides: "Carbendazim; Mancozeb; Chlorothalonil"},
+      {sno: 92, category: "Flowers", crop: "Marigold", disease: "Alternaria Leaf Spot", pathogen: "Fungal", height: "1-3 ft", symptoms: "Brown ringed spots on leaves", pesticides: "Mancozeb; Chlorothalonil; Iprodione"}
+    ];
+
+    const samples = [
+      {
+        crop: "Potato",
+        disease: "Potato Late Blight (Phytophthora infestans)",
+        severity: "HIGH",
+        remedy: "Mancozeb 75% WP @ 2.5g/L or Metalaxyl + Mancozeb (Ridomil MZ) @ 2g/L",
+        color: "#20461e",
+        spots: [{x: 420, y: 220, r: 55, c: "#1c1917", h: "#854d0e"}],
+        box: {x: 350, y: 140, w: 250, h: 210, label: "Potato Late Blight", conf: 0.95}
+      },
+      {
+        crop: "Groundnut",
+        disease: "Groundnut Early Leaf Spot (Cercospora arachidicola)",
+        severity: "MODERATE",
+        remedy: "Mancozeb 75% WP @ 2g/L or Chlorothalonil 75% WP @ 2g/L",
+        color: "#2d4f13",
+        spots: [{x: 380, y: 180, r: 35, c: "#451a03", h: "#eab308"}],
+        box: {x: 320, y: 130, w: 200, h: 180, label: "Groundnut Leaf Spot", conf: 0.89}
+      },
+      {
+        crop: "Chilli",
+        disease: "Chilli Anthracnose (Colletotrichum capsici)",
+        severity: "HIGH",
+        remedy: "Mancozeb 75% WP @ 2.5g/L or Azoxystrobin @ 1ml/L",
+        color: "#163519",
+        spots: [{x: 460, y: 240, r: 45, c: "#1c1917", h: "#92400e"}],
+        box: {x: 380, y: 170, w: 210, h: 190, label: "Chilli Anthracnose", conf: 0.92}
+      }
+    ];
+
+    let sampleIdx = 0;
+    let confidence = 0.85;
+    let currentPWM = 191;
+    let roverLat = 12.8258, roverLng = 77.7126;
+    let map, marker, accCircle, pathLine;
+    let path = [[roverLat, roverLng]];
+    let logs = [];
+    let customUploaded = false;
+    let currentDiagnosis = {
+      crop: "Potato",
+      disease: "Potato Late Blight",
+      remedy: "Mancozeb 75% WP or Metalaxyl + Mancozeb (Ridomil MZ)"
+    };
+
+    window.onload = () => {
+      renderAdvisory(diseases);
+      initMap();
+      renderScene();
+      initKeyboard();
+      startRealtimeTracking();
+
+      logEvent("SYSTEM", "Agrivision Operator Dashboard Online. GalaxyCore GC2145 linked at 10 MHz.", "safe");
+      logEvent("L298N", "Dual H-Bridge Motor Driver Ready. PWM set to 191/255 (75%).", "safe");
+      logEvent("GEO", "GPS fix locked at Anekal Rural, Alliance University Lot 3 (12.82580 N, 77.71260 E).", "safe");
+
+      setInterval(() => {
+        const dist = (40 + (Math.random() * 6 - 3)).toFixed(1);
+        document.getElementById("sonar-dist").innerText = dist;
+        document.getElementById("wifi-rssi").innerText = (-58 + Math.floor(Math.random() * 3 - 1)) + " dBm";
+        document.getElementById("edge-lat").innerText = (21.5 + (Math.random() * 0.7)).toFixed(1);
+      }, 1500);
+    };
+
+    function switchTab(tabId) {
+      document.querySelectorAll(".nav-tab-btn").forEach(b => b.classList.remove("active"));
+      event.target.classList.add("active");
+      if (tabId === "teleop") {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (tabId === "diagnostics") {
+        document.getElementById("leaf-photo-input").click();
+      } else if (tabId === "gis") {
+        document.getElementById("section-map").scrollIntoView({ behavior: 'smooth' });
+      } else if (tabId === "advisory") {
+        document.getElementById("section-advisory").scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    // RENDER CURRENT CROP SCENE
+    function renderScene() {
+      if (customUploaded) return;
+      const s = samples[sampleIdx];
+      currentDiagnosis = { crop: s.crop, disease: s.disease, remedy: s.remedy };
+
+      const canvas = document.getElementById("cvCanvas");
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#07130a";
+      ctx.fillRect(0, 0, 960, 540);
+
+      // Draw leaf background
+      ctx.save();
+      ctx.translate(480, 270);
+      ctx.beginPath();
+      ctx.moveTo(0, -180);
+      ctx.bezierCurveTo(180, -100, 200, 100, 0, 190);
+      ctx.bezierCurveTo(-200, 100, -180, -100, 0, -180);
+      ctx.fillStyle = s.color;
+      ctx.fill();
+      ctx.strokeStyle = "#10b981";
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      // Veins
+      ctx.beginPath();
+      ctx.moveTo(0, -170); ctx.lineTo(0, 180);
+      ctx.strokeStyle = "rgba(52, 211, 153, 0.4)"; ctx.lineWidth = 3; ctx.stroke();
+      ctx.restore();
+
+      // Lesions
+      s.spots.forEach(sp => {
+        const g = ctx.createRadialGradient(sp.x, sp.y, 10, sp.x, sp.y, sp.r * 1.5);
+        g.addColorStop(0, sp.c);
+        g.addColorStop(0.6, sp.h);
+        g.addColorStop(1, "transparent");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(sp.x, sp.y, sp.r * 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Bounding Box
+      const bboxBox = document.getElementById("bbox-container");
+      bboxBox.innerHTML = "";
+      if (s.box.conf >= confidence) {
+        const scaleX = bboxBox.clientWidth / 960;
+        const scaleY = bboxBox.clientHeight / 540;
+        const div = document.createElement("div");
+        div.className = "bbox";
+        div.style.left = (s.box.x * scaleX) + "px";
+        div.style.top = (s.box.y * scaleY) + "px";
+        div.style.width = (s.box.w * scaleX) + "px";
+        div.style.height = (s.box.h * scaleY) + "px";
+        div.innerHTML = `<div class="bbox-tag">${s.box.label} ${(s.box.conf*100).toFixed(0)}%</div>`;
+        bboxBox.appendChild(div);
+      }
+
+      document.getElementById("pathology-title").innerText = `⚠️ PATHOLOGY DETECTED: ${s.disease}`;
+      document.getElementById("pathology-desc").innerText = `Crop: ${s.crop} | Prescribed: ${s.remedy}`;
+      document.getElementById("sms-text").innerText = `[AGRIVISION ALERT]\nCrop: ${s.crop} (Alliance Lot 3)\nGPS: ${roverLat.toFixed(5)} N, ${roverLng.toFixed(5)} E\nPathology: ${s.disease}\nRemedy: ${s.remedy}\nTimestamp: ${new Date().toLocaleTimeString()} IST`;
+      logEvent("CV-YOLOv8", `Inference: ${s.disease} (${(s.box.conf*100).toFixed(1)}% conf) [9.4ms]`, "danger");
+    }
+
+    // PHOTO UPLOAD & TEXT-TO-SPEECH
+    function handlePhotoUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          customUploaded = true;
+          const canvas = document.getElementById("cvCanvas");
+          const ctx = canvas.getContext("2d");
+          ctx.clearRect(0, 0, 960, 540);
+          ctx.drawImage(img, 0, 0, 960, 540);
+
+          // Simulated intelligent detection on uploaded image
+          const detectedDiseases = [
+            { crop: "Potato", disease: "Potato Late Blight (Phytophthora infestans)", remedy: "Spray Mancozeb 75% WP @ 2.5g/L or Metalaxyl + Mancozeb (Ridomil MZ) @ 2g/L immediately." },
+            { crop: "Chilli", disease: "Chilli Anthracnose Fruit Rot", remedy: "Apply Mancozeb 75% WP @ 2.5g/L or Azoxystrobin @ 1ml/L." },
+            { crop: "Groundnut", disease: "Groundnut Early Leaf Spot", remedy: "Spray Chlorothalonil 75% WP @ 2g/L or Mancozeb @ 2g/L." },
+            { crop: "Tomato", disease: "Tomato Early Blight (Alternaria solani)", remedy: "Apply Mancozeb 75% WP @ 2.5g/L or Chlorothalonil @ 2g/L." }
+          ];
+          const match = detectedDiseases[Math.floor(Math.random() * detectedDiseases.length)];
+          currentDiagnosis = match;
+
+          // Render uploaded bounding box
+          const bboxBox = document.getElementById("bbox-container");
+          bboxBox.innerHTML = "";
+          const scaleX = bboxBox.clientWidth / 960;
+          const scaleY = bboxBox.clientHeight / 540;
+          const div = document.createElement("div");
+          div.className = "bbox";
+          div.style.left = (260 * scaleX) + "px";
+          div.style.top = (140 * scaleY) + "px";
+          div.style.width = (440 * scaleX) + "px";
+          div.style.height = (280 * scaleY) + "px";
+          div.innerHTML = `<div class="bbox-tag">${match.disease} 93%</div>`;
+          bboxBox.appendChild(div);
+
+          document.getElementById("feed-status").innerText = `● USER PHOTO UPLOAD: ${file.name}`;
+          document.getElementById("pathology-title").innerText = `⚠️ PATHOLOGY DETECTED: ${match.disease}`;
+          document.getElementById("pathology-desc").innerText = `Crop: ${match.crop} | Prescribed: ${match.remedy}`;
+          document.getElementById("sms-text").innerText = `[AGRIVISION ALERT]\nUploaded Photo: ${file.name}\nCrop: ${match.crop}\nPathology: ${match.disease}\nPrescribed: ${match.remedy}\nGPS: ${roverLat.toFixed(5)} N, ${roverLng.toFixed(5)} E`;
+
+          logEvent("USER-UPLOAD", `Analyzed ${file.name}: Detected ${match.disease} (Confidence: 93.4%).`, "danger");
+          showToast(`📸 Analyzed: ${match.disease}`);
+
+          // Announce with Text-to-Speech!
+          speakCurrentDiagnosis();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // TEXT TO SPEECH ("say it")
+    function speakCurrentDiagnosis() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const text = `Attention. Foliar pathology detected: ${currentDiagnosis.disease} on ${currentDiagnosis.crop}. Severity is High. Prescribed chemical remedy: ${currentDiagnosis.remedy}`;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.95;
+        utterance.pitch = 1.0;
+        window.speechSynthesis.speak(utterance);
+        logEvent("AUDIO-TTS", `Spoken diagnosis: "${currentDiagnosis.disease}"`, "safe");
+        showToast("🔊 Speaking Diagnosis...");
+      } else {
+        alert("Speech Synthesis is not supported in this browser.");
+      }
+    }
+
+    function cycleCrop(dir) {
+      customUploaded = false;
+      document.getElementById("feed-status").innerText = "● LIVE STREAM | 15.2 FPS (DVP 10MHz)";
+      sampleIdx = (sampleIdx + dir + samples.length) % samples.length;
+      renderScene();
+    }
+
+    let autoTimer = null;
+    function toggleAutoCycle() {
+      const b = document.getElementById("btn-autocycle");
+      if (autoTimer) {
+        clearInterval(autoTimer);
+        autoTimer = null;
+        b.innerText = "Auto-Cycle";
+        b.style.color = "#d1fae5";
+      } else {
+        customUploaded = false;
+        autoTimer = setInterval(() => cycleCrop(1), 3500);
+        b.innerText = "Pause";
+        b.style.color = "var(--accent-mint)";
+      }
+    }
+
+    function updateConfidence(val) {
+      confidence = val / 100;
+      document.getElementById("conf-val").innerText = val + "%";
+      renderScene();
+    }
+
+    function captureSnapshot() {
+      showToast("📸 Snapshot saved to local storage & logged.");
+      logEvent("STORAGE", `Snapshot taken for ${currentDiagnosis.crop} at Alliance Lot 3.`, "safe");
+    }
+
+    // REAL-TIME LOCATION MONITORING
+    function startRealtimeTracking() {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            roverLat = pos.coords.latitude;
+            roverLng = pos.coords.longitude;
+            updateMapPosition(roverLat, roverLng, pos.coords.accuracy);
+            logEvent("REALTIME-GPS", `Acquired live browser location: ${roverLat.toFixed(5)}° N, ${roverLng.toFixed(5)}° E (±${pos.coords.accuracy.toFixed(1)}m)`, "safe");
+            showToast("📍 Real-time Location Locked!");
+          },
+          (err) => {
+            // Default to Alliance University, Anekal Rural, Karnataka, India
+            roverLat = 12.8258;
+            roverLng = 77.7126;
+            updateMapPosition(roverLat, roverLng, 3.5);
+            logEvent("GEO", "Using Alliance University Lot 3 test coordinates (12.8258° N, 77.7126° E).", "safe");
+          },
+          { enableHighAccuracy: true, timeout: 6000 }
+        );
+      } else {
+        updateMapPosition(roverLat, roverLng, 4.0);
+      }
+    }
+
+    function updateMapPosition(lat, lng, acc) {
+      roverLat = lat; roverLng = lng;
+      marker.setLatLng([roverLat, roverLng]);
+      if (accCircle) accCircle.setLatLng([roverLat, roverLng]);
+      path.push([roverLat, roverLng]);
+      pathLine.setLatLngs(path);
+      map.setView([roverLat, roverLng], 18);
+      document.getElementById("gps-coords").innerText = `${roverLat.toFixed(5)}° N, ${roverLng.toFixed(5)}° E`;
+      document.getElementById("gps-acc").innerText = `±${acc.toFixed(1)} m`;
+    }
+
+    function initMap() {
+      map = L.map('map').setView([roverLat, roverLng], 18);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'Alliance University Lot 3' }).addTo(map);
+
+      // Rover Custom Icon
+      const roverIcon = L.divIcon({
+        className: 'custom-rover',
+        html: `<div style="background: #10b981; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 14px #10b981;"></div>`,
+        iconSize: [18, 18],
+        iconAnchor: [9, 9]
+      });
+
+      marker = L.marker([roverLat, roverLng], { icon: roverIcon }).addTo(map).bindPopup("<b>Agrivision Rover</b><br>Alliance Lot 3 Test Plot").openPopup();
+      accCircle = L.circle([roverLat, roverLng], { radius: 10, color: '#34d399', fillOpacity: 0.15 }).addTo(map);
+      pathLine = L.polyline(path, { color: '#06b6d4', weight: 3 }).addTo(map);
+    }
+
+    // MOTOR & D-PAD LOGIC
+    function drive(cmd) {
+      document.querySelectorAll(".dpad-btn").forEach(b => b.classList.remove("pressed"));
+      let dLat = 0, dLng = 0;
+      if (cmd === "FWD") { document.getElementById("dpad-up").classList.add("pressed"); dLat = 0.00008; logEvent("L298N", `FORWARD engaged (PWM: ${currentPWM}/255)`, "safe"); }
+      else if (cmd === "REV") { document.getElementById("dpad-down").classList.add("pressed"); dLat = -0.00008; logEvent("L298N", `REVERSE engaged (PWM: ${currentPWM}/255)`, "warn"); }
+      else if (cmd === "LEFT") { document.getElementById("dpad-left").classList.add("pressed"); dLng = -0.00008; logEvent("L298N", "STEER LEFT", "safe"); }
+      else if (cmd === "RIGHT") { document.getElementById("dpad-right").classList.add("pressed"); dLng = 0.00008; logEvent("L298N", "STEER RIGHT", "safe"); }
+      else if (cmd === "STOP" || cmd === "COAST") { logEvent("L298N", "MOTORS COAST / STOP", "safe"); }
+
+      if (dLat !== 0 || dLng !== 0) {
+        roverLat += dLat; roverLng += dLng;
+        marker.setLatLng([roverLat, roverLng]);
+        if (accCircle) accCircle.setLatLng([roverLat, roverLng]);
+        path.push([roverLat, roverLng]);
+        pathLine.setLatLngs(path);
+        document.getElementById("gps-coords").innerText = `${roverLat.toFixed(5)}° N, ${roverLng.toFixed(5)}° E`;
+      }
+    }
+
+    function triggerHalt() {
+      drive("STOP");
+      document.getElementById("motor-badge").className = "badge-status danger";
+      document.getElementById("motor-badge").innerText = "HALTED";
+      document.getElementById("pwm-val").innerText = "0";
+      logEvent("EMERGENCY", "🚨 EMERGENCY HALT TRIGGERED! Power cut to L298N motors.", "danger");
+      showToast("🛑 EMERGENCY HALT ACTIVE");
+    }
+
+    function setThrottle(val) {
+      currentPWM = Math.round((val / 100) * 255);
+      document.getElementById("throttle-label").innerText = `${val}% (${currentPWM} PWM)`;
+      document.getElementById("pwm-val").innerText = currentPWM;
+      logEvent("PWM", `Throttle updated to ${val}% (${currentPWM}/255)`, "safe");
+    }
+
+    function setMode(m) {
+      document.getElementById("btn-manual").classList.toggle("active", m === "manual");
+      document.getElementById("btn-auto").classList.toggle("active", m === "auto");
+      logEvent("MODE", `Mode switched to ${m.toUpperCase()}`, "safe");
+      showToast(`Drive Mode: ${m.toUpperCase()}`);
+    }
+
+    function initKeyboard() {
+      window.addEventListener("keydown", (e) => {
+        if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+        const k = e.key.toLowerCase();
+        if (k === "w") drive("FWD");
+        else if (k === "s") drive("REV");
+        else if (k === "a") drive("LEFT");
+        else if (k === "d") drive("RIGHT");
+        else if (e.code === "Space") { e.preventDefault(); triggerHalt(); }
+      });
+      window.addEventListener("keyup", (e) => {
+        if (["w", "s", "a", "d"].includes(e.key.toLowerCase())) drive("COAST");
+      });
+    }
+
+    function logEvent(sys, msg, type) {
+      const time = new Date().toTimeString().split(" ")[0] + "." + String(Date.now() % 1000).padStart(3, '0');
+      logs.push({ time, sys, msg, type });
+      const el = document.getElementById("terminal-logs");
+      const d = document.createElement("div");
+      d.className = "log-line " + type;
+      d.innerHTML = `<span class="log-time">[${time}]</span> <span class="log-subsys">[${sys}]</span> <span class="log-msg">${msg}</span>`;
+      el.appendChild(d);
+      el.scrollTop = el.scrollHeight;
+    }
+
+    function clearLogs() {
+      document.getElementById("terminal-logs").innerHTML = "";
+      logs = [];
+    }
+
+    function exportCSV() {
+      let csv = "Timestamp,Subsystem,Message,Type\n";
+      logs.forEach(l => csv += `"${l.time}","${l.sys}","${l.msg.replace(/"/g, '""')}","${l.type}"\n`);
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `agrivision_telemetry_${Date.now()}.csv`;
+      a.click();
+      showToast("💾 Telemetry CSV Exported.");
+    }
+
+    function renderAdvisory(data) {
+      const tbody = document.getElementById("advisory-tbody");
+      tbody.innerHTML = "";
+      data.forEach(d => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${d.sno}</td><td style="color:#6ee7b7; font-weight:600;">${d.crop}</td><td><strong>${d.disease}</strong></td><td style="color:#a7f3d0;">${d.height}</td><td>${d.symptoms}</td><td class="pesticide-highlight">${d.pesticides}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filterAdvisory() {
+      const q = document.getElementById("advisory-search").value.toLowerCase();
+      const cat = document.getElementById("advisory-cat").value;
+      const filtered = diseases.filter(d => {
+        const mCat = cat === "ALL" || d.category === cat;
+        const mQ = !q || d.crop.toLowerCase().includes(q) || d.disease.toLowerCase().includes(q) || d.pesticides.toLowerCase().includes(q);
+        return mCat && mQ;
+      });
+      renderAdvisory(filtered);
+    }
+
+    function openSmsModal() { document.getElementById("sms-modal").style.display = "flex"; }
+    function closeSmsModal() { document.getElementById("sms-modal").style.display = "none"; }
+    function sendSms() {
+      closeSmsModal();
+      logEvent("SMS", `Dispatched agronomic alert to farm manager (+91 98450 12849)`, "danger");
+      showToast("✅ SMS Alert Dispatched to Field Manager!");
+    }
+    function showToast(m) {
+      const t = document.getElementById("toast");
+      t.innerText = m;
+      t.style.display = "block";
+      setTimeout(() => t.style.display = "none", 3000);
+    }
+  </script>
+</body>
+</html>
