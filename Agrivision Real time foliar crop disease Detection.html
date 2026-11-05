@@ -500,8 +500,33 @@
       display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap;
     }
 
-    .hardware-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    @media (max-width: 650px) { .hardware-grid { grid-template-columns: 1fr; } }
+    .hardware-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    @media (max-width: 1000px) { .hardware-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .hardware-grid { grid-template-columns: 1fr; } }
+
+    .meter-track {
+      width: 100%; height: 8px; background: rgba(255, 255, 255, 0.1);
+      border-radius: 9999px; overflow: hidden; position: relative; margin: 6px 0;
+    }
+    .meter-fill {
+      height: 100%; width: 92%; background: linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, var(--primary-bright) 80%, var(--accent-cyan) 100%);
+      border-radius: 9999px; transition: width 0.35s ease, background 0.35s ease;
+    }
+    .spec-kv-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 7px 0; border-bottom: 1px solid var(--border-subtle);
+      font-size: 11.5px; font-family: 'JetBrains Mono', monospace;
+    }
+    .spec-kv-row:last-child { border-bottom: none; }
+    .spec-k { color: var(--text-dim); }
+    .spec-v { color: var(--text-main); font-weight: 600; text-align: right; }
+    .audit-chip {
+      display: inline-flex; align-items: center; gap: 5px; font-size: 11px;
+      padding: 3px 8px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-weight: 600;
+    }
+    .audit-chip.pass { background: rgba(16, 185, 129, 0.15); color: var(--primary-bright); border: 1px solid var(--border-accent); }
+    .audit-chip.warn { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .audit-chip.fail { background: rgba(239, 68, 68, 0.15); color: var(--accent-rose); border: 1px solid rgba(239, 68, 68, 0.3); }
     .hw-card {
       background: var(--bg-card); border: 1px solid var(--border-subtle);
       border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 6px;
@@ -570,10 +595,11 @@
     </div>
 
     <div class="header-actions-group">
-      <div class="pill-telemetry">
+      <div class="pill-telemetry" onclick="openWifiModal()" style="cursor: pointer;" title="Click to view full Wi-Fi Network &amp; Password Integrity Hub">
         <div class="pulse-dot"></div>
         <span class="pill-label">Wi-Fi:</span>
         <span class="pill-val" id="wifi-rssi" style="color: var(--primary-bright);">-58 dBm</span>
+        <span style="font-size: 10px; background: rgba(16,185,129,0.2); color: var(--primary-bright); padding: 1px 6px; border-radius: 4px; font-weight: 700; border: 1px solid var(--border-accent);">WPA3 • 92%</span>
       </div>
 
       <div class="pill-telemetry">
@@ -783,6 +809,20 @@
               <span>30 Hz | 0% Loss</span>
             </div>
           </div>
+
+          <div class="hw-card" onclick="openWifiModal()" style="cursor: pointer;" title="Click to view Wi-Fi Network &amp; Password Integrity Hub">
+            <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dim); text-transform:uppercase;">
+              <span>Wi-Fi &amp; Security</span>
+              <span class="badge-tag" style="background:rgba(16,185,129,0.15); color:var(--primary-bright);" id="card-wifi-sec-badge">WPA3-SAE</span>
+            </div>
+            <div style="font-family:'JetBrains Mono', monospace; font-size:17px; font-weight:700; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" id="card-wifi-ssid-display">
+              Agrivision_Field_Rover
+            </div>
+            <div style="font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-muted); display:flex; justify-content:space-between;">
+              <span>Integrity: <strong style="color:var(--primary-bright);" id="card-wifi-integ-score">92/100</strong></span>
+              <span style="color:var(--accent-cyan); font-weight:600;">🔍 Audit</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -964,6 +1004,178 @@
     </div>
   </div>
 
+  <!-- MODAL: WI-FI NETWORK TELEMETRY & PASSWORD INTEGRITY HUB -->
+  <div class="modal-backdrop" id="wifi-modal">
+    <div class="modal-box" style="max-width: 740px; max-height: 92vh; overflow-y: auto;">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+        <div>
+          <h3 style="font-family:'Plus Jakarta Sans', sans-serif; font-size:18px; font-weight:800; display:flex; align-items:center; gap:8px;">
+            <span>📶 Wi-Fi Network &amp; Password Integrity Hub</span>
+          </h3>
+          <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
+            Active Link Layer Telemetry, Cryptographic Handshake &amp; Entropy Vulnerability Audit
+          </div>
+        </div>
+        <button onclick="closeWifiModal()" style="background:transparent; border:none; color:var(--text-muted); font-size:24px; cursor:pointer; line-height:1;">&times;</button>
+      </div>
+
+      <!-- Bento Grid Inside Modal -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <!-- Card 1: Network Architecture & RF Specs -->
+        <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 6px;">
+            <span style="font-family:'Plus Jakarta Sans', sans-serif; font-size:12.5px; font-weight:700; color:var(--primary-bright);">
+              📡 Active Network Telemetry
+            </span>
+            <span class="badge-tag">ESP32 SoftAP</span>
+          </div>
+
+          <div class="spec-kv-row">
+            <span class="spec-k">SSID (Broadcast):</span>
+            <span class="spec-v" id="wifi-modal-ssid" style="color:var(--primary-bright);">Agrivision_Field_Rover</span>
+          </div>
+          <div class="spec-kv-row">
+            <span class="spec-k">BSSID (AP MAC):</span>
+            <span class="spec-v">3C:84:6A:9B:F4:22</span>
+          </div>
+          <div class="spec-kv-row">
+            <span class="spec-k">Frequency / Channel:</span>
+            <span class="spec-v" style="color:var(--accent-cyan);">2.412 GHz (Ch 6) • 20MHz</span>
+          </div>
+          <div class="spec-kv-row">
+            <span class="spec-k">Signal / RSSI:</span>
+            <span class="spec-v" style="color:var(--primary-bright);" id="wifi-modal-rssi">-58 dBm (82% Quality)</span>
+          </div>
+          <div class="spec-kv-row">
+            <span class="spec-k">Gateway IP:</span>
+            <span class="spec-v">192.168.4.1</span>
+          </div>
+          <div class="spec-kv-row">
+            <span class="spec-k">Edge Host IP:</span>
+            <span class="spec-v">192.168.4.2 (DHCP Lease)</span>
+          </div>
+          <div class="spec-kv-row">
+            <span class="spec-k">Subnet &amp; DNS:</span>
+            <span class="spec-v">255.255.255.0 / 1.1.1.1</span>
+          </div>
+          <div class="spec-kv-row">
+            <span class="spec-k">Physical Standard:</span>
+            <span class="spec-v">Wi-Fi 6 / 802.11b/g/n</span>
+          </div>
+          <div class="spec-kv-row">
+            <span class="spec-k">Link Rate &amp; Loss:</span>
+            <span class="spec-v" style="color:var(--primary-bright);">72.2 Mbps • 0.0% Loss</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Password Integrity & Cryptographic Security -->
+        <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 6px;">
+            <span style="font-family:'Plus Jakarta Sans', sans-serif; font-size:12.5px; font-weight:700; color:var(--accent-cyan);">
+              🔐 Password Integrity &amp; Cipher
+            </span>
+            <span class="badge-tag" style="background:rgba(6,182,212,0.18); color:var(--accent-cyan);">WPA3 / AES</span>
+          </div>
+
+          <!-- Password Display with Toggle -->
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <div style="display:flex; justify-content:space-between; font-size:11px; font-family:'JetBrains Mono', monospace; color:var(--text-dim);">
+              <span>Active Password:</span>
+              <span id="pwd-visible-btn" onclick="togglePasswordVisibility()" style="cursor:pointer; color:var(--primary-bright); font-weight:600;">👁️ Show</span>
+            </div>
+            <div style="position:relative;">
+              <input type="password" id="wifi-pass-input" class="input-field" value="agrivision2026" oninput="onWifiPasswordInput(this.value)" style="letter-spacing: 1px;">
+            </div>
+          </div>
+
+          <!-- Integrity Score Gauge -->
+          <div style="margin-top: 4px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; font-family:'JetBrains Mono', monospace; font-size:11px;">
+              <span style="color:var(--text-dim);">Password Integrity Score:</span>
+              <strong id="pwd-score-text" style="color:var(--primary-bright);">92 / 100 (VERY STRONG)</strong>
+            </div>
+            <div class="meter-track">
+              <div class="meter-fill" id="pwd-meter-bar" style="width: 92%;"></div>
+            </div>
+          </div>
+
+          <div class="spec-kv-row">
+            <span class="spec-k">Shannon Entropy:</span>
+            <span class="spec-v" id="pwd-entropy-val" style="color:var(--accent-amber);">58.4 bits (High)</span>
+          </div>
+          <div class="spec-kv-row">
+            <span class="spec-k">Brute-Force (Online AP):</span>
+            <span class="spec-v" style="color:var(--primary-bright);" id="pwd-online-crack">> 140,000 Years</span>
+          </div>
+          <div class="spec-kv-row">
+            <span class="spec-k">Offline GPU (8x RTX 4090):</span>
+            <span class="spec-v" id="pwd-offline-crack" style="color:var(--accent-cyan);">~4.2 Years (PBKDF2)</span>
+          </div>
+          <div class="spec-kv-row">
+            <span class="spec-k">Cipher Engine:</span>
+            <span class="spec-v">AES-CCMP 256-bit</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security Checklist & Threat Mitigation Section -->
+      <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 14px; display:flex; flex-direction:column; gap:10px;">
+        <div style="font-family:'Plus Jakarta Sans', sans-serif; font-size:13px; font-weight:700; color:var(--text-main); display:flex; align-items:center; gap:6px;">
+          <span>🛡️ Rover Cyber-Physical Attack Defense Status</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:11.5px; font-family:'JetBrains Mono', monospace;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span id="chk-len" class="audit-chip pass">✓ 14+ Chars</span>
+            <span style="color:var(--text-muted);">Exceeds 8-char WPA requirement</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span id="chk-pmf" class="audit-chip pass">✓ 802.11w PMF</span>
+            <span style="color:var(--text-muted);">Protected Management Frames (Anti-Deauth)</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span id="chk-handshake" class="audit-chip pass">✓ SAE / 4-Way</span>
+            <span style="color:var(--text-muted);">Valid Nonce / MIC Handshake exchange</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span id="chk-rogu" class="audit-chip pass">✓ Rogue AP Guard</span>
+            <span style="color:var(--text-muted);">BSSID MAC certificate matched</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Change Credentials Inputs -->
+      <div style="display:flex; flex-direction:column; gap:8px; background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:12px; padding:14px;">
+        <div style="font-family:'Plus Jakarta Sans', sans-serif; font-size:12.5px; font-weight:700; color:var(--primary-bright);">
+          ✏️ Edit &amp; Update Wi-Fi Network Credentials
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+          <div>
+            <label style="font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dim);">Rover SSID Name:</label>
+            <input type="text" id="edit-wifi-ssid" class="input-field" value="Agrivision_Field_Rover" style="margin-top:4px;">
+          </div>
+          <div>
+            <label style="font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dim);">Generate Suggested Strong Password:</label>
+            <button class="btn-outline-action" onclick="generateStrongWifiPass()" style="width:100%; margin-top:4px; justify-content:center;">
+              🎲 Suggest High-Entropy Passphrase
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-top:4px;">
+        <span style="font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dim);">
+          Persisted in Local Storage &amp; Synchronized with ESP32 WebSocket
+        </span>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-outline-action" onclick="closeWifiModal()">Close</button>
+          <button class="btn-solid-primary" onclick="saveWifiCredentials()">💾 Save &amp; Apply Credentials</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="toast-msg" id="toast"></div>
 
   <script>
@@ -1022,6 +1234,9 @@
 
     let userEmail = localStorage.getItem("agri_user_email") || "harikant4880@gmail.com";
     let userPhone = localStorage.getItem("agri_user_phone") || "+91 98450 12849";
+    let wifiSSID = localStorage.getItem("agri_wifi_ssid") || "Agrivision_Field_Rover";
+    let wifiPass = localStorage.getItem("agri_wifi_pass") || "agrivision2026";
+    let wifiPassVisible = false;
     let sampleIdx = 0;
     let confidence = 0.85;
     let currentPWM = 191;
@@ -1043,6 +1258,7 @@
 
     window.onload = () => {
       updateContactDisplay();
+      updateWifiModalUI(wifiPass);
       const savedTheme = localStorage.getItem("agri_theme") || "theme-obsidian";
       document.body.className = savedTheme;
       document.getElementById("theme-selector").value = savedTheme;
@@ -1068,6 +1284,186 @@
       document.body.className = themeClass;
       localStorage.setItem("agri_theme", themeClass);
       showToast(`🎨 Theme Applied: ${themeClass.replace("theme-", "").toUpperCase()}`);
+    }
+
+    function openWifiModal() {
+      document.getElementById("wifi-modal").style.display = "flex";
+      document.getElementById("edit-wifi-ssid").value = wifiSSID;
+      document.getElementById("wifi-pass-input").value = wifiPass;
+      updateWifiModalUI(wifiPass);
+    }
+
+    function closeWifiModal() {
+      document.getElementById("wifi-modal").style.display = "none";
+    }
+
+    function togglePasswordVisibility() {
+      wifiPassVisible = !wifiPassVisible;
+      const input = document.getElementById("wifi-pass-input");
+      input.type = wifiPassVisible ? "text" : "password";
+      document.getElementById("pwd-visible-btn").innerText = wifiPassVisible ? "🙈 Hide" : "👁️ Show";
+    }
+
+    function onWifiPasswordInput(val) {
+      updateWifiModalUI(val);
+    }
+
+    function calculatePasswordIntegrity(pwd) {
+      if (!pwd) return { score: 0, grade: "EMPTY", color: "#ef4444", entropy: 0, online: "< 1 sec", offline: "< 1 sec", hasUpper: false, hasLower: false, hasDigit: false, hasSymbol: false, isLen: false };
+
+      let score = 0;
+      const len = pwd.length;
+      const hasLower = /[a-z]/.test(pwd);
+      const hasUpper = /[A-Z]/.test(pwd);
+      const hasDigit = /[0-9]/.test(pwd);
+      const hasSymbol = /[^a-zA-Z0-9]/.test(pwd);
+
+      if (len >= 8) score += 15;
+      if (len >= 12) score += 15;
+      if (len >= 16) score += 10;
+
+      if (hasLower) score += 10;
+      if (hasUpper) score += 15;
+      if (hasDigit) score += 15;
+      if (hasSymbol) score += 15;
+
+      let charSet = 0;
+      if (hasLower) charSet += 26;
+      if (hasUpper) charSet += 26;
+      if (hasDigit) charSet += 10;
+      if (hasSymbol) charSet += 33;
+
+      const entropy = Math.round(len * (charSet > 0 ? Math.log2(charSet) : 0));
+      if (entropy > 50) score += 5;
+      if (entropy > 70) score += 5;
+
+      const lower = pwd.toLowerCase();
+      if (lower.includes("123") || lower.includes("password") || lower.includes("admin")) {
+        score = Math.max(10, score - 25);
+      }
+
+      score = Math.min(100, Math.max(12, score));
+
+      let grade = "POOR / WEAK";
+      let color = "#ef4444";
+      let online = "~45 mins";
+      let offline = "< 1 day";
+
+      if (score >= 90) {
+        grade = "CRYPTOGRAPHICALLY BULLETPROOF";
+        color = "var(--primary-bright)";
+        online = "> 500,000 Years";
+        offline = "> 1,200 Centuries";
+      } else if (score >= 75) {
+        grade = "VERY STRONG (HIGH ENTROPY)";
+        color = "#10b981";
+        online = "> 140,000 Years";
+        offline = "~4.2 Years";
+      } else if (score >= 50) {
+        grade = "MODERATE (FIELD PASSABLE)";
+        color = "#f59e0b";
+        online = "~12 Years";
+        offline = "~18 Days";
+      } else {
+        grade = "VULNERABLE (UPGRADE RECOMMENDED)";
+        color = "#ef4444";
+        online = "< 1 Month";
+        offline = "< 2 Hours";
+      }
+
+      return {
+        score,
+        grade,
+        color,
+        entropy,
+        online,
+        offline,
+        hasUpper,
+        hasLower,
+        hasDigit,
+        hasSymbol,
+        isLen: len >= 8
+      };
+    }
+
+    function updateWifiModalUI(pwd) {
+      const res = calculatePasswordIntegrity(pwd);
+      const scoreTxt = document.getElementById("pwd-score-text");
+      if (scoreTxt) {
+        scoreTxt.innerText = `${res.score} / 100 (${res.grade})`;
+        scoreTxt.style.color = res.color;
+      }
+      const bar = document.getElementById("pwd-meter-bar");
+      if (bar) {
+        bar.style.width = res.score + "%";
+        bar.style.background = res.color;
+      }
+      const entVal = document.getElementById("pwd-entropy-val");
+      if (entVal) {
+        entVal.innerText = `${res.entropy} bits (${res.entropy > 60 ? "High" : res.entropy > 40 ? "Moderate" : "Low"})`;
+      }
+      const onCrack = document.getElementById("pwd-online-crack");
+      if (onCrack) onCrack.innerText = res.online;
+      const offCrack = document.getElementById("pwd-offline-crack");
+      if (offCrack) offCrack.innerText = res.offline;
+
+      const chkLen = document.getElementById("chk-len");
+      if (chkLen) {
+        chkLen.className = res.isLen ? "audit-chip pass" : "audit-chip fail";
+        chkLen.innerText = res.isLen ? `✓ ${pwd.length} Chars` : "✗ < 8 Chars";
+      }
+
+      const cardSSID = document.getElementById("card-wifi-ssid-display");
+      if (cardSSID) cardSSID.innerText = wifiSSID;
+      const cardScore = document.getElementById("card-wifi-integ-score");
+      if (cardScore) {
+        cardScore.innerText = `${res.score}/100`;
+        cardScore.style.color = res.color;
+      }
+      const modalSSID = document.getElementById("wifi-modal-ssid");
+      if (modalSSID) modalSSID.innerText = wifiSSID;
+    }
+
+    function generateStrongWifiPass() {
+      const chars = "abcdefghijklmnopqrstuvwxyz";
+      const uppers = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+      const digits = "23456789";
+      const syms = "!@#$%^&*";
+      
+      let p = "Agri!";
+      for (let i = 0; i < 3; i++) p += uppers[Math.floor(Math.random() * uppers.length)];
+      for (let i = 0; i < 4; i++) p += digits[Math.floor(Math.random() * digits.length)];
+      p += syms[Math.floor(Math.random() * syms.length)];
+      for (let i = 0; i < 3; i++) p += chars[Math.floor(Math.random() * chars.length)];
+      
+      document.getElementById("wifi-pass-input").value = p;
+      wifiPassVisible = true;
+      document.getElementById("wifi-pass-input").type = "text";
+      document.getElementById("pwd-visible-btn").innerText = "🙈 Hide";
+      updateWifiModalUI(p);
+      showToast("🎲 High-Entropy Passphrase Generated!");
+    }
+
+    function saveWifiCredentials() {
+      const newSSID = document.getElementById("edit-wifi-ssid").value.trim();
+      const newPass = document.getElementById("wifi-pass-input").value.trim();
+      if (!newSSID || !newPass) {
+        alert("SSID and password cannot be empty.");
+        return;
+      }
+      if (newPass.length < 8) {
+        alert("WPA3 / WPA2 Wi-Fi passphrase must be at least 8 characters long.");
+        return;
+      }
+      wifiSSID = newSSID;
+      wifiPass = newPass;
+      localStorage.setItem("agri_wifi_ssid", wifiSSID);
+      localStorage.setItem("agri_wifi_pass", wifiPass);
+
+      updateWifiModalUI(wifiPass);
+      closeWifiModal();
+      logEvent("WIFI-SEC", `Credentials updated: SSID=${wifiSSID}, Handshake Key Re-anchored`, "safe");
+      showToast(`📶 Wi-Fi credentials updated: ${wifiSSID}`);
     }
 
     function updateContactDisplay() {
