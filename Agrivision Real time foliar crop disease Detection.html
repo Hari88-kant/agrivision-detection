@@ -664,13 +664,14 @@
         ✏️ Change Mail &amp; Phone
       </button>
 
-      <div class="switch-wrap">
-        <span>⚡ Auto-Dispatch:</span>
-        <label class="toggle-ui">
-          <input type="checkbox" id="auto-dispatch-toggle" checked onchange="toggleAutoDispatch(this.checked)">
-          <span class="toggle-track"></span>
-        </label>
-        <span id="auto-dispatch-label" style="font-weight: 700; color: var(--primary-bright);">ON</span>
+      <div class="switch-wrap" style="gap: 6px; padding: 4px 8px;">
+        <span>📧 Mail Mode:</span>
+        <button id="btn-mode-auto" onclick="setMailDispatchMode(true)" style="background: var(--primary); color: #02261a; border: none; padding: 4px 10px; border-radius: 9999px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; cursor: pointer;">
+          ⚡ Auto-Dispatch
+        </button>
+        <button id="btn-mode-manual" onclick="setMailDispatchMode(false)" style="background: transparent; color: var(--text-muted); border: 1px solid var(--border-subtle); padding: 4px 10px; border-radius: 9999px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; cursor: pointer;">
+          ✉️ Send When Needed
+        </button>
       </div>
     </div>
   </div>
@@ -712,6 +713,9 @@
           </div>
 
           <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <select id="excel-crop-selector" class="input-field" style="width: 245px; padding: 7px 10px; font-size: 11.5px;" onchange="selectExcelCrop(this.value)" title="Select any crop & disease from the Excel dataset to run detection on its plant image">
+            </select>
+
             <div class="switch-wrap" title="When OFF, speech only plays when you click Speak Diagnosis. When ON, it automatically announces on upload.">
               <span>Auto-Speak:</span>
               <label class="toggle-ui">
@@ -732,17 +736,28 @@
         </div>
 
         <div class="pathology-banner-card" id="pathology-banner">
-          <div>
-            <div style="font-family:'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700; color: #fca5a5;" id="pathology-title">
-              ⚠️ PATHOLOGY DETECTED: Potato Late Blight
-            </div>
-            <div style="font-size: 12px; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; margin-top: 3px;" id="pathology-desc">
-              Prescribed Remedy: Mancozeb 75% WP @ 2.5g/L or Metalaxyl + Mancozeb (Ridomil MZ) @ 2g/L
+          <div style="display: flex; align-items: center; gap: 14px; flex: 1; min-width: 260px;">
+            <img id="pathology-med-img" src="medicine_images/metalaxyl_mancozeb_mz.jpg" alt="Prescribed Medicine" style="width: 64px; height: 64px; border-radius: 10px; object-fit: cover; border: 2px solid var(--border-accent); background: #fff; flex-shrink: 0;">
+            <div>
+              <div style="font-family:'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700; color: #fca5a5;" id="pathology-title">
+                ⚠️ PATHOLOGY DETECTED: Potato Late Blight
+              </div>
+              <div style="font-size: 12px; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; margin-top: 3px;" id="pathology-desc">
+                Prescribed Remedy: Mancozeb 75% WP @ 2.5g/L or Metalaxyl + Mancozeb (Ridomil MZ) @ 2g/L
+              </div>
+              <div style="font-size: 11px; color: var(--primary-bright); font-family: 'JetBrains Mono', monospace; margin-top: 4px;" id="pathology-med-label">
+                💊 Medicine: Metalaxyl + Mancozeb (Ridomil MZ 68% WP) • Mail Mode: ⚡ Auto-Dispatch ON
+              </div>
             </div>
           </div>
-          <button class="btn-solid-primary" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color:#fff;" onclick="openDispatchModal()">
-            📱 Dispatch to Mail &amp; Mobile
-          </button>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+            <button class="btn-outline-action" id="btn-send-mail-now" onclick="executeTransmission()" style="border-color: var(--accent-cyan); color: var(--accent-cyan);" title="Send email & dashboard notification right now when needed">
+              ✉️ Send Mail Now
+            </button>
+            <button class="btn-solid-primary" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color:#fff;" onclick="openDispatchModal()">
+              📱 Dispatch to Mail &amp; Mobile
+            </button>
+          </div>
         </div>
 
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; background: var(--bg-card); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-subtle);">
@@ -852,11 +867,12 @@
             <thead>
               <tr style="background: var(--bg-card); position: sticky; top: 0; border-bottom: 1px solid var(--border-subtle);">
                 <th style="padding: 8px 12px; width: 45px; font-family:'JetBrains Mono', monospace; color:var(--text-dim);">S.No</th>
+                <th style="padding: 8px 12px; width: 62px; color:var(--text-dim);">Leaf</th>
                 <th style="padding: 8px 12px; width: 100px; color:var(--primary-bright);">Crop</th>
                 <th style="padding: 8px 12px; width: 150px;">Disease</th>
                 <th style="padding: 8px 12px; width: 85px; color:var(--text-dim);">Height</th>
                 <th style="padding: 8px 12px;">Visible Symptoms</th>
-                <th style="padding: 8px 12px; color:var(--primary-bright);">Prescribed Chemical / Measures</th>
+                <th style="padding: 8px 12px; color:var(--primary-bright);">Prescribed Medicine &amp; Measures</th>
               </tr>
             </thead>
             <tbody id="advisory-tbody"></tbody>
@@ -1180,64 +1196,1729 @@
 
   <script>
     const diseases = [
-      {sno: 1, category: "Cereals", crop: "Wheat", disease: "Yellow rust", pathogen: "Fungal", height: "2-3 ft", symptoms: "Yellow stripes of pustules along leaves", pesticides: "Propiconazole; Tebuconazole; Mancozeb"},
-      {sno: 2, category: "Cereals", crop: "Wheat", disease: "Brown rust", pathogen: "Fungal", height: "2-3 ft", symptoms: "Scattered orange-brown pustules on leaves", pesticides: "Propiconazole; Tebuconazole; Mancozeb"},
-      {sno: 6, category: "Pulses & Oilseeds", crop: "Chickpea", disease: "Fusarium Wilt", pathogen: "Fungal", height: "1-2 ft", symptoms: "Yellowing and wilting", pesticides: "Carbendazim + Thiram (seed); Trichoderma"},
-      {sno: 8, category: "Pulses & Oilseeds", crop: "Soybean", disease: "Soybean Rust", pathogen: "Fungal", height: "1.5-3 ft", symptoms: "Brown/rust-coloured pustules", pesticides: "Hexaconazole; Tebuconazole; Propiconazole; Azoxystrobin"},
-      {sno: 10, category: "Pulses & Oilseeds", crop: "Groundnut", disease: "Rust", pathogen: "Fungal", height: "1-1.5 ft", symptoms: "Orange/brown pustules", pesticides: "Chlorothalonil; Tebuconazole"},
-      {sno: 12, category: "Pulses & Oilseeds", crop: "Groundnut", disease: "Early Leaf Spot", pathogen: "Fungal", height: "1-1.5 ft", symptoms: "Small brown spots with yellow halo", pesticides: "Mancozeb; Chlorothalonil; Hexaconazole"},
-      {sno: 13, category: "Pulses & Oilseeds", crop: "Groundnut", disease: "Late Leaf Spot", pathogen: "Fungal", height: "1-1.5 ft", symptoms: "Dark spots, premature leaf fall", pesticides: "Chlorothalonil; Tebuconazole; Hexaconazole"},
-      {sno: 14, category: "Pulses & Oilseeds", crop: "Green Gram", disease: "Powdery Mildew", pathogen: "Fungal", height: "1-2 ft", symptoms: "White powdery growth", pesticides: "Wettable sulphur; Hexaconazole; Azoxystrobin"},
-      {sno: 28, category: "Vegetables", crop: "Potato", disease: "Late blight", pathogen: "Oomycete", height: "1-2 ft", symptoms: "Brown/black lesions, rapid decay", pesticides: "Mancozeb; Metalaxyl + Mancozeb (Ridomil MZ); Cymoxanil + Mancozeb"},
-      {sno: 31, category: "Vegetables", crop: "Chilli", disease: "Anthracnose", pathogen: "Fungal", height: "1.5-3 ft", symptoms: "Dark sunken lesions, fruit rot", pesticides: "Mancozeb; Carbendazim; Azoxystrobin"},
-      {sno: 32, category: "Vegetables", crop: "Chilli", disease: "Powdery mildew", pathogen: "Fungal", height: "1.5-3 ft", symptoms: "White powdery patches under leaves", pesticides: "Wettable sulphur; Hexaconazole; Azoxystrobin"},
-      {sno: 37, category: "Vegetables", crop: "Cucurbits", disease: "Downy mildew", pathogen: "Oomycete", height: "Trailing vine", symptoms: "Angular yellow patches with purplish-grey growth", pesticides: "Metalaxyl + Mancozeb; Cymoxanil + Mancozeb"},
-      {sno: 40, category: "Vegetables", crop: "Onion", disease: "Purple blotch", pathogen: "Fungal", height: "1-2 ft", symptoms: "Purple/brown elongated lesions", pesticides: "Mancozeb; Chlorothalonil; Difenoconazole"},
-      {sno: 42, category: "Vegetables", crop: "Potato", disease: "Early Blight", pathogen: "Fungal", height: "1-2 ft", symptoms: "Brown target-like spots", pesticides: "Mancozeb; Chlorothalonil; Azoxystrobin"},
-      {sno: 47, category: "Vegetables", crop: "Beans", disease: "Bean Rust", pathogen: "Fungal", height: "1-2 ft", symptoms: "Rust-coloured pustules", pesticides: "Mancozeb; Hexaconazole; Tebuconazole"},
-      {sno: 49, category: "Vegetables", crop: "Cabbage", disease: "Alternaria Leaf Spot", pathogen: "Fungal", height: "1-1.5 ft", symptoms: "Dark concentric spots", pesticides: "Mancozeb; Iprodione; Chlorothalonil"},
-      {sno: 63, category: "Leafy Vegetables & Herbs", crop: "Spinach", disease: "Downy Mildew", pathogen: "Oomycete", height: "0.5-1 ft", symptoms: "Yellow patches, grey/purple growth underneath", pesticides: "Metalaxyl + Mancozeb"},
-      {sno: 74, category: "Ground-level Fruits", crop: "Strawberry", disease: "Leaf Scorch", pathogen: "Fungal", height: "0.5-1 ft", symptoms: "Purple/brown spots on leaves", pesticides: "Captan; Mancozeb; Carbendazim"},
-      {sno: 79, category: "Ground-level Fruits", crop: "Watermelon", disease: "Anthracnose", pathogen: "Fungal", height: "Trailing vine", symptoms: "Sunken dark spots on fruit and leaves", pesticides: "Carbendazim; Mancozeb; Chlorothalonil"},
-      {sno: 92, category: "Flowers", crop: "Marigold", disease: "Alternaria Leaf Spot", pathogen: "Fungal", height: "1-3 ft", symptoms: "Brown ringed spots on leaves", pesticides: "Mancozeb; Chlorothalonil; Iprodione"}
-    ];
+  {
+    "sno": 1,
+    "category": "Cereals",
+    "crop": "Wheat",
+    "disease": "Yellow rust",
+    "pathogen": "Fungal",
+    "height": "2-3 ft",
+    "symptoms": "Yellow stripes of pustules along leaves",
+    "control_type": "Fungicide",
+    "pesticides": "Propiconazole; Tebuconazole; Mancozeb",
+    "leafImg": "sample_leaves/wheat_yellow_rust.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 2,
+    "category": "Cereals",
+    "crop": "Wheat",
+    "disease": "Brown rust",
+    "pathogen": "Fungal",
+    "height": "2-3 ft",
+    "symptoms": "Scattered orange-brown pustules on leaves",
+    "control_type": "Fungicide",
+    "pesticides": "Propiconazole; Tebuconazole; Mancozeb",
+    "leafImg": "sample_leaves/wheat_brown_rust.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 3,
+    "category": "Cereals",
+    "crop": "Wheat",
+    "disease": "Black rust",
+    "pathogen": "Fungal",
+    "height": "2-3 ft",
+    "symptoms": "Dark reddish-black pustules on stems and leaves",
+    "control_type": "Fungicide",
+    "pesticides": "Propiconazole; Tebuconazole; Mancozeb",
+    "leafImg": "sample_leaves/wheat_black_rust.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 4,
+    "category": "Cereals",
+    "crop": "Wheat",
+    "disease": "Powdery mildew",
+    "pathogen": "Fungal",
+    "height": "2-3 ft",
+    "symptoms": "White powdery growth on leaves",
+    "control_type": "Fungicide",
+    "pesticides": "Wettable sulphur; Propiconazole; Tridemorph",
+    "leafImg": "sample_leaves/wheat_powdery_mildew.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 5,
+    "category": "Cereals",
+    "crop": "Wheat",
+    "disease": "Loose smut",
+    "pathogen": "Fungal",
+    "height": "2-3 ft",
+    "symptoms": "Ears replaced by black powdery spore mass",
+    "control_type": "Seed treatment + Fungicide",
+    "pesticides": "Carboxin; Tebuconazole; Carbendazim (seed treatment)",
+    "leafImg": "sample_leaves/wheat_loose_smut.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 6,
+    "category": "Pulses & Oilseeds",
+    "crop": "Chickpea",
+    "disease": "Fusarium Wilt",
+    "pathogen": "Fungal",
+    "height": "1-2 ft",
+    "symptoms": "Yellowing and wilting",
+    "control_type": "Seed treatment + Fungicide",
+    "pesticides": "Carbendazim + Thiram (seed); Trichoderma",
+    "leafImg": "sample_leaves/chickpea_fusarium_wilt.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 7,
+    "category": "Pulses & Oilseeds",
+    "crop": "Chickpea",
+    "disease": "Ascochyta blight",
+    "pathogen": "Fungal",
+    "height": "1-2 ft",
+    "symptoms": "Dark spots on leaves/stems/pods",
+    "control_type": "Fungicide",
+    "pesticides": "Chlorothalonil; Mancozeb",
+    "leafImg": "sample_leaves/chickpea_ascochyta_blight.jpg",
+    "medImg": "medicine_images/chlorothalonil_75_wp.jpg",
+    "medName": "Chlorothalonil 75% WP",
+    "medGroup": "Broad-Spectrum Contact Fungicide"
+  },
+  {
+    "sno": 8,
+    "category": "Pulses & Oilseeds",
+    "crop": "Soybean",
+    "disease": "Soybean Rust",
+    "pathogen": "Fungal",
+    "height": "1.5-3 ft",
+    "symptoms": "Brown/rust-coloured pustules",
+    "control_type": "Fungicide",
+    "pesticides": "Hexaconazole; Tebuconazole; Propiconazole; Azoxystrobin",
+    "leafImg": "sample_leaves/soybean_soybean_rust.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 9,
+    "category": "Pulses & Oilseeds",
+    "crop": "Soybean",
+    "disease": "Yellow mosaic",
+    "pathogen": "Viral",
+    "height": "1.5-3 ft",
+    "symptoms": "Bright yellow patches on leaves, stunting, poor pod set",
+    "control_type": "Insecticide (vector control)",
+    "pesticides": "Thiamethoxam; Imidacloprid; Diafenthiuron (against whitefly)",
+    "leafImg": "sample_leaves/soybean_yellow_mosaic.jpg",
+    "medImg": "medicine_images/imidacloprid_17_8_sl.jpg",
+    "medName": "Imidacloprid 17.8% SL / Thiamethoxam",
+    "medGroup": "Systemic Vector Insecticide"
+  },
+  {
+    "sno": 10,
+    "category": "Pulses & Oilseeds",
+    "crop": "Groundnut",
+    "disease": "Rust",
+    "pathogen": "Fungal",
+    "height": "1-1.5 ft",
+    "symptoms": "Orange/brown rust-coloured pustules",
+    "control_type": "Fungicide",
+    "pesticides": "Chlorothalonil; Tebuconazole",
+    "leafImg": "sample_leaves/groundnut_rust.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 11,
+    "category": "Pulses & Oilseeds",
+    "crop": "Groundnut",
+    "disease": "Bud necrosis",
+    "pathogen": "Viral",
+    "height": "1-1.5 ft",
+    "symptoms": "Ring spots on young leaves, bud/shoot necrosis, stunting",
+    "control_type": "Insecticide (vector control)",
+    "pesticides": "Imidacloprid (seed/spray); Dimethoate (against thrips)",
+    "leafImg": "sample_leaves/groundnut_bud_necrosis.jpg",
+    "medImg": "medicine_images/imidacloprid_17_8_sl.jpg",
+    "medName": "Imidacloprid 17.8% SL / Thiamethoxam",
+    "medGroup": "Systemic Vector Insecticide"
+  },
+  {
+    "sno": 12,
+    "category": "Pulses & Oilseeds",
+    "crop": "Groundnut",
+    "disease": "Early Leaf Spot",
+    "pathogen": "Fungal",
+    "height": "1-1.5 ft",
+    "symptoms": "Small brown spots with yellow halo",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Chlorothalonil; Hexaconazole",
+    "leafImg": "sample_leaves/groundnut_early_leaf_spot.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 13,
+    "category": "Pulses & Oilseeds",
+    "crop": "Groundnut",
+    "disease": "Late Leaf Spot",
+    "pathogen": "Fungal",
+    "height": "1-1.5 ft",
+    "symptoms": "Dark spots, premature leaf fall",
+    "control_type": "Fungicide",
+    "pesticides": "Chlorothalonil; Tebuconazole; Hexaconazole",
+    "leafImg": "sample_leaves/groundnut_late_leaf_spot.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 14,
+    "category": "Pulses & Oilseeds",
+    "crop": "Green Gram",
+    "disease": "Powdery Mildew",
+    "pathogen": "Fungal",
+    "height": "1-2 ft",
+    "symptoms": "White powdery growth",
+    "control_type": "Fungicide",
+    "pesticides": "Wettable sulphur; Hexaconazole; Azoxystrobin",
+    "leafImg": "sample_leaves/green_gram_powdery_mildew.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 15,
+    "category": "Pulses & Oilseeds",
+    "crop": "Green Gram",
+    "disease": "Cercospora Leaf Spot",
+    "pathogen": "Fungal",
+    "height": "1-2 ft",
+    "symptoms": "Circular leaf spots",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Carbendazim",
+    "leafImg": "sample_leaves/green_gram_cercospora_leaf_spot.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 16,
+    "category": "Pulses & Oilseeds",
+    "crop": "Green Gram",
+    "disease": "Anthracnose",
+    "pathogen": "Fungal",
+    "height": "1-2 ft",
+    "symptoms": "Dark lesions",
+    "control_type": "Fungicide",
+    "pesticides": "Carbendazim; Mancozeb; seed treatment",
+    "leafImg": "sample_leaves/green_gram_anthracnose.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 17,
+    "category": "Pulses & Oilseeds",
+    "crop": "Green Gram",
+    "disease": "Yellow Mosaic Virus",
+    "pathogen": "Viral",
+    "height": "1-2 ft",
+    "symptoms": "Yellow patches on leaves, stunting, poor pods",
+    "control_type": "Insecticide (vector control)",
+    "pesticides": "Thiamethoxam; Imidacloprid (against whitefly); resistant varieties",
+    "leafImg": "sample_leaves/green_gram_yellow_mosaic_virus.jpg",
+    "medImg": "medicine_images/imidacloprid_17_8_sl.jpg",
+    "medName": "Imidacloprid 17.8% SL / Thiamethoxam",
+    "medGroup": "Systemic Vector Insecticide"
+  },
+  {
+    "sno": 18,
+    "category": "Pulses & Oilseeds",
+    "crop": "Black Gram",
+    "disease": "Leaf Spot",
+    "pathogen": "Fungal",
+    "height": "1-2 ft",
+    "symptoms": "Brown/black spots",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Carbendazim",
+    "leafImg": "sample_leaves/black_gram_leaf_spot.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 19,
+    "category": "Pulses & Oilseeds",
+    "crop": "Black Gram",
+    "disease": "Powdery Mildew",
+    "pathogen": "Fungal",
+    "height": "1-2 ft",
+    "symptoms": "White powder",
+    "control_type": "Fungicide",
+    "pesticides": "Wettable sulphur; Hexaconazole; Azoxystrobin",
+    "leafImg": "sample_leaves/black_gram_powdery_mildew.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 20,
+    "category": "Pulses & Oilseeds",
+    "crop": "Black Gram",
+    "disease": "Yellow Mosaic Virus",
+    "pathogen": "Viral",
+    "height": "1-2 ft",
+    "symptoms": "Yellow patches on leaves, stunting, poor pods",
+    "control_type": "Insecticide (vector control)",
+    "pesticides": "Thiamethoxam; Imidacloprid (against whitefly); resistant varieties",
+    "leafImg": "sample_leaves/black_gram_yellow_mosaic_virus.jpg",
+    "medImg": "medicine_images/imidacloprid_17_8_sl.jpg",
+    "medName": "Imidacloprid 17.8% SL / Thiamethoxam",
+    "medGroup": "Systemic Vector Insecticide"
+  },
+  {
+    "sno": 21,
+    "category": "Pulses & Oilseeds",
+    "crop": "Cowpea",
+    "disease": "Leaf Spot",
+    "pathogen": "Fungal",
+    "height": "1-2 ft (bush type)",
+    "symptoms": "Brown spots",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Carbendazim",
+    "leafImg": "sample_leaves/cowpea_leaf_spot.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 22,
+    "category": "Pulses & Oilseeds",
+    "crop": "Cowpea",
+    "disease": "Rust",
+    "pathogen": "Fungal",
+    "height": "1-2 ft (bush type)",
+    "symptoms": "Rust-coloured pustules",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Hexaconazole; Tebuconazole",
+    "leafImg": "sample_leaves/cowpea_rust.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 23,
+    "category": "Pulses & Oilseeds",
+    "crop": "Cowpea",
+    "disease": "Powdery Mildew",
+    "pathogen": "Fungal",
+    "height": "1-2 ft (bush type)",
+    "symptoms": "White powder",
+    "control_type": "Fungicide",
+    "pesticides": "Wettable sulphur; Hexaconazole; Azoxystrobin",
+    "leafImg": "sample_leaves/cowpea_powdery_mildew.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 24,
+    "category": "Pulses & Oilseeds",
+    "crop": "Soybean",
+    "disease": "Bacterial Blight",
+    "pathogen": "Bacterial",
+    "height": "1.5-3 ft",
+    "symptoms": "Water-soaked/angular lesions",
+    "control_type": "Bactericide",
+    "pesticides": "Copper oxychloride + Streptocycline",
+    "leafImg": "sample_leaves/soybean_bacterial_blight.jpg",
+    "medImg": "medicine_images/copper_oxychloride_50_wp.jpg",
+    "medName": "Copper Oxychloride 50% WP",
+    "medGroup": "Contact Fungicide & Bactericide"
+  },
+  {
+    "sno": 25,
+    "category": "Pulses & Oilseeds",
+    "crop": "Soybean",
+    "disease": "Frogeye Leaf Spot",
+    "pathogen": "Fungal",
+    "height": "1.5-3 ft",
+    "symptoms": "Circular spots with dark margins",
+    "control_type": "Fungicide",
+    "pesticides": "Carbendazim; Mancozeb; Hexaconazole",
+    "leafImg": "sample_leaves/soybean_frogeye_leaf_spot.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 26,
+    "category": "Pulses & Oilseeds",
+    "crop": "Lentil",
+    "disease": "Rust",
+    "pathogen": "Fungal",
+    "height": "1-1.5 ft",
+    "symptoms": "Orange/brown pustules",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Propiconazole; Hexaconazole",
+    "leafImg": "sample_leaves/lentil_rust.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 27,
+    "category": "Pulses & Oilseeds",
+    "crop": "Lentil",
+    "disease": "Wilt",
+    "pathogen": "Fungal",
+    "height": "1-1.5 ft",
+    "symptoms": "Yellowing and wilting",
+    "control_type": "Seed treatment + Fungicide",
+    "pesticides": "Carbendazim + Thiram (seed); Trichoderma; resistant varieties",
+    "leafImg": "sample_leaves/lentil_wilt.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 28,
+    "category": "Vegetables",
+    "crop": "Potato",
+    "disease": "Late blight",
+    "pathogen": "Oomycete (fungus-like)",
+    "height": "1-2 ft",
+    "symptoms": "Brown/black lesions, rapid decay",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Metalaxyl + Mancozeb; Cymoxanil + Mancozeb; Dimethomorph",
+    "leafImg": "sample_leaves/potato_late_blight.jpg",
+    "medImg": "medicine_images/metalaxyl_mancozeb_mz.jpg",
+    "medName": "Metalaxyl + Mancozeb (Ridomil MZ 68% WP)",
+    "medGroup": "Systemic & Contact Fungicide"
+  },
+  {
+    "sno": 29,
+    "category": "Vegetables",
+    "crop": "Potato",
+    "disease": "Common scab",
+    "pathogen": "Bacterial",
+    "height": "1-2 ft",
+    "symptoms": "Rough, corky scab-like patches on tuber skin",
+    "control_type": "Cultural / Bio-control",
+    "pesticides": "Boric acid seed-tuber dip; keep soil slightly acidic; crop rotation",
+    "leafImg": "sample_leaves/potato_common_scab.jpg",
+    "medImg": "medicine_images/mancozeb_75_wp.jpg",
+    "medName": "Mancozeb 75% WP",
+    "medGroup": "Broad-Spectrum Contact Fungicide"
+  },
+  {
+    "sno": 30,
+    "category": "Vegetables",
+    "crop": "Potato",
+    "disease": "Black leg",
+    "pathogen": "Bacterial",
+    "height": "1-2 ft",
+    "symptoms": "Black slimy stem base, wilting, soft rot of tubers",
+    "control_type": "Bactericide",
+    "pesticides": "Streptocycline (seed dip); Copper oxychloride; healthy seed",
+    "leafImg": "sample_leaves/potato_black_leg.jpg",
+    "medImg": "medicine_images/copper_oxychloride_50_wp.jpg",
+    "medName": "Copper Oxychloride 50% WP",
+    "medGroup": "Contact Fungicide & Bactericide"
+  },
+  {
+    "sno": 31,
+    "category": "Vegetables",
+    "crop": "Chilli",
+    "disease": "Anthracnose",
+    "pathogen": "Fungal",
+    "height": "1.5-3 ft",
+    "symptoms": "Dark sunken lesions, fruit rot",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Carbendazim; Azoxystrobin; Difenoconazole",
+    "leafImg": "sample_leaves/chilli_anthracnose.jpg",
+    "medImg": "medicine_images/azoxystrobin_23_sc.jpg",
+    "medName": "Azoxystrobin 23% SC",
+    "medGroup": "Strobilurin Systemic Fungicide"
+  },
+  {
+    "sno": 32,
+    "category": "Vegetables",
+    "crop": "Chilli",
+    "disease": "Powdery mildew",
+    "pathogen": "Fungal",
+    "height": "1.5-3 ft",
+    "symptoms": "White powdery patches under leaves, yellowing above",
+    "control_type": "Fungicide",
+    "pesticides": "Wettable sulphur; Hexaconazole; Azoxystrobin",
+    "leafImg": "sample_leaves/chilli_powdery_mildew.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 33,
+    "category": "Vegetables",
+    "crop": "Chilli",
+    "disease": "Leaf curl",
+    "pathogen": "Viral",
+    "height": "1.5-3 ft",
+    "symptoms": "Curling, distortion, stunting",
+    "control_type": "Insecticide (vector control)",
+    "pesticides": "Imidacloprid; Diafenthiuron; Spiromesifen (whitefly, thrips, mites)",
+    "leafImg": "sample_leaves/chilli_leaf_curl.jpg",
+    "medImg": "medicine_images/imidacloprid_17_8_sl.jpg",
+    "medName": "Imidacloprid 17.8% SL / Thiamethoxam",
+    "medGroup": "Systemic Vector Insecticide"
+  },
+  {
+    "sno": 34,
+    "category": "Vegetables",
+    "crop": "Chilli",
+    "disease": "Mosaic",
+    "pathogen": "Viral",
+    "height": "1.5-3 ft",
+    "symptoms": "Mottled, distorted leaves, stunted plants",
+    "control_type": "Insecticide (vector control)",
+    "pesticides": "Imidacloprid; Thiamethoxam (against aphids)",
+    "leafImg": "sample_leaves/chilli_mosaic.jpg",
+    "medImg": "medicine_images/imidacloprid_17_8_sl.jpg",
+    "medName": "Imidacloprid 17.8% SL / Thiamethoxam",
+    "medGroup": "Systemic Vector Insecticide"
+  },
+  {
+    "sno": 35,
+    "category": "Vegetables",
+    "crop": "Brinjal (Eggplant)",
+    "disease": "Little leaf",
+    "pathogen": "Phytoplasma",
+    "height": "2-3.5 ft",
+    "symptoms": "Small narrow leaves, short internodes, no fruiting",
+    "control_type": "Insecticide (vector control)",
+    "pesticides": "Imidacloprid; Dimethoate (against leafhopper); remove infected plants",
+    "leafImg": "sample_leaves/brinjal_eggplant_little_leaf.jpg",
+    "medImg": "medicine_images/imidacloprid_17_8_sl.jpg",
+    "medName": "Imidacloprid 17.8% SL / Thiamethoxam",
+    "medGroup": "Systemic Vector Insecticide"
+  },
+  {
+    "sno": 36,
+    "category": "Vegetables",
+    "crop": "Brinjal (Eggplant)",
+    "disease": "Bacterial wilt",
+    "pathogen": "Bacterial",
+    "height": "2-3.5 ft",
+    "symptoms": "Sudden wilting while leaves may remain green",
+    "control_type": "Bactericide",
+    "pesticides": "Copper oxychloride drench; resistant rootstock/varieties",
+    "leafImg": "sample_leaves/brinjal_eggplant_bacterial_wilt.jpg",
+    "medImg": "medicine_images/copper_oxychloride_50_wp.jpg",
+    "medName": "Copper Oxychloride 50% WP",
+    "medGroup": "Contact Fungicide & Bactericide"
+  },
+  {
+    "sno": 37,
+    "category": "Vegetables",
+    "crop": "Cucurbits (gourds, cucumber)",
+    "disease": "Downy mildew",
+    "pathogen": "Oomycete (fungus-like)",
+    "height": "Ground-trailing vine",
+    "symptoms": "Angular yellow patches with purplish-grey growth beneath",
+    "control_type": "Fungicide",
+    "pesticides": "Metalaxyl + Mancozeb; Cymoxanil + Mancozeb",
+    "leafImg": "sample_leaves/cucurbits_gourds_cucumber_downy_mildew.jpg",
+    "medImg": "medicine_images/metalaxyl_mancozeb_mz.jpg",
+    "medName": "Metalaxyl + Mancozeb (Ridomil MZ 68% WP)",
+    "medGroup": "Systemic & Contact Fungicide"
+  },
+  {
+    "sno": 38,
+    "category": "Vegetables",
+    "crop": "Cucurbits (gourds, cucumber)",
+    "disease": "Powdery mildew",
+    "pathogen": "Fungal",
+    "height": "Ground-trailing vine",
+    "symptoms": "White powdery patches on leaves",
+    "control_type": "Fungicide",
+    "pesticides": "Wettable sulphur; Hexaconazole; Azoxystrobin",
+    "leafImg": "sample_leaves/cucurbits_gourds_cucumber_powdery_mildew.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 39,
+    "category": "Vegetables",
+    "crop": "Cucurbits (gourds, cucumber)",
+    "disease": "Mosaic virus",
+    "pathogen": "Viral",
+    "height": "Ground-trailing vine",
+    "symptoms": "Mottling, leaf distortion, stunted fruit",
+    "control_type": "Insecticide (vector control)",
+    "pesticides": "Imidacloprid; Thiamethoxam (aphids / whitefly)",
+    "leafImg": "sample_leaves/cucurbits_gourds_cucumber_mosaic_virus.jpg",
+    "medImg": "medicine_images/imidacloprid_17_8_sl.jpg",
+    "medName": "Imidacloprid 17.8% SL / Thiamethoxam",
+    "medGroup": "Systemic Vector Insecticide"
+  },
+  {
+    "sno": 40,
+    "category": "Vegetables",
+    "crop": "Onion",
+    "disease": "Purple blotch",
+    "pathogen": "Fungal",
+    "height": "1-2 ft",
+    "symptoms": "Purple/brown elongated lesions",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Chlorothalonil; Difenoconazole; Iprodione",
+    "leafImg": "sample_leaves/onion_purple_blotch.jpg",
+    "medImg": "medicine_images/chlorothalonil_75_wp.jpg",
+    "medName": "Chlorothalonil 75% WP",
+    "medGroup": "Broad-Spectrum Contact Fungicide"
+  },
+  {
+    "sno": 41,
+    "category": "Vegetables",
+    "crop": "Onion",
+    "disease": "Downy mildew",
+    "pathogen": "Oomycete (fungus-like)",
+    "height": "1-2 ft",
+    "symptoms": "Pale patches and fungal growth",
+    "control_type": "Fungicide",
+    "pesticides": "Metalaxyl + Mancozeb; Mancozeb",
+    "leafImg": "sample_leaves/onion_downy_mildew.jpg",
+    "medImg": "medicine_images/metalaxyl_mancozeb_mz.jpg",
+    "medName": "Metalaxyl + Mancozeb (Ridomil MZ 68% WP)",
+    "medGroup": "Systemic & Contact Fungicide"
+  },
+  {
+    "sno": 42,
+    "category": "Vegetables",
+    "crop": "Potato",
+    "disease": "Early Blight",
+    "pathogen": "Fungal",
+    "height": "1-2 ft",
+    "symptoms": "Brown target-like spots",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Chlorothalonil; Azoxystrobin",
+    "leafImg": "sample_leaves/potato_early_blight.jpg",
+    "medImg": "medicine_images/azoxystrobin_23_sc.jpg",
+    "medName": "Azoxystrobin 23% SC",
+    "medGroup": "Strobilurin Systemic Fungicide"
+  },
+  {
+    "sno": 43,
+    "category": "Vegetables",
+    "crop": "Chilli",
+    "disease": "Leaf Spot",
+    "pathogen": "Fungal / Bacterial (varies)",
+    "height": "1.5-3 ft",
+    "symptoms": "Brown/black spots",
+    "control_type": "Fungicide / Bactericide",
+    "pesticides": "Mancozeb; Copper oxychloride; Streptocycline (if bacterial)",
+    "leafImg": "sample_leaves/chilli_leaf_spot.jpg",
+    "medImg": "medicine_images/copper_oxychloride_50_wp.jpg",
+    "medName": "Copper Oxychloride 50% WP",
+    "medGroup": "Contact Fungicide & Bactericide"
+  },
+  {
+    "sno": 44,
+    "category": "Vegetables",
+    "crop": "Brinjal (Eggplant)",
+    "disease": "Phomopsis Blight / Fruit Rot",
+    "pathogen": "Fungal",
+    "height": "2-3.5 ft",
+    "symptoms": "Leaf spots, fruit lesions and rot",
+    "control_type": "Fungicide",
+    "pesticides": "Carbendazim; Mancozeb; Thiram seed treatment; remove infected fruits",
+    "leafImg": "sample_leaves/brinjal_eggplant_phomopsis_blight_fruit_rot.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 45,
+    "category": "Vegetables",
+    "crop": "Brinjal (Eggplant)",
+    "disease": "Cercospora Leaf Spot",
+    "pathogen": "Fungal",
+    "height": "2-3.5 ft",
+    "symptoms": "Circular brown/grey leaf spots",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Carbendazim; Chlorothalonil",
+    "leafImg": "sample_leaves/brinjal_eggplant_cercospora_leaf_spot.jpg",
+    "medImg": "medicine_images/chlorothalonil_75_wp.jpg",
+    "medName": "Chlorothalonil 75% WP",
+    "medGroup": "Broad-Spectrum Contact Fungicide"
+  },
+  {
+    "sno": 46,
+    "category": "Vegetables",
+    "crop": "Beans",
+    "disease": "Angular Leaf Spot",
+    "pathogen": "Fungal / Bacterial (varies)",
+    "height": "1-2 ft (bush type)",
+    "symptoms": "Angular brown lesions",
+    "control_type": "Fungicide / Bactericide",
+    "pesticides": "Mancozeb; Copper oxychloride; clean seed",
+    "leafImg": "sample_leaves/beans_angular_leaf_spot.jpg",
+    "medImg": "medicine_images/copper_oxychloride_50_wp.jpg",
+    "medName": "Copper Oxychloride 50% WP",
+    "medGroup": "Contact Fungicide & Bactericide"
+  },
+  {
+    "sno": 47,
+    "category": "Vegetables",
+    "crop": "Beans",
+    "disease": "Bean Rust",
+    "pathogen": "Fungal",
+    "height": "1-2 ft (bush type)",
+    "symptoms": "Rust-coloured pustules",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Hexaconazole; Tebuconazole",
+    "leafImg": "sample_leaves/beans_bean_rust.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 48,
+    "category": "Vegetables",
+    "crop": "Beans",
+    "disease": "Anthracnose",
+    "pathogen": "Fungal",
+    "height": "1-2 ft (bush type)",
+    "symptoms": "Dark lesions on leaves/stems/pods",
+    "control_type": "Fungicide",
+    "pesticides": "Carbendazim; Mancozeb; Thiram-treated clean seed",
+    "leafImg": "sample_leaves/beans_anthracnose.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 49,
+    "category": "Vegetables",
+    "crop": "Cabbage",
+    "disease": "Alternaria Leaf Spot",
+    "pathogen": "Fungal",
+    "height": "1-1.5 ft",
+    "symptoms": "Dark concentric spots",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Iprodione; Chlorothalonil",
+    "leafImg": "sample_leaves/cabbage_alternaria_leaf_spot.jpg",
+    "medImg": "medicine_images/chlorothalonil_75_wp.jpg",
+    "medName": "Chlorothalonil 75% WP",
+    "medGroup": "Broad-Spectrum Contact Fungicide"
+  },
+  {
+    "sno": 50,
+    "category": "Vegetables",
+    "crop": "Cabbage",
+    "disease": "Downy Mildew",
+    "pathogen": "Oomycete (fungus-like)",
+    "height": "1-1.5 ft",
+    "symptoms": "Yellow patches + downy growth",
+    "control_type": "Fungicide",
+    "pesticides": "Metalaxyl + Mancozeb; Cymoxanil + Mancozeb; reduce leaf wetness",
+    "leafImg": "sample_leaves/cabbage_downy_mildew.jpg",
+    "medImg": "medicine_images/metalaxyl_mancozeb_mz.jpg",
+    "medName": "Metalaxyl + Mancozeb (Ridomil MZ 68% WP)",
+    "medGroup": "Systemic & Contact Fungicide"
+  },
+  {
+    "sno": 51,
+    "category": "Vegetables",
+    "crop": "Cabbage",
+    "disease": "Black Rot",
+    "pathogen": "Bacterial",
+    "height": "1-1.5 ft",
+    "symptoms": "V-shaped yellow/brown lesions",
+    "control_type": "Bactericide",
+    "pesticides": "Streptocycline + Copper oxychloride; hot-water seed treatment; sanitation",
+    "leafImg": "sample_leaves/cabbage_black_rot.jpg",
+    "medImg": "medicine_images/copper_oxychloride_50_wp.jpg",
+    "medName": "Copper Oxychloride 50% WP",
+    "medGroup": "Contact Fungicide & Bactericide"
+  },
+  {
+    "sno": 52,
+    "category": "Vegetables",
+    "crop": "Cabbage",
+    "disease": "Club Root",
+    "pathogen": "Protist",
+    "height": "1-1.5 ft",
+    "symptoms": "Swollen club-like roots, wilting, stunting",
+    "control_type": "Cultural / Bio-control",
+    "pesticides": "Soil liming (raise pH); Carbendazim drench; crop rotation",
+    "leafImg": "sample_leaves/cabbage_club_root.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 53,
+    "category": "Vegetables",
+    "crop": "Cauliflower",
+    "disease": "Alternaria Leaf Spot",
+    "pathogen": "Fungal",
+    "height": "1.5-2 ft",
+    "symptoms": "Dark concentric spots",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Iprodione; Chlorothalonil",
+    "leafImg": "sample_leaves/cauliflower_alternaria_leaf_spot.jpg",
+    "medImg": "medicine_images/chlorothalonil_75_wp.jpg",
+    "medName": "Chlorothalonil 75% WP",
+    "medGroup": "Broad-Spectrum Contact Fungicide"
+  },
+  {
+    "sno": 54,
+    "category": "Vegetables",
+    "crop": "Cauliflower",
+    "disease": "Downy Mildew",
+    "pathogen": "Oomycete (fungus-like)",
+    "height": "1.5-2 ft",
+    "symptoms": "Yellow patches + downy growth",
+    "control_type": "Fungicide",
+    "pesticides": "Metalaxyl + Mancozeb; Cymoxanil + Mancozeb; reduce leaf wetness",
+    "leafImg": "sample_leaves/cauliflower_downy_mildew.jpg",
+    "medImg": "medicine_images/metalaxyl_mancozeb_mz.jpg",
+    "medName": "Metalaxyl + Mancozeb (Ridomil MZ 68% WP)",
+    "medGroup": "Systemic & Contact Fungicide"
+  },
+  {
+    "sno": 55,
+    "category": "Vegetables",
+    "crop": "Cauliflower",
+    "disease": "Black Rot",
+    "pathogen": "Bacterial",
+    "height": "1.5-2 ft",
+    "symptoms": "V-shaped yellow/brown lesions",
+    "control_type": "Bactericide",
+    "pesticides": "Streptocycline + Copper oxychloride; hot-water seed treatment; sanitation",
+    "leafImg": "sample_leaves/cauliflower_black_rot.jpg",
+    "medImg": "medicine_images/copper_oxychloride_50_wp.jpg",
+    "medName": "Copper Oxychloride 50% WP",
+    "medGroup": "Contact Fungicide & Bactericide"
+  },
+  {
+    "sno": 56,
+    "category": "Vegetables",
+    "crop": "Cauliflower",
+    "disease": "Club Root",
+    "pathogen": "Protist",
+    "height": "1.5-2 ft",
+    "symptoms": "Swollen club-like roots, wilting, stunting",
+    "control_type": "Cultural / Bio-control",
+    "pesticides": "Soil liming (raise pH); Carbendazim drench; crop rotation",
+    "leafImg": "sample_leaves/cauliflower_club_root.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 57,
+    "category": "Vegetables",
+    "crop": "Onion",
+    "disease": "Stemphylium Blight",
+    "pathogen": "Fungal",
+    "height": "1-2 ft",
+    "symptoms": "Yellow/brown lesions",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Chlorothalonil; Difenoconazole",
+    "leafImg": "sample_leaves/onion_stemphylium_blight.jpg",
+    "medImg": "medicine_images/chlorothalonil_75_wp.jpg",
+    "medName": "Chlorothalonil 75% WP",
+    "medGroup": "Broad-Spectrum Contact Fungicide"
+  },
+  {
+    "sno": 58,
+    "category": "Vegetables",
+    "crop": "Carrot",
+    "disease": "Alternaria Leaf Blight",
+    "pathogen": "Fungal",
+    "height": "1-1.5 ft",
+    "symptoms": "Brown/black leaf lesions",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Chlorothalonil; Iprodione",
+    "leafImg": "sample_leaves/carrot_alternaria_leaf_blight.jpg",
+    "medImg": "medicine_images/chlorothalonil_75_wp.jpg",
+    "medName": "Chlorothalonil 75% WP",
+    "medGroup": "Broad-Spectrum Contact Fungicide"
+  },
+  {
+    "sno": 59,
+    "category": "Vegetables",
+    "crop": "Carrot",
+    "disease": "Cercospora Leaf Blight",
+    "pathogen": "Fungal",
+    "height": "1-1.5 ft",
+    "symptoms": "Small circular leaf spots",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Carbendazim; Chlorothalonil",
+    "leafImg": "sample_leaves/carrot_cercospora_leaf_blight.jpg",
+    "medImg": "medicine_images/chlorothalonil_75_wp.jpg",
+    "medName": "Chlorothalonil 75% WP",
+    "medGroup": "Broad-Spectrum Contact Fungicide"
+  },
+  {
+    "sno": 60,
+    "category": "Vegetables",
+    "crop": "Peas",
+    "disease": "Powdery Mildew",
+    "pathogen": "Fungal",
+    "height": "1.5-3 ft (dwarf type)",
+    "symptoms": "White powdery coating",
+    "control_type": "Fungicide",
+    "pesticides": "Wettable sulphur; Hexaconazole; Azoxystrobin",
+    "leafImg": "sample_leaves/peas_powdery_mildew.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 61,
+    "category": "Vegetables",
+    "crop": "Peas",
+    "disease": "Downy Mildew",
+    "pathogen": "Oomycete (fungus-like)",
+    "height": "1.5-3 ft (dwarf type)",
+    "symptoms": "Yellow patches",
+    "control_type": "Fungicide",
+    "pesticides": "Metalaxyl + Mancozeb; Cymoxanil + Mancozeb",
+    "leafImg": "sample_leaves/peas_downy_mildew.jpg",
+    "medImg": "medicine_images/metalaxyl_mancozeb_mz.jpg",
+    "medName": "Metalaxyl + Mancozeb (Ridomil MZ 68% WP)",
+    "medGroup": "Systemic & Contact Fungicide"
+  },
+  {
+    "sno": 62,
+    "category": "Vegetables",
+    "crop": "Peas",
+    "disease": "Leaf Spot",
+    "pathogen": "Fungal",
+    "height": "1.5-3 ft (dwarf type)",
+    "symptoms": "Brown spots",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Carbendazim",
+    "leafImg": "sample_leaves/peas_leaf_spot.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 63,
+    "category": "Leafy Vegetables & Herbs",
+    "crop": "Spinach",
+    "disease": "Downy Mildew",
+    "pathogen": "Oomycete (fungus-like)",
+    "height": "0.5-1 ft",
+    "symptoms": "Yellow patches and grey/purple growth underneath",
+    "control_type": "Fungicide",
+    "pesticides": "Metalaxyl + Mancozeb; reduce leaf wetness",
+    "leafImg": "sample_leaves/spinach_downy_mildew.jpg",
+    "medImg": "medicine_images/metalaxyl_mancozeb_mz.jpg",
+    "medName": "Metalaxyl + Mancozeb (Ridomil MZ 68% WP)",
+    "medGroup": "Systemic & Contact Fungicide"
+  },
+  {
+    "sno": 64,
+    "category": "Leafy Vegetables & Herbs",
+    "crop": "Spinach",
+    "disease": "Leaf Spot",
+    "pathogen": "Fungal",
+    "height": "0.5-1 ft",
+    "symptoms": "Brown/black spots",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Copper oxychloride",
+    "leafImg": "sample_leaves/spinach_leaf_spot.jpg",
+    "medImg": "medicine_images/copper_oxychloride_50_wp.jpg",
+    "medName": "Copper Oxychloride 50% WP",
+    "medGroup": "Contact Fungicide & Bactericide"
+  },
+  {
+    "sno": 65,
+    "category": "Leafy Vegetables & Herbs",
+    "crop": "Lettuce",
+    "disease": "Downy Mildew",
+    "pathogen": "Oomycete (fungus-like)",
+    "height": "0.5-1 ft",
+    "symptoms": "Yellow patches, downy growth",
+    "control_type": "Fungicide",
+    "pesticides": "Metalaxyl + Mancozeb; Cymoxanil",
+    "leafImg": "sample_leaves/lettuce_downy_mildew.jpg",
+    "medImg": "medicine_images/metalaxyl_mancozeb_mz.jpg",
+    "medName": "Metalaxyl + Mancozeb (Ridomil MZ 68% WP)",
+    "medGroup": "Systemic & Contact Fungicide"
+  },
+  {
+    "sno": 66,
+    "category": "Leafy Vegetables & Herbs",
+    "crop": "Lettuce",
+    "disease": "Septoria Leaf Spot",
+    "pathogen": "Fungal",
+    "height": "0.5-1 ft",
+    "symptoms": "Small dark spots",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Chlorothalonil",
+    "leafImg": "sample_leaves/lettuce_septoria_leaf_spot.jpg",
+    "medImg": "medicine_images/chlorothalonil_75_wp.jpg",
+    "medName": "Chlorothalonil 75% WP",
+    "medGroup": "Broad-Spectrum Contact Fungicide"
+  },
+  {
+    "sno": 67,
+    "category": "Leafy Vegetables & Herbs",
+    "crop": "Fenugreek",
+    "disease": "Powdery Mildew",
+    "pathogen": "Fungal",
+    "height": "1-2 ft",
+    "symptoms": "White powdery coating",
+    "control_type": "Fungicide",
+    "pesticides": "Wettable sulphur; Hexaconazole",
+    "leafImg": "sample_leaves/fenugreek_powdery_mildew.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 68,
+    "category": "Leafy Vegetables & Herbs",
+    "crop": "Fenugreek",
+    "disease": "Downy Mildew",
+    "pathogen": "Oomycete (fungus-like)",
+    "height": "1-2 ft",
+    "symptoms": "Yellow patches",
+    "control_type": "Fungicide",
+    "pesticides": "Metalaxyl + Mancozeb; Cymoxanil + Mancozeb",
+    "leafImg": "sample_leaves/fenugreek_downy_mildew.jpg",
+    "medImg": "medicine_images/metalaxyl_mancozeb_mz.jpg",
+    "medName": "Metalaxyl + Mancozeb (Ridomil MZ 68% WP)",
+    "medGroup": "Systemic & Contact Fungicide"
+  },
+  {
+    "sno": 69,
+    "category": "Leafy Vegetables & Herbs",
+    "crop": "Amaranth",
+    "disease": "Leaf Spot",
+    "pathogen": "Fungal",
+    "height": "1-3 ft",
+    "symptoms": "Brown/black spots",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Copper oxychloride",
+    "leafImg": "sample_leaves/amaranth_leaf_spot.jpg",
+    "medImg": "medicine_images/copper_oxychloride_50_wp.jpg",
+    "medName": "Copper Oxychloride 50% WP",
+    "medGroup": "Contact Fungicide & Bactericide"
+  },
+  {
+    "sno": 70,
+    "category": "Leafy Vegetables & Herbs",
+    "crop": "Amaranth",
+    "disease": "Downy Mildew",
+    "pathogen": "Oomycete (fungus-like)",
+    "height": "1-3 ft",
+    "symptoms": "Yellow leaf patches",
+    "control_type": "Fungicide",
+    "pesticides": "Metalaxyl + Mancozeb",
+    "leafImg": "sample_leaves/amaranth_downy_mildew.jpg",
+    "medImg": "medicine_images/metalaxyl_mancozeb_mz.jpg",
+    "medName": "Metalaxyl + Mancozeb (Ridomil MZ 68% WP)",
+    "medGroup": "Systemic & Contact Fungicide"
+  },
+  {
+    "sno": 71,
+    "category": "Leafy Vegetables & Herbs",
+    "crop": "Coriander",
+    "disease": "Powdery Mildew",
+    "pathogen": "Fungal",
+    "height": "1-2 ft",
+    "symptoms": "White powder",
+    "control_type": "Fungicide",
+    "pesticides": "Wettable sulphur; Hexaconazole",
+    "leafImg": "sample_leaves/coriander_powdery_mildew.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 72,
+    "category": "Leafy Vegetables & Herbs",
+    "crop": "Coriander",
+    "disease": "Wilt",
+    "pathogen": "Fungal",
+    "height": "1-2 ft",
+    "symptoms": "Yellowing and wilting",
+    "control_type": "Cultural / Bio-control",
+    "pesticides": "Carbendazim drench; Trichoderma; resistant varieties",
+    "leafImg": "sample_leaves/coriander_wilt.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 73,
+    "category": "Leafy Vegetables & Herbs",
+    "crop": "Coriander",
+    "disease": "Stem Gall",
+    "pathogen": "Fungal",
+    "height": "1-2 ft",
+    "symptoms": "Swelling/deformation of stems",
+    "control_type": "Seed treatment + Fungicide",
+    "pesticides": "Thiram / Carbendazim (seed); Hexaconazole; field sanitation",
+    "leafImg": "sample_leaves/coriander_stem_gall.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 74,
+    "category": "Ground-level Fruits",
+    "crop": "Strawberry",
+    "disease": "Leaf Scorch",
+    "pathogen": "Fungal",
+    "height": "0.5-1 ft",
+    "symptoms": "Purple/brown spots on leaves",
+    "control_type": "Fungicide",
+    "pesticides": "Captan; Mancozeb; Carbendazim; sanitation",
+    "leafImg": "sample_leaves/strawberry_leaf_scorch.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 75,
+    "category": "Ground-level Fruits",
+    "crop": "Strawberry",
+    "disease": "Leaf Spot",
+    "pathogen": "Fungal",
+    "height": "0.5-1 ft",
+    "symptoms": "Circular spots",
+    "control_type": "Fungicide",
+    "pesticides": "Captan; Mancozeb; Carbendazim",
+    "leafImg": "sample_leaves/strawberry_leaf_spot.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 76,
+    "category": "Ground-level Fruits",
+    "crop": "Strawberry",
+    "disease": "Powdery Mildew",
+    "pathogen": "Fungal",
+    "height": "0.5-1 ft",
+    "symptoms": "White coating, leaf curling",
+    "control_type": "Fungicide",
+    "pesticides": "Wettable sulphur; Hexaconazole; Azoxystrobin",
+    "leafImg": "sample_leaves/strawberry_powdery_mildew.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 77,
+    "category": "Ground-level Fruits",
+    "crop": "Strawberry",
+    "disease": "Gray Mold (Botrytis)",
+    "pathogen": "Fungal",
+    "height": "0.5-1 ft",
+    "symptoms": "Grey fuzzy mould on flowers and fruit",
+    "control_type": "Fungicide",
+    "pesticides": "Iprodione; Carbendazim; improve ventilation; mulch",
+    "leafImg": "sample_leaves/strawberry_gray_mold_botrytis.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 78,
+    "category": "Ground-level Fruits",
+    "crop": "Strawberry",
+    "disease": "Anthracnose Fruit Rot",
+    "pathogen": "Fungal",
+    "height": "0.5-1 ft",
+    "symptoms": "Dark sunken spots on fruit, crown rot",
+    "control_type": "Fungicide",
+    "pesticides": "Azoxystrobin; Captan; Carbendazim",
+    "leafImg": "sample_leaves/strawberry_anthracnose_fruit_rot.jpg",
+    "medImg": "medicine_images/azoxystrobin_23_sc.jpg",
+    "medName": "Azoxystrobin 23% SC",
+    "medGroup": "Strobilurin Systemic Fungicide"
+  },
+  {
+    "sno": 79,
+    "category": "Ground-level Fruits",
+    "crop": "Watermelon",
+    "disease": "Anthracnose",
+    "pathogen": "Fungal",
+    "height": "Ground-trailing vine",
+    "symptoms": "Sunken dark spots on fruit, leaf spots",
+    "control_type": "Fungicide",
+    "pesticides": "Carbendazim; Mancozeb; Chlorothalonil; Azoxystrobin",
+    "leafImg": "sample_leaves/watermelon_anthracnose.jpg",
+    "medImg": "medicine_images/azoxystrobin_23_sc.jpg",
+    "medName": "Azoxystrobin 23% SC",
+    "medGroup": "Strobilurin Systemic Fungicide"
+  },
+  {
+    "sno": 80,
+    "category": "Ground-level Fruits",
+    "crop": "Watermelon",
+    "disease": "Fusarium Wilt",
+    "pathogen": "Fungal",
+    "height": "Ground-trailing vine",
+    "symptoms": "Vine wilting, brown vascular tissue",
+    "control_type": "Cultural / Bio-control",
+    "pesticides": "Carbendazim drench; Trichoderma; grafting / resistant varieties",
+    "leafImg": "sample_leaves/watermelon_fusarium_wilt.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 81,
+    "category": "Ground-level Fruits",
+    "crop": "Watermelon",
+    "disease": "Downy Mildew",
+    "pathogen": "Oomycete (fungus-like)",
+    "height": "Ground-trailing vine",
+    "symptoms": "Angular yellow patches, grey-purple growth beneath",
+    "control_type": "Fungicide",
+    "pesticides": "Metalaxyl + Mancozeb; Cymoxanil + Mancozeb",
+    "leafImg": "sample_leaves/watermelon_downy_mildew.jpg",
+    "medImg": "medicine_images/metalaxyl_mancozeb_mz.jpg",
+    "medName": "Metalaxyl + Mancozeb (Ridomil MZ 68% WP)",
+    "medGroup": "Systemic & Contact Fungicide"
+  },
+  {
+    "sno": 82,
+    "category": "Ground-level Fruits",
+    "crop": "Watermelon",
+    "disease": "Powdery Mildew",
+    "pathogen": "Fungal",
+    "height": "Ground-trailing vine",
+    "symptoms": "White powdery patches",
+    "control_type": "Fungicide",
+    "pesticides": "Wettable sulphur; Hexaconazole; Azoxystrobin",
+    "leafImg": "sample_leaves/watermelon_powdery_mildew.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 83,
+    "category": "Ground-level Fruits",
+    "crop": "Watermelon",
+    "disease": "Gummy Stem Blight",
+    "pathogen": "Fungal",
+    "height": "Ground-trailing vine",
+    "symptoms": "Water-soaked stem lesions with gummy ooze, leaf spots",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Chlorothalonil; Difenoconazole",
+    "leafImg": "sample_leaves/watermelon_gummy_stem_blight.jpg",
+    "medImg": "medicine_images/chlorothalonil_75_wp.jpg",
+    "medName": "Chlorothalonil 75% WP",
+    "medGroup": "Broad-Spectrum Contact Fungicide"
+  },
+  {
+    "sno": 84,
+    "category": "Ground-level Fruits",
+    "crop": "Watermelon",
+    "disease": "Mosaic Virus",
+    "pathogen": "Viral",
+    "height": "Ground-trailing vine",
+    "symptoms": "Mottling, leaf distortion, deformed fruit",
+    "control_type": "Insecticide (vector control)",
+    "pesticides": "Imidacloprid; Thiamethoxam (against aphid/whitefly vector); remove infected plants",
+    "leafImg": "sample_leaves/watermelon_mosaic_virus.jpg",
+    "medImg": "medicine_images/imidacloprid_17_8_sl.jpg",
+    "medName": "Imidacloprid 17.8% SL / Thiamethoxam",
+    "medGroup": "Systemic Vector Insecticide"
+  },
+  {
+    "sno": 85,
+    "category": "Ground-level Fruits",
+    "crop": "Muskmelon",
+    "disease": "Powdery Mildew",
+    "pathogen": "Fungal",
+    "height": "Ground-trailing vine",
+    "symptoms": "White powdery patches",
+    "control_type": "Fungicide",
+    "pesticides": "Wettable sulphur; Hexaconazole; Azoxystrobin",
+    "leafImg": "sample_leaves/muskmelon_powdery_mildew.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 86,
+    "category": "Ground-level Fruits",
+    "crop": "Muskmelon",
+    "disease": "Downy Mildew",
+    "pathogen": "Oomycete (fungus-like)",
+    "height": "Ground-trailing vine",
+    "symptoms": "Angular yellow patches, downy growth beneath",
+    "control_type": "Fungicide",
+    "pesticides": "Metalaxyl + Mancozeb; Cymoxanil + Mancozeb",
+    "leafImg": "sample_leaves/muskmelon_downy_mildew.jpg",
+    "medImg": "medicine_images/metalaxyl_mancozeb_mz.jpg",
+    "medName": "Metalaxyl + Mancozeb (Ridomil MZ 68% WP)",
+    "medGroup": "Systemic & Contact Fungicide"
+  },
+  {
+    "sno": 87,
+    "category": "Ground-level Fruits",
+    "crop": "Muskmelon",
+    "disease": "Fusarium Wilt",
+    "pathogen": "Fungal",
+    "height": "Ground-trailing vine",
+    "symptoms": "Vine yellowing and wilting",
+    "control_type": "Cultural / Bio-control",
+    "pesticides": "Carbendazim drench; Trichoderma; resistant varieties",
+    "leafImg": "sample_leaves/muskmelon_fusarium_wilt.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 88,
+    "category": "Ground-level Fruits",
+    "crop": "Muskmelon",
+    "disease": "Mosaic Virus",
+    "pathogen": "Viral",
+    "height": "Ground-trailing vine",
+    "symptoms": "Mottling, leaf distortion, stunting",
+    "control_type": "Insecticide (vector control)",
+    "pesticides": "Imidacloprid; Thiamethoxam (against aphid/whitefly vector); remove infected plants",
+    "leafImg": "sample_leaves/muskmelon_mosaic_virus.jpg",
+    "medImg": "medicine_images/imidacloprid_17_8_sl.jpg",
+    "medName": "Imidacloprid 17.8% SL / Thiamethoxam",
+    "medGroup": "Systemic Vector Insecticide"
+  },
+  {
+    "sno": 89,
+    "category": "Ground-level Fruits",
+    "crop": "Pumpkin / Bottle gourd / Bitter gourd",
+    "disease": "Powdery Mildew",
+    "pathogen": "Fungal",
+    "height": "Ground-trailing vine",
+    "symptoms": "White powdery patches on leaves",
+    "control_type": "Fungicide",
+    "pesticides": "Wettable sulphur; Hexaconazole; Azoxystrobin",
+    "leafImg": "sample_leaves/pumpkin_bottle_gourd_bitter_gourd_powdery_mildew.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 90,
+    "category": "Ground-level Fruits",
+    "crop": "Pumpkin / Bottle gourd / Bitter gourd",
+    "disease": "Downy Mildew",
+    "pathogen": "Oomycete (fungus-like)",
+    "height": "Ground-trailing vine",
+    "symptoms": "Angular yellow patches, downy growth beneath",
+    "control_type": "Fungicide",
+    "pesticides": "Metalaxyl + Mancozeb; Cymoxanil + Mancozeb",
+    "leafImg": "sample_leaves/pumpkin_bottle_gourd_bitter_gourd_downy_mildew.jpg",
+    "medImg": "medicine_images/metalaxyl_mancozeb_mz.jpg",
+    "medName": "Metalaxyl + Mancozeb (Ridomil MZ 68% WP)",
+    "medGroup": "Systemic & Contact Fungicide"
+  },
+  {
+    "sno": 91,
+    "category": "Ground-level Fruits",
+    "crop": "Pumpkin / Bottle gourd / Bitter gourd",
+    "disease": "Mosaic Virus",
+    "pathogen": "Viral",
+    "height": "Ground-trailing vine",
+    "symptoms": "Mottling, leaf distortion, stunted fruit",
+    "control_type": "Insecticide (vector control)",
+    "pesticides": "Imidacloprid; Thiamethoxam (against aphid/whitefly vector); remove infected plants",
+    "leafImg": "sample_leaves/pumpkin_bottle_gourd_bitter_gourd_mosaic_virus.jpg",
+    "medImg": "medicine_images/imidacloprid_17_8_sl.jpg",
+    "medName": "Imidacloprid 17.8% SL / Thiamethoxam",
+    "medGroup": "Systemic Vector Insecticide"
+  },
+  {
+    "sno": 92,
+    "category": "Flowers",
+    "crop": "Marigold",
+    "disease": "Alternaria Leaf Spot / Flower Blight",
+    "pathogen": "Fungal",
+    "height": "1-3 ft",
+    "symptoms": "Brown ringed spots on leaves, blighted flowers",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Chlorothalonil; Iprodione",
+    "leafImg": "sample_leaves/marigold_alternaria_leaf_spot_flower_blight.jpg",
+    "medImg": "medicine_images/chlorothalonil_75_wp.jpg",
+    "medName": "Chlorothalonil 75% WP",
+    "medGroup": "Broad-Spectrum Contact Fungicide"
+  },
+  {
+    "sno": 93,
+    "category": "Flowers",
+    "crop": "Marigold",
+    "disease": "Powdery Mildew",
+    "pathogen": "Fungal",
+    "height": "1-3 ft",
+    "symptoms": "White powdery coating",
+    "control_type": "Fungicide",
+    "pesticides": "Wettable sulphur; Hexaconazole; Azoxystrobin",
+    "leafImg": "sample_leaves/marigold_powdery_mildew.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 94,
+    "category": "Flowers",
+    "crop": "Marigold",
+    "disease": "Damping-off / Root Rot",
+    "pathogen": "Fungal",
+    "height": "1-3 ft",
+    "symptoms": "Seedlings collapse at base, root rot",
+    "control_type": "Seed treatment + Fungicide",
+    "pesticides": "Thiram / Captan (seed); Metalaxyl drench; Trichoderma",
+    "leafImg": "sample_leaves/marigold_damping_off_root_rot.jpg",
+    "medImg": "medicine_images/metalaxyl_mancozeb_mz.jpg",
+    "medName": "Metalaxyl + Mancozeb (Ridomil MZ 68% WP)",
+    "medGroup": "Systemic & Contact Fungicide"
+  },
+  {
+    "sno": 95,
+    "category": "Flowers",
+    "crop": "Chrysanthemum",
+    "disease": "Septoria Leaf Spot",
+    "pathogen": "Fungal",
+    "height": "1-3 ft",
+    "symptoms": "Dark brown spots from lower leaves upward",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Chlorothalonil; Carbendazim",
+    "leafImg": "sample_leaves/chrysanthemum_septoria_leaf_spot.jpg",
+    "medImg": "medicine_images/chlorothalonil_75_wp.jpg",
+    "medName": "Chlorothalonil 75% WP",
+    "medGroup": "Broad-Spectrum Contact Fungicide"
+  },
+  {
+    "sno": 96,
+    "category": "Flowers",
+    "crop": "Chrysanthemum",
+    "disease": "White Rust",
+    "pathogen": "Fungal",
+    "height": "1-3 ft",
+    "symptoms": "Pale spots with white pustules underneath",
+    "control_type": "Fungicide",
+    "pesticides": "Propiconazole; Mancozeb; Hexaconazole",
+    "leafImg": "sample_leaves/chrysanthemum_white_rust.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 97,
+    "category": "Flowers",
+    "crop": "Chrysanthemum",
+    "disease": "Powdery Mildew",
+    "pathogen": "Fungal",
+    "height": "1-3 ft",
+    "symptoms": "White powdery coating",
+    "control_type": "Fungicide",
+    "pesticides": "Wettable sulphur; Hexaconazole; Azoxystrobin",
+    "leafImg": "sample_leaves/chrysanthemum_powdery_mildew.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 98,
+    "category": "Flowers",
+    "crop": "Chrysanthemum",
+    "disease": "Fusarium Wilt",
+    "pathogen": "Fungal",
+    "height": "1-3 ft",
+    "symptoms": "Yellowing, one-sided wilting",
+    "control_type": "Cultural / Bio-control",
+    "pesticides": "Carbendazim drench; Trichoderma; healthy cuttings",
+    "leafImg": "sample_leaves/chrysanthemum_fusarium_wilt.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 99,
+    "category": "Flowers",
+    "crop": "Carnation",
+    "disease": "Fusarium Wilt",
+    "pathogen": "Fungal",
+    "height": "1-2.5 ft",
+    "symptoms": "Yellowing, wilting, stem base rot",
+    "control_type": "Cultural / Bio-control",
+    "pesticides": "Carbendazim drench; Trichoderma; soil sterilization",
+    "leafImg": "sample_leaves/carnation_fusarium_wilt.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 100,
+    "category": "Flowers",
+    "crop": "Carnation",
+    "disease": "Rust",
+    "pathogen": "Fungal",
+    "height": "1-2.5 ft",
+    "symptoms": "Brown powdery pustules on leaves and stems",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Hexaconazole",
+    "leafImg": "sample_leaves/carnation_rust.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 101,
+    "category": "Flowers",
+    "crop": "Carnation",
+    "disease": "Alternaria Blight",
+    "pathogen": "Fungal",
+    "height": "1-2.5 ft",
+    "symptoms": "Brown spots with purple margin",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Chlorothalonil",
+    "leafImg": "sample_leaves/carnation_alternaria_blight.jpg",
+    "medImg": "medicine_images/chlorothalonil_75_wp.jpg",
+    "medName": "Chlorothalonil 75% WP",
+    "medGroup": "Broad-Spectrum Contact Fungicide"
+  },
+  {
+    "sno": 102,
+    "category": "Flowers",
+    "crop": "Gerbera",
+    "disease": "Powdery Mildew",
+    "pathogen": "Fungal",
+    "height": "1-1.5 ft",
+    "symptoms": "White powdery coating on leaves",
+    "control_type": "Fungicide",
+    "pesticides": "Wettable sulphur; Hexaconazole; Azoxystrobin",
+    "leafImg": "sample_leaves/gerbera_powdery_mildew.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 103,
+    "category": "Flowers",
+    "crop": "Gerbera",
+    "disease": "Phytophthora Crown / Root Rot",
+    "pathogen": "Oomycete (fungus-like)",
+    "height": "1-1.5 ft",
+    "symptoms": "Wilting, crown rot, blackened roots",
+    "control_type": "Fungicide",
+    "pesticides": "Metalaxyl + Mancozeb (drench); Fosetyl-Al; good drainage",
+    "leafImg": "sample_leaves/gerbera_phytophthora_crown_root_rot.jpg",
+    "medImg": "medicine_images/metalaxyl_mancozeb_mz.jpg",
+    "medName": "Metalaxyl + Mancozeb (Ridomil MZ 68% WP)",
+    "medGroup": "Systemic & Contact Fungicide"
+  },
+  {
+    "sno": 104,
+    "category": "Flowers",
+    "crop": "Gerbera",
+    "disease": "Gray Mold (Botrytis)",
+    "pathogen": "Fungal",
+    "height": "1-1.5 ft",
+    "symptoms": "Grey fuzzy mould on flowers",
+    "control_type": "Fungicide",
+    "pesticides": "Iprodione; Carbendazim; improve ventilation",
+    "leafImg": "sample_leaves/gerbera_gray_mold_botrytis.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 105,
+    "category": "Flowers",
+    "crop": "Tuberose",
+    "disease": "Leaf Spot / Blight",
+    "pathogen": "Fungal",
+    "height": "2-3.5 ft (with spike)",
+    "symptoms": "Brown spots, blight on leaves",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Carbendazim",
+    "leafImg": "sample_leaves/tuberose_leaf_spot_blight.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 106,
+    "category": "Flowers",
+    "crop": "Tuberose",
+    "disease": "Stem Rot",
+    "pathogen": "Fungal",
+    "height": "2-3.5 ft (with spike)",
+    "symptoms": "Rot at base with white mycelium",
+    "control_type": "Cultural / Bio-control",
+    "pesticides": "Carbendazim drench; Trichoderma",
+    "leafImg": "sample_leaves/tuberose_stem_rot.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 107,
+    "category": "Flowers",
+    "crop": "Crossandra",
+    "disease": "Fusarium Wilt",
+    "pathogen": "Fungal",
+    "height": "1-3 ft",
+    "symptoms": "Yellowing, wilting, brown vascular tissue",
+    "control_type": "Cultural / Bio-control",
+    "pesticides": "Carbendazim drench; Trichoderma",
+    "leafImg": "sample_leaves/crossandra_fusarium_wilt.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 108,
+    "category": "Flowers",
+    "crop": "China Aster",
+    "disease": "Fusarium Wilt",
+    "pathogen": "Fungal",
+    "height": "1-2.5 ft",
+    "symptoms": "Yellowing, wilting",
+    "control_type": "Cultural / Bio-control",
+    "pesticides": "Carbendazim drench; Trichoderma",
+    "leafImg": "sample_leaves/china_aster_fusarium_wilt.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 109,
+    "category": "Flowers",
+    "crop": "China Aster",
+    "disease": "Aster Yellows",
+    "pathogen": "Phytoplasma",
+    "height": "1-2.5 ft",
+    "symptoms": "Yellowing, green sterile flowers, stunting",
+    "control_type": "Insecticide (vector control)",
+    "pesticides": "Imidacloprid; Dimethoate (against leafhoppers); remove infected plants",
+    "leafImg": "sample_leaves/china_aster_aster_yellows.jpg",
+    "medImg": "medicine_images/imidacloprid_17_8_sl.jpg",
+    "medName": "Imidacloprid 17.8% SL / Thiamethoxam",
+    "medGroup": "Systemic Vector Insecticide"
+  },
+  {
+    "sno": 110,
+    "category": "Flowers",
+    "crop": "Orchids",
+    "disease": "Black Rot (Phytophthora)",
+    "pathogen": "Oomycete (fungus-like)",
+    "height": "0.5-3 ft",
+    "symptoms": "Dark water-soaked patches, rapid rotting",
+    "control_type": "Fungicide",
+    "pesticides": "Metalaxyl + Mancozeb; Copper oxychloride; reduce watering",
+    "leafImg": "sample_leaves/orchids_black_rot_phytophthora.jpg",
+    "medImg": "medicine_images/metalaxyl_mancozeb_mz.jpg",
+    "medName": "Metalaxyl + Mancozeb (Ridomil MZ 68% WP)",
+    "medGroup": "Systemic & Contact Fungicide"
+  },
+  {
+    "sno": 111,
+    "category": "Flowers",
+    "crop": "Orchids",
+    "disease": "Anthracnose",
+    "pathogen": "Fungal",
+    "height": "0.5-3 ft",
+    "symptoms": "Sunken brown spots on leaves",
+    "control_type": "Fungicide",
+    "pesticides": "Carbendazim; Mancozeb",
+    "leafImg": "sample_leaves/orchids_anthracnose.jpg",
+    "medImg": "medicine_images/carbendazim_50_wp.jpg",
+    "medName": "Carbendazim 50% WP",
+    "medGroup": "Systemic Benzimidazole Fungicide"
+  },
+  {
+    "sno": 112,
+    "category": "Flowers",
+    "crop": "Zinnia",
+    "disease": "Powdery Mildew",
+    "pathogen": "Fungal",
+    "height": "1-3 ft",
+    "symptoms": "White powdery coating",
+    "control_type": "Fungicide",
+    "pesticides": "Wettable sulphur; Hexaconazole; Azoxystrobin",
+    "leafImg": "sample_leaves/zinnia_powdery_mildew.jpg",
+    "medImg": "medicine_images/propiconazole_25_ec.jpg",
+    "medName": "Propiconazole / Tebuconazole 25% EC",
+    "medGroup": "Triazole Systemic Fungicide"
+  },
+  {
+    "sno": 113,
+    "category": "Flowers",
+    "crop": "Zinnia",
+    "disease": "Alternaria Leaf Spot",
+    "pathogen": "Fungal",
+    "height": "1-3 ft",
+    "symptoms": "Brown spots with concentric rings",
+    "control_type": "Fungicide",
+    "pesticides": "Mancozeb; Chlorothalonil",
+    "leafImg": "sample_leaves/zinnia_alternaria_leaf_spot.jpg",
+    "medImg": "medicine_images/chlorothalonil_75_wp.jpg",
+    "medName": "Chlorothalonil 75% WP",
+    "medGroup": "Broad-Spectrum Contact Fungicide"
+  }
+];
 
-    const samples = [
-      {
-        crop: "Potato",
-        disease: "Potato Late Blight (Phytophthora infestans)",
-        severity: "HIGH",
-        remedy: "Mancozeb 75% WP @ 2.5g/L or Metalaxyl + Mancozeb (Ridomil MZ) @ 2g/L",
-        color: "#1e3a24",
-        spots: [{x: 420, y: 220, r: 55, c: "#1c1917", h: "#854d0e"}],
-        box: {x: 350, y: 140, w: 250, h: 210, label: "Potato Late Blight", conf: 0.95}
-      },
-      {
-        crop: "Groundnut",
-        disease: "Groundnut Early Leaf Spot (Cercospora arachidicola)",
-        severity: "MODERATE",
-        remedy: "Mancozeb 75% WP @ 2g/L or Chlorothalonil 75% WP @ 2g/L",
-        color: "#284218",
-        spots: [{x: 380, y: 180, r: 35, c: "#451a03", h: "#eab308"}],
-        box: {x: 320, y: 130, w: 200, h: 180, label: "Groundnut Leaf Spot", conf: 0.89}
-      },
-      {
-        crop: "Chilli",
-        disease: "Chilli Anthracnose (Colletotrichum capsici)",
-        severity: "HIGH",
-        remedy: "Mancozeb 75% WP @ 2.5g/L or Azoxystrobin @ 1ml/L",
-        color: "#152e19",
-        spots: [{x: 460, y: 240, r: 45, c: "#1c1917", h: "#92400e"}],
-        box: {x: 380, y: 170, w: 210, h: 190, label: "Chilli Anthracnose", conf: 0.92}
+    const samples = diseases.map(d => ({
+      sno: d.sno,
+      crop: d.crop,
+      disease: `${d.crop} ${d.disease} (${d.pathogen})`,
+      severity: d.pathogen === "Viral" || d.disease.toLowerCase().includes("blight") || d.disease.toLowerCase().includes("wilt") || d.disease.toLowerCase().includes("rot") ? "HIGH" : "MODERATE",
+      remedy: d.pesticides,
+      leafImg: d.leafImg,
+      medImg: d.medImg,
+      medName: d.medName,
+      medGroup: d.medGroup,
+      box: {
+        x: 240 + ((d.sno * 17) % 80),
+        y: 120 + ((d.sno * 13) % 60),
+        w: 320,
+        h: 230,
+        label: `${d.crop}: ${d.disease}`,
+        conf: 0.89 + ((d.sno % 9) * 0.01)
       }
-    ];
+    }));
 
     let userEmail = localStorage.getItem("agri_user_email") || "harikant4880@gmail.com";
     let userPhone = localStorage.getItem("agri_user_phone") || "+91 98450 12849";
     let wifiSSID = localStorage.getItem("agri_wifi_ssid") || "Agrivision_Field_Rover";
     let wifiPass = localStorage.getItem("agri_wifi_pass") || "agrivision2026";
     let wifiPassVisible = false;
-    let sampleIdx = 0;
+    let sampleIdx = Math.max(0, samples.findIndex(s => s.sno === 28));
     let confidence = 0.85;
     let currentPWM = 191;
     let roverLat = 12.8258, roverLng = 77.7126;
@@ -1263,7 +2944,9 @@
       document.body.className = savedTheme;
       document.getElementById("theme-selector").value = savedTheme;
 
+      populateExcelCropSelector();
       renderAdvisory(diseases);
+      setMailDispatchMode(true, true);
       initMap();
       renderScene();
       initKeyboard();
@@ -1621,51 +3304,91 @@ Timestamp: ${new Date().toLocaleString()} IST`;
       }
     }
 
-    function toggleAutoDispatch(val) {
-      autoDispatchEnabled = val;
-      const el = document.getElementById("auto-dispatch-label");
-      el.innerText = val ? "ON" : "OFF";
-      el.style.color = val ? "var(--primary-bright)" : "var(--text-muted)";
-      showToast(val ? "⚡ Auto-Dispatch Active" : "⏸ Auto-Dispatch Paused");
+    function setMailDispatchMode(isAuto, silent = false) {
+      autoDispatchEnabled = isAuto;
+      const btnAuto = document.getElementById("btn-mode-auto");
+      const btnManual = document.getElementById("btn-mode-manual");
+      if (btnAuto && btnManual) {
+        if (isAuto) {
+          btnAuto.style.background = "var(--primary)";
+          btnAuto.style.color = "#02261a";
+          btnAuto.style.border = "none";
+          btnManual.style.background = "transparent";
+          btnManual.style.color = "var(--text-muted)";
+          btnManual.style.border = "1px solid var(--border-subtle)";
+        } else {
+          btnAuto.style.background = "transparent";
+          btnAuto.style.color = "var(--text-muted)";
+          btnAuto.style.border = "1px solid var(--border-subtle)";
+          btnManual.style.background = "var(--accent-amber)";
+          btnManual.style.color = "#02261a";
+          btnManual.style.border = "none";
+        }
+      }
+      updatePathologyMedLabel();
+      if (!silent) {
+        logEvent("MAIL-MODE", isAuto ? "Switched to Auto-Dispatch Mail (real-time)" : "Switched to Send When Needed (manual mail dispatch)", "safe");
+        showToast(isAuto ? "⚡ Mail Mode: Auto-Dispatch ON" : "✉️ Mail Mode: Send Only When Needed");
+      }
     }
 
-    function renderScene() {
+    function updatePathologyMedLabel() {
+      const el = document.getElementById("pathology-med-label");
+      if (el) {
+        const modeTxt = autoDispatchEnabled ? "⚡ Auto-Dispatch ON" : "✉️ Manual (Send When Needed)";
+        el.innerText = `💊 Medicine: ${currentDiagnosis.medName || "Mancozeb 75% WP"} • Mail Mode: ${modeTxt}`;
+      }
+    }
+
+    function populateExcelCropSelector() {
+      const sel = document.getElementById("excel-crop-selector");
+      if (!sel) return;
+      sel.innerHTML = "";
+      samples.forEach((s, idx) => {
+        const opt = document.createElement("option");
+        opt.value = idx;
+        opt.text = `#${s.sno} ${s.crop} — ${diseases[idx].disease}`;
+        if (idx === sampleIdx) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    }
+
+    function selectExcelCrop(idxStr) {
+      customUploaded = false;
+      sampleIdx = parseInt(idxStr, 10) || 0;
+      renderScene(true);
+    }
+
+    function renderScene(triggerAutoMail = false) {
       if (customUploaded) return;
       const s = samples[sampleIdx];
-      currentDiagnosis = { crop: s.crop, disease: s.disease, severity: s.severity, remedy: s.remedy };
+      currentDiagnosis = {
+        crop: s.crop,
+        disease: s.disease,
+        severity: s.severity,
+        remedy: s.remedy,
+        medImg: s.medImg,
+        medName: s.medName
+      };
+
+      const sel = document.getElementById("excel-crop-selector");
+      if (sel && sel.value !== String(sampleIdx)) sel.value = String(sampleIdx);
 
       const canvas = document.getElementById("cvCanvas");
       const ctx = canvas.getContext("2d");
-      ctx.fillStyle = "#020604";
-      ctx.fillRect(0, 0, 960, 540);
 
-      ctx.save();
-      ctx.translate(480, 270);
-      ctx.beginPath();
-      ctx.moveTo(0, -180);
-      ctx.bezierCurveTo(180, -100, 200, 100, 0, 190);
-      ctx.bezierCurveTo(-200, 100, -180, -100, 0, -180);
-      ctx.fillStyle = s.color;
-      ctx.fill();
-      ctx.strokeStyle = "#10b981";
-      ctx.lineWidth = 3;
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.moveTo(0, -170); ctx.lineTo(0, 180);
-      ctx.strokeStyle = "rgba(52, 211, 153, 0.35)"; ctx.lineWidth = 2.5; ctx.stroke();
-      ctx.restore();
-
-      s.spots.forEach(sp => {
-        const g = ctx.createRadialGradient(sp.x, sp.y, 8, sp.x, sp.y, sp.r * 1.5);
-        g.addColorStop(0, sp.c);
-        g.addColorStop(0.6, sp.h);
-        g.addColorStop(1, "transparent");
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(sp.x, sp.y, sp.r * 1.5, 0, Math.PI * 2);
-        ctx.fill();
-      });
+      const leafImage = new Image();
+      leafImage.onload = () => {
+        ctx.fillStyle = "#020604";
+        ctx.fillRect(0, 0, 960, 540);
+        const scale = Math.min(960 / leafImage.width, 540 / leafImage.height);
+        const dw = leafImage.width * scale;
+        const dh = leafImage.height * scale;
+        const dx = (960 - dw) / 2;
+        const dy = (540 - dh) / 2;
+        ctx.drawImage(leafImage, dx, dy, dw, dh);
+      };
+      leafImage.src = s.leafImg;
 
       const bboxBox = document.getElementById("bbox-container");
       bboxBox.innerHTML = "";
@@ -1682,11 +3405,18 @@ Timestamp: ${new Date().toLocaleString()} IST`;
         bboxBox.appendChild(div);
       }
 
+      const medImgEl = document.getElementById("pathology-med-img");
+      if (medImgEl && s.medImg) medImgEl.src = s.medImg;
+
+      document.getElementById("feed-status").innerText = `● EXCEL CROP #${s.sno} | ${s.crop.toUpperCase()} (${(s.box.conf*100).toFixed(0)}% CONF)`;
       document.getElementById("pathology-title").innerText = `⚠️ PATHOLOGY DETECTED: ${s.disease}`;
       document.getElementById("pathology-desc").innerText = `Crop: ${s.crop} | Prescribed: ${s.remedy}`;
-      logEvent("CV-YOLOv8", `Inference: ${s.disease} (${(s.box.conf*100).toFixed(1)}% conf)`, "danger");
+      updatePathologyMedLabel();
+
+      logEvent("CV-YOLOv8", `Detected #${s.sno} ${s.disease} (${(s.box.conf*100).toFixed(1)}% conf) -> ${s.medName}`, "danger");
 
       if (autoSpeakEnabled) speakCurrentDiagnosis();
+      if (triggerAutoMail && autoDispatchEnabled) executeTransmission();
     }
 
     function handlePhotoUpload(e) {
@@ -1713,36 +3443,45 @@ Timestamp: ${new Date().toLocaleString()} IST`;
 
           ctx.drawImage(img, drawX, drawY, drawW, drawH);
 
-          const fn = file.name.toLowerCase();
-          let match = {
-            crop: "Potato",
-            disease: "Potato Late Blight (Phytophthora infestans)",
-            severity: "HIGH",
-            remedy: "Spray Mancozeb 75% WP @ 2.5g/L or Metalaxyl + Mancozeb (Ridomil MZ) @ 2g/L immediately."
-          };
+          const fn = file.name.toLowerCase().replace(/[^a-z0-9]/g, " ");
+          let matchedRow = diseases.find(d => {
+            const cropTok = d.crop.toLowerCase().split(/[\s/(]+/)[0];
+            const disTok = d.disease.toLowerCase().split(/[\s/(]+/)[0];
+            return fn.includes(cropTok) && fn.includes(disTok);
+          }) || diseases.find(d => fn.includes(d.crop.toLowerCase().split(/[\s/(]+/)[0]));
 
-          if (fn.includes("groundnut") || fn.includes("peanut") || fn.includes("spot")) {
-            match = {
-              crop: "Groundnut",
-              disease: "Groundnut Early Leaf Spot (Cercospora arachidicola)",
-              severity: "MODERATE",
-              remedy: "Spray Chlorothalonil 75% WP @ 2g/L or Mancozeb @ 2g/L."
-            };
-          } else if (fn.includes("chilli") || fn.includes("pepper") || fn.includes("anthracnose")) {
-            match = {
-              crop: "Chilli",
-              disease: "Chilli Anthracnose Fruit Rot (Colletotrichum capsici)",
-              severity: "HIGH",
-              remedy: "Apply Mancozeb 75% WP @ 2.5g/L or Azoxystrobin @ 1ml/L."
-            };
-          } else if (fn.includes("healthy")) {
+          let match;
+          if (fn.includes("healthy")) {
             match = {
               crop: "Crop Foliage",
               disease: "Healthy Foliage (No Pathology Detected)",
               severity: "HEALTHY",
-              remedy: "No fungicide required. Maintain standard irrigation."
+              remedy: "No fungicide required. Maintain standard irrigation.",
+              medImg: "medicine_images/trichoderma_bio.jpg",
+              medName: "Preventive Bio-Care (Optional)"
+            };
+          } else if (matchedRow) {
+            match = {
+              crop: matchedRow.crop,
+              disease: `${matchedRow.crop} ${matchedRow.disease} (${matchedRow.pathogen})`,
+              severity: matchedRow.pathogen === "Viral" || matchedRow.disease.toLowerCase().includes("blight") ? "HIGH" : "MODERATE",
+              remedy: matchedRow.pesticides,
+              medImg: matchedRow.medImg,
+              medName: matchedRow.medName
+            };
+          } else {
+            match = {
+              crop: "Potato",
+              disease: "Potato Late Blight (Phytophthora infestans)",
+              severity: "HIGH",
+              remedy: "Spray Mancozeb 75% WP @ 2.5g/L or Metalaxyl + Mancozeb (Ridomil MZ) @ 2g/L immediately.",
+              medImg: "medicine_images/metalaxyl_mancozeb_mz.jpg",
+              medName: "Metalaxyl + Mancozeb (Ridomil MZ 68% WP)"
             };
           }
+
+          const medImgEl = document.getElementById("pathology-med-img");
+          if (medImgEl && match.medImg) medImgEl.src = match.medImg;
 
           currentDiagnosis = match;
 
@@ -1767,6 +3506,7 @@ Timestamp: ${new Date().toLocaleString()} IST`;
             ? `✅ HEALTHY LEAF: ${match.disease}` 
             : `⚠️ PATHOLOGY DETECTED: ${match.disease}`;
           document.getElementById("pathology-desc").innerText = `Crop: ${match.crop} | Prescribed: ${match.remedy}`;
+          updatePathologyMedLabel();
 
           logEvent("USER-UPLOAD", `Analyzed ${file.name}: ${match.disease}`, match.severity === "HEALTHY" ? "safe" : "danger");
           showToast(`📸 Analyzed: ${match.disease.split("(")[0]}`);
@@ -1930,14 +3670,27 @@ Timestamp: ${new Date().toLocaleString()} IST`;
       const tbody = document.getElementById("advisory-tbody");
       tbody.innerHTML = "";
       data.forEach(d => {
+        const idx = diseases.findIndex(x => x.sno === d.sno);
         const tr = document.createElement("tr");
+        tr.style.cursor = "pointer";
+        tr.title = "Click to load this crop's plant image for detection";
+        tr.onclick = () => selectExcelCrop(idx);
         tr.innerHTML = `
           <td style="padding:8px 12px; font-family:'JetBrains Mono', monospace; color:var(--text-dim);">${d.sno}</td>
+          <td style="padding:6px 12px;"><img src="${d.leafImg}" alt="${d.crop}" style="width:48px; height:32px; object-fit:cover; border-radius:6px; border:1px solid var(--border-subtle);"></td>
           <td style="padding:8px 12px; font-weight:600; color:var(--primary-bright);">${d.crop}</td>
-          <td style="padding:8px 12px;"><strong>${d.disease}</strong></td>
+          <td style="padding:8px 12px;"><strong>${d.disease}</strong><div style="font-size:10px; color:var(--text-dim);">${d.pathogen}</div></td>
           <td style="padding:8px 12px; color:var(--text-dim);">${d.height}</td>
           <td style="padding:8px 12px;">${d.symptoms}</td>
-          <td style="padding:8px 12px; color:var(--primary-bright); font-weight:600;">${d.pesticides}</td>
+          <td style="padding:8px 12px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <img src="${d.medImg}" alt="${d.medName}" style="width:32px; height:32px; object-fit:cover; border-radius:6px; border:1px solid var(--border-accent); background:#fff; flex-shrink:0;">
+              <div>
+                <div style="color:var(--primary-bright); font-weight:600;">${d.pesticides}</div>
+                <div style="font-size:10px; color:var(--text-dim);">${d.medGroup}</div>
+              </div>
+            </div>
+          </td>
         `;
         tbody.appendChild(tr);
       });
