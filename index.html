@@ -744,7 +744,7 @@
 
         <div class="pathology-banner-card" id="pathology-banner">
           <div style="display: flex; align-items: center; gap: 14px; flex: 1; min-width: 260px;">
-            <img id="pathology-med-img" src="medicine_images/metalaxyl_mancozeb_mz.jpg" alt="Prescribed Medicine" style="width: 64px; height: 64px; border-radius: 10px; object-fit: cover; border: 2px solid var(--border-accent); background: #fff; flex-shrink: 0;">
+            <img id="pathology-med-img" src="medicine_images/metalaxyl_mancozeb_mz.jpg" alt="Prescribed Medicine" onclick="openMedicineViewer(currentDiagnosis.medImg)" title="Click to inspect medicine image &amp; dosage" style="width: 64px; height: 64px; border-radius: 10px; object-fit: cover; border: 2px solid var(--border-accent); background: #fff; flex-shrink: 0; cursor: pointer;">
             <div>
               <div style="font-family:'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700; color: #fca5a5;" id="pathology-title">
                 ⚠️ PATHOLOGY DETECTED: Potato Late Blight
@@ -758,6 +758,9 @@
             </div>
           </div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+            <button class="btn-outline-action" id="btn-view-med" onclick="openMedicineViewer(currentDiagnosis.medImg)" style="border-color: var(--primary-bright); color: var(--primary-bright);" title="Open Medicine Image Viewer">
+              💊 View Medicine
+            </button>
             <button class="btn-outline-action" id="btn-send-mail-now" onclick="executeTransmission()" style="border-color: var(--accent-cyan); color: var(--accent-cyan);" title="Send email & dashboard notification right now when needed">
               ✉️ Send Mail Now
             </button>
@@ -857,6 +860,9 @@
             <span>Agronomic Prescription Advisory Card</span>
             <span class="badge-tag">113 Low-Height Crop Remedies</span>
           </div>
+          <button class="btn-outline-action" onclick="openMedicineViewer(currentDiagnosis.medImg)" style="padding:5px 12px; font-size:11px; border-color:var(--primary-bright); color:var(--primary-bright);" title="Browse all 14 agrochemical medicine images">
+            💊 Medicine Gallery (14)
+          </button>
         </div>
 
         <div style="display: flex; gap: 8px;">
@@ -1201,6 +1207,59 @@
           <button class="btn-outline-action" onclick="closeWifiModal()">Close</button>
           <button class="btn-solid-primary" onclick="saveWifiCredentials()">💾 Save &amp; Apply Credentials</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: MEDICINE IMAGE VIEWER & FORMULARY GALLERY -->
+  <div class="modal-backdrop" id="medicine-viewer-modal" onclick="if (event.target === this) closeMedicineViewer()">
+    <div class="modal-box" style="max-width: 720px; max-height: 92vh; overflow-y: auto;">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+        <div>
+          <h3 style="font-family:'Plus Jakarta Sans', sans-serif; font-size:18px; font-weight:800; display:flex; align-items:center; gap:8px;">
+            <span>💊 Agrochemical &amp; Medicine Image Viewer</span>
+            <span class="badge-tag" id="med-viewer-counter">1 / 14</span>
+          </h3>
+          <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
+            Inspect prescribed formulation labels, dosage rates &amp; treated crop pathologies
+          </div>
+        </div>
+        <button onclick="closeMedicineViewer()" style="background:transparent; border:none; color:var(--text-muted); font-size:24px; cursor:pointer; line-height:1;">&times;</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1.15fr; gap:16px; align-items:center;">
+        <div style="background:#fff; border-radius:12px; border:2px solid var(--border-accent); padding:10px; display:flex; align-items:center; justify-content:center; min-height:240px;">
+          <img id="med-viewer-img" src="medicine_images/metalaxyl_mancozeb_mz.jpg" alt="Medicine Preview" style="max-width:100%; max-height:260px; object-fit:contain; border-radius:8px;">
+        </div>
+        <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div id="med-viewer-name" style="font-family:'Plus Jakarta Sans', sans-serif; font-size:16px; font-weight:800; color:var(--primary-bright);">METALAXYL + MANCOZEB</div>
+          <div id="med-viewer-group" style="font-family:'JetBrains Mono', monospace; font-size:11.5px; color:var(--accent-cyan);">Ridomil MZ 68% WP • Systemic + Contact</div>
+          <div class="spec-kv-row">
+            <span class="spec-k">Dosage:</span>
+            <span class="spec-v" id="med-viewer-dosage" style="color:var(--accent-amber);">2.0 g/L Water</span>
+          </div>
+          <div class="spec-kv-row">
+            <span class="spec-k">Image File:</span>
+            <span class="spec-v" id="med-viewer-file" style="font-size:10.5px;">medicine_images/metalaxyl_mancozeb_mz.jpg</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px; margin-top:4px;">
+            <span style="font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dim);">Used in Dataset For:</span>
+            <div id="med-viewer-crops" style="max-height:110px; overflow-y:auto; font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-muted); line-height:1.5; background:rgba(0,0,0,0.22); padding:8px; border-radius:8px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+        <div style="display:flex; gap:8px;">
+          <button class="btn-outline-action" onclick="stepMedicineViewer(-1)">◀ Prev Medicine</button>
+          <button class="btn-outline-action" onclick="stepMedicineViewer(1)">Next Medicine ▶</button>
+        </div>
+        <button class="btn-solid-primary" onclick="closeMedicineViewer()">Done</button>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <div style="font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dim);">All 14 Formulary Medicines (Click to Inspect):</div>
+        <div id="med-viewer-strip" style="display:flex; gap:8px; overflow-x:auto; padding:6px 2px;"></div>
       </div>
     </div>
   </div>
@@ -3734,7 +3793,7 @@ Timestamp: ${new Date().toLocaleString()} IST`;
           <td style="padding:8px 12px;">${d.symptoms}</td>
           <td style="padding:8px 12px;">
             <div style="display:flex; align-items:center; gap:8px;">
-              <img src="${d.medImg}" alt="${d.medName}" style="width:32px; height:32px; object-fit:cover; border-radius:6px; border:1px solid var(--border-accent); background:#fff; flex-shrink:0;">
+              <img src="${d.medImg}" alt="${d.medName}" onclick="event.stopPropagation(); openMedicineViewer('${d.medImg}');" title="Click to view medicine image" style="width:32px; height:32px; object-fit:cover; border-radius:6px; border:1px solid var(--border-accent); background:#fff; flex-shrink:0; cursor:pointer;">
               <div>
                 <div style="color:var(--primary-bright); font-weight:600;">${d.pesticides}</div>
                 <div style="font-size:10px; color:var(--text-dim);">${d.medGroup}</div>
@@ -3755,6 +3814,68 @@ Timestamp: ${new Date().toLocaleString()} IST`;
         return mCat && mQ;
       });
       renderAdvisory(filtered);
+    }
+
+    const MEDICINES_GALLERY = [
+      { img: "medicine_images/mancozeb_75_wp.jpg", name: "MANCOZEB 75% WP", group: "Wettable Powder • Contact Fungicide", dosage: "2.0 - 2.5 g/L Water" },
+      { img: "medicine_images/metalaxyl_mancozeb_mz.jpg", name: "METALAXYL + MANCOZEB", group: "Ridomil MZ 68% WP • Systemic + Contact", dosage: "2.0 g/L Water" },
+      { img: "medicine_images/propiconazole_25_ec.jpg", name: "PROPICONAZOLE 25% EC", group: "Triazole Systemic Fungicide", dosage: "1.0 ml/L Water" },
+      { img: "medicine_images/azoxystrobin_23_sc.jpg", name: "AZOXYSTROBIN 23% SC", group: "Suspension Concentrate • Systemic", dosage: "1.0 ml/L Water" },
+      { img: "medicine_images/carbendazim_50_wp.jpg", name: "CARBENDAZIM 50% WP", group: "Wettable Powder • Systemic Fungicide", dosage: "1.0 g/L Water" },
+      { img: "medicine_images/chlorothalonil_75_wp.jpg", name: "CHLOROTHALONIL 75% WP", group: "Contact Foliar Fungicide", dosage: "2.0 g/L Water" },
+      { img: "medicine_images/copper_oxychloride_50_wp.jpg", name: "COPPER OXYCHLORIDE", group: "50% WP • Fungicide & Bactericide", dosage: "2.5 - 3.0 g/L Water" },
+      { img: "medicine_images/wettable_sulphur_80_wp.jpg", name: "WETTABLE SULPHUR 80%", group: "WP • Powdery Mildew & Miticide", dosage: "2.0 - 3.0 g/L Water" },
+      { img: "medicine_images/streptocycline.jpg", name: "STREPTOCYCLINE", group: "Streptomycin + Tetracycline • Bactericide", dosage: "0.1 - 0.15 g/L Water" },
+      { img: "medicine_images/imidacloprid_17_8_sl.jpg", name: "IMIDACLOPRID 17.8% SL", group: "Systemic Insecticide (Vector Control)", dosage: "0.5 ml/L Water" },
+      { img: "medicine_images/trichoderma_bio.jpg", name: "TRICHODERMA VIRIDE", group: "Bio-Control Antagonist Formulation", dosage: "5.0 g/L or Seed Coat" },
+      { img: "medicine_images/iprodione_difenoconazole.jpg", name: "DIFENOCONAZOLE 25% EC", group: "Alternaria & Blotch Specialist", dosage: "0.5 - 1.0 ml/L Water" },
+      { img: "medicine_images/captan_thiram.jpg", name: "CAPTAN 50% WP", group: "Protective Seed & Foliar Fungicide", dosage: "2.0 g/L Water" },
+      { img: "medicine_images/cymoxanil_dimethomorph.jpg", name: "CYMOXANIL + MANCOZEB", group: "Oomycete Blight & Mildew Control", dosage: "2.0 g/L Water" }
+    ];
+    let medViewerIdx = 1;
+
+    function openMedicineViewer(medImgPath) {
+      const foundIdx = MEDICINES_GALLERY.findIndex(m => m.img === medImgPath);
+      medViewerIdx = foundIdx >= 0 ? foundIdx : 0;
+      renderMedicineViewer();
+      document.getElementById("medicine-viewer-modal").style.display = "flex";
+    }
+
+    function closeMedicineViewer() {
+      document.getElementById("medicine-viewer-modal").style.display = "none";
+    }
+
+    function stepMedicineViewer(dir) {
+      medViewerIdx = (medViewerIdx + dir + MEDICINES_GALLERY.length) % MEDICINES_GALLERY.length;
+      renderMedicineViewer();
+    }
+
+    function renderMedicineViewer() {
+      const m = MEDICINES_GALLERY[medViewerIdx];
+      document.getElementById("med-viewer-img").src = m.img;
+      document.getElementById("med-viewer-img").alt = m.name;
+      document.getElementById("med-viewer-name").innerText = m.name;
+      document.getElementById("med-viewer-group").innerText = m.group;
+      document.getElementById("med-viewer-dosage").innerText = m.dosage;
+      document.getElementById("med-viewer-file").innerText = m.img;
+      document.getElementById("med-viewer-counter").innerText = `${medViewerIdx + 1} / ${MEDICINES_GALLERY.length}`;
+
+      const matched = diseases.filter(d => d.medImg === m.img);
+      const cropsEl = document.getElementById("med-viewer-crops");
+      cropsEl.innerHTML = matched.length
+        ? matched.map(d => `• <strong>${d.crop}</strong> — ${d.disease}`).join("<br>")
+        : "• General broad-spectrum / preventive formulary reserve";
+
+      const strip = document.getElementById("med-viewer-strip");
+      strip.innerHTML = "";
+      MEDICINES_GALLERY.forEach((item, idx) => {
+        const btn = document.createElement("button");
+        btn.onclick = () => { medViewerIdx = idx; renderMedicineViewer(); };
+        btn.title = item.name;
+        btn.style.cssText = `flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:4px; padding:5px; border-radius:8px; cursor:pointer; background:${idx === medViewerIdx ? "rgba(16,185,129,0.2)" : "var(--bg-card)"}; border:2px solid ${idx === medViewerIdx ? "var(--primary-bright)" : "var(--border-subtle)"}; width:78px;`;
+        btn.innerHTML = `<img src="${item.img}" alt="${item.name}" style="width:52px; height:44px; object-fit:cover; border-radius:6px; background:#fff;"><span style="font-family:'JetBrains Mono', monospace; font-size:9px; color:var(--text-main); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:68px;">${item.name.split(" ")[0]}</span>`;
+        strip.appendChild(btn);
+      });
     }
 
     function showToast(m) {
