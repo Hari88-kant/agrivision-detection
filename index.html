@@ -681,7 +681,7 @@
       <section class="card-panel">
         <div class="panel-head">
           <div class="panel-title">
-            <span>Modules 3 &amp; 4: Computer Vision Viewport</span>
+            <span>Computer Vision Viewport</span>
             <span class="badge-tag" id="active-model-badge">YOLOv8n-Foliar</span>
             <select id="ai-model-selector" class="input-field" style="width: auto; padding: 4px 10px; font-size: 11px; border-radius: 9999px;" onchange="switchAIModel(this.value)" title="Switch active AI pathology detection model">
               <option value="yolov8n">YOLOv8n-Foliar (Edge Nano • 15.2 FPS)</option>
@@ -761,6 +761,9 @@
             <button class="btn-outline-action" id="btn-send-mail-now" onclick="executeTransmission()" style="border-color: var(--accent-cyan); color: var(--accent-cyan);" title="Send email & dashboard notification right now when needed">
               ✉️ Send Mail Now
             </button>
+            <button class="btn-outline-action" id="btn-send-sms-now" onclick="dispatchSMS()" style="border-color: var(--accent-amber); color: var(--accent-amber);" title="Send SMS alert to target mobile number">
+              📲 Send SMS
+            </button>
             <button class="btn-solid-primary" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color:#fff;" onclick="openDispatchModal()">
               📱 Dispatch to Mail &amp; Mobile
             </button>
@@ -784,7 +787,7 @@
       <section class="card-panel">
         <div class="panel-head">
           <div class="panel-title">
-            <span>Modules 1, 2 &amp; 5: Hardware Telemetry</span>
+            <span>Hardware Telemetry</span>
             <span class="badge-tag">Sensors &amp; Actuators</span>
           </div>
         </div>
@@ -892,7 +895,7 @@
       <section class="card-panel">
         <div class="panel-head">
           <div class="panel-title">
-            <span>Module 1: Navigation &amp; D-Pad Hub</span>
+            <span>Navigation &amp; D-Pad Hub</span>
             <span class="badge-tag">WASD + Spacebar</span>
           </div>
         </div>
@@ -927,7 +930,7 @@
       <section class="card-panel">
         <div class="panel-head">
           <div class="panel-title">
-            <span>Module 7: Real-Time Field Location</span>
+            <span>Real-Time Field Location</span>
             <span class="badge-tag">Alliance Lot 3 GPS</span>
           </div>
           <button class="btn-solid-primary" style="padding:5px 12px; font-size:11px;" onclick="startRealtimeTracking()">
@@ -946,7 +949,7 @@
       <section class="card-panel">
         <div class="panel-head">
           <div class="panel-title">
-            <span>Module 7: Telemetry Audit Trail</span>
+            <span>Telemetry Audit Trail</span>
             <span class="badge-tag">Millisecond Stream</span>
           </div>
           <div style="display:flex; gap:6px;">
@@ -1014,6 +1017,9 @@
 
       <div style="display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; margin-top:6px;">
         <button class="btn-outline-action" onclick="closeDispatchModal()">Cancel</button>
+        <button class="btn-outline-action" style="border-color:var(--accent-amber); color:var(--accent-amber);" onclick="dispatchSMS()">
+          📲 Send SMS
+        </button>
         <button class="btn-outline-action" style="border-color:#25d366; color:#25d366;" onclick="dispatchWhatsApp()">
           💬 WhatsApp
         </button>
@@ -3228,6 +3234,17 @@ Timestamp: ${new Date().toLocaleString()} IST`;
 
       const el = document.getElementById("modal-payload-text");
       if (el) el.innerText = preview;
+    }
+
+    function dispatchSMS() {
+      const cleanPhone = userPhone.replace(/[^0-9+]/g, "");
+      const smsText = `[AGRIVISION ALERT] ${currentDiagnosis.disease} on ${currentDiagnosis.crop}. Remedy: ${currentDiagnosis.remedy}. GPS: ${roverLat.toFixed(5)}N, ${roverLng.toFixed(5)}E`;
+      const encoded = encodeURIComponent(smsText);
+      const sep = /iPad|iPhone|iPod|Macintosh/i.test(navigator.userAgent) ? "&" : "?";
+      window.location.href = `sms:${cleanPhone}${sep}body=${encoded}`;
+      logEvent("SMS-DISPATCH", `SMS alert triggered to ${userPhone} for ${currentDiagnosis.crop}`, "danger");
+      showToast(`📲 SMS Alert opened for ${userPhone}`);
+      executeTransmission();
     }
 
     function dispatchWhatsApp() {
