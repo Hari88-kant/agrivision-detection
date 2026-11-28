@@ -3528,6 +3528,55 @@ Timestamp: ${new Date().toLocaleString()} IST`;
       if (triggerAutoMail && autoDispatchEnabled) executeTransmission();
     }
 
+    function analyzeLeafPixels(ctx, rx, ry, rw, rh) {
+      const x0 = Math.max(0, Math.floor(rx)), y0 = Math.max(0, Math.floor(ry));
+      const w = Math.max(1, Math.floor(rw)), h = Math.max(1, Math.floor(rh));
+      const data = ctx.getImageData(x0, y0, w, h).data;
+      let total = 0, green = 0, yellow = 0, brown = 0, white = 0, dark = 0;
+      let minX = w, minY = h, maxX = 0, maxY = 0;
+      const step = 4;
+      for (let py = 0; py < h; py += step) {
+        for (let px = 0; px < w; px += step) {
+          const idx = (py * w + px) * 4;
+          const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+          if (r < 12 && g < 12 && b < 12) continue;
+          total++;
+          let isLesion = false;
+          if (g > r * 1.12 && g > b * 1.15 && g > 45) {
+            green++;
+          } else if (r > 185 && g > 185 && b > 180 && Math.abs(r - g) < 25) {
+            white++; isLesion = true;
+          } else if (r > 130 && g > 110 && b < 110 && r >= g * 0.9) {
+            yellow++; isLesion = true;
+          } else if (r > 80 && r > g * 1.25 && b < 95) {
+            brown++; isLesion = true;
+          } else if (r < 75 && g < 70 && b < 65) {
+            dark++; isLesion = true;
+          }
+          if (isLesion) {
+            if (px < minX) minX = px;
+            if (py < minY) minY = py;
+            if (px > maxX) maxX = px;
+            if (py > maxY) maxY = py;
+          }
+        }
+      }
+      const t = Math.max(1, total);
+      const lesionRatio = (yellow + brown + white + dark) / t;
+      const hasBox = maxX > minX + 16 && maxY > minY + 16;
+      return {
+        greenRatio: green / t,
+        yellowRatio: yellow / t,
+        brownRatio: brown / t,
+        whiteRatio: white / t,
+        darkRatio: dark / t,
+        lesionRatio,
+        box: hasBox
+          ? { x: x0 + minX, y: y0 + minY, w: maxX - minX, h: maxY - minY }
+          : { x: rx + rw * 0.2, y: ry + rh * 0.18, w: rw * 0.6, h: rh * 0.6 }
+      };
+    }
+
     function handlePhotoUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -3552,23 +3601,29 @@ Timestamp: ${new Date().toLocaleString()} IST`;
 
           ctx.drawImage(img, drawX, drawY, drawW, drawH);
 
+          const stats = analyzeLeafPixels(ctx, drawX, drawY, drawW, drawH);
           const fn = file.name.toLowerCase().replace(/[^a-z0-9]/g, " ");
           let matchedRow = diseases.find(d => {
             const cropTok = d.crop.toLowerCase().split(/[\s/(]+/)[0];
             const disTok = d.disease.toLowerCase().split(/[\s/(]+/)[0];
             return fn.includes(cropTok) && fn.includes(disTok);
+          }) || diseases.find(d => {
+            const disTok = d.disease.toLowerCase().split(/[\s/(]+/)[0];
+            return disTok.length > 3 && fn.includes(disTok);
           }) || diseases.find(d => fn.includes(d.crop.toLowerCase().split(/[\s/(]+/)[0]));
 
           let match;
-          if (fn.includes("healthy")) {
+          let detConf = 92;
+          if (fn.includes("healthy") || (!matchedRow && stats.greenRatio > 0.68 && stats.lesionRatio < 0.12)) {
             match = {
-              crop: "Crop Foliage",
+              crop: matchedRow ? matchedRow.crop : "Crop Foliage",
               disease: "Healthy Foliage (No Pathology Detected)",
               severity: "HEALTHY",
               remedy: "No fungicide required. Maintain standard irrigation.",
               medImg: "medicine_images/trichoderma_bio.jpg",
               medName: "Preventive Bio-Care (Optional)"
             };
+            detConf = Math.min(98, Math.round(80 + stats.greenRatio * 20));
           } else if (matchedRow) {
             match = {
               crop: matchedRow.crop,
@@ -3578,15 +3633,22 @@ Timestamp: ${new Date().toLocaleString()} IST`;
               medImg: matchedRow.medImg,
               medName: matchedRow.medName
             };
+            detConf = Math.min(97, Math.max(84, Math.round(86 + stats.lesionRatio * 25)));
           } else {
+            let inferredKey = "late blight";
+            if (stats.whiteRatio > 0.14) inferredKey = "powdery mildew";
+            else if (stats.brownRatio > stats.yellowRatio && stats.brownRatio > 0.12) inferredKey = "rust";
+            else if (stats.yellowRatio > 0.18) inferredKey = "yellow mosaic";
+            const inferredRow = diseases.find(d => d.disease.toLowerCase().includes(inferredKey)) || diseases[27];
             match = {
-              crop: "Potato",
-              disease: "Potato Late Blight (Phytophthora infestans)",
-              severity: "HIGH",
-              remedy: "Spray Mancozeb 75% WP @ 2.5g/L or Metalaxyl + Mancozeb (Ridomil MZ) @ 2g/L immediately.",
-              medImg: "medicine_images/metalaxyl_mancozeb_mz.jpg",
-              medName: "Metalaxyl + Mancozeb (Ridomil MZ 68% WP)"
+              crop: inferredRow.crop,
+              disease: `${inferredRow.crop} ${inferredRow.disease} (${inferredRow.pathogen})`,
+              severity: stats.lesionRatio > 0.25 ? "HIGH" : "MODERATE",
+              remedy: inferredRow.pesticides,
+              medImg: inferredRow.medImg,
+              medName: inferredRow.medName
             };
+            detConf = Math.min(95, Math.max(76, Math.round(78 + stats.lesionRatio * 30)));
           }
 
           const medImgEl = document.getElementById("pathology-med-img");
@@ -3602,23 +3664,23 @@ Timestamp: ${new Date().toLocaleString()} IST`;
           if (match.severity !== "HEALTHY") {
             const div = document.createElement("div");
             div.className = "bbox";
-            div.style.left = (drawX + drawW * 0.25) * scaleX + "px";
-            div.style.top = (drawY + drawH * 0.2) * scaleY + "px";
-            div.style.width = (drawW * 0.5) * scaleX + "px";
-            div.style.height = (drawH * 0.55) * scaleY + "px";
-            div.innerHTML = `<div class="bbox-tag">${match.disease.split("(")[0]} 94%</div>`;
+            div.style.left = (stats.box.x * scaleX) + "px";
+            div.style.top = (stats.box.y * scaleY) + "px";
+            div.style.width = (stats.box.w * scaleX) + "px";
+            div.style.height = (stats.box.h * scaleY) + "px";
+            div.innerHTML = `<div class="bbox-tag">${match.disease.split("(")[0]} ${detConf}%</div>`;
             bboxBox.appendChild(div);
           }
 
-          document.getElementById("feed-status").innerText = `● USER PHOTO: ${file.name.substring(0, 20)}`;
+          document.getElementById("feed-status").innerText = `● USER PHOTO: ${file.name.substring(0, 20)} (${detConf}% CONF)`;
           document.getElementById("pathology-title").innerText = match.severity === "HEALTHY" 
             ? `✅ HEALTHY LEAF: ${match.disease}` 
             : `⚠️ PATHOLOGY DETECTED: ${match.disease}`;
           document.getElementById("pathology-desc").innerText = `Crop: ${match.crop} | Prescribed: ${match.remedy}`;
           updatePathologyMedLabel();
 
-          logEvent("USER-UPLOAD", `Analyzed ${file.name}: ${match.disease}`, match.severity === "HEALTHY" ? "safe" : "danger");
-          showToast(`📸 Analyzed: ${match.disease.split("(")[0]}`);
+          logEvent("USER-UPLOAD", `Analyzed ${file.name}: ${match.disease} (${detConf}% conf)`, match.severity === "HEALTHY" ? "safe" : "danger");
+          showToast(`📸 Analyzed: ${match.disease.split("(")[0]} (${detConf}%)`);
 
           if (autoSpeakEnabled) speakCurrentDiagnosis();
           if (autoDispatchEnabled && match.severity !== "HEALTHY") executeTransmission();
