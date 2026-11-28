@@ -682,7 +682,14 @@
         <div class="panel-head">
           <div class="panel-title">
             <span>Modules 3 &amp; 4: Computer Vision Viewport</span>
-            <span class="badge-tag">YOLOv8 Edge Engine</span>
+            <span class="badge-tag" id="active-model-badge">YOLOv8n-Foliar</span>
+            <select id="ai-model-selector" class="input-field" style="width: auto; padding: 4px 10px; font-size: 11px; border-radius: 9999px;" onchange="switchAIModel(this.value)" title="Switch active AI pathology detection model">
+              <option value="yolov8n">YOLOv8n-Foliar (Edge Nano • 15.2 FPS)</option>
+              <option value="yolov8s">YOLOv8s-Foliar (Balanced Small • 11.8 FPS)</option>
+              <option value="yolov8m">YOLOv8m-Pathology (High Precision • 7.4 FPS)</option>
+              <option value="mobilenetv2">MobileNetV2-SSD (Ultra-Light • 24.0 FPS)</option>
+              <option value="efficientnet">EfficientNet-B0 (Deep Classifier • 9.6 FPS)</option>
+            </select>
           </div>
           <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--primary-bright);" id="feed-status">
             ● LIVE STREAM | 15.2 FPS (DVP 10MHz)
@@ -2920,6 +2927,14 @@
     let wifiPassVisible = false;
     let sampleIdx = Math.max(0, samples.findIndex(s => s.sno === 28));
     let confidence = 0.85;
+    const AI_MODELS = {
+      yolov8n: { name: "YOLOv8n-Foliar", fps: 15.2, latency: 21.8, confBoost: 0.00, desc: "Edge Nano • Real-Time Rover" },
+      yolov8s: { name: "YOLOv8s-Foliar", fps: 11.8, latency: 34.5, confBoost: 0.02, desc: "Balanced Small • Field Trials" },
+      yolov8m: { name: "YOLOv8m-Pathology", fps: 7.4, latency: 58.2, confBoost: 0.04, desc: "High Precision • Lab Grade" },
+      mobilenetv2: { name: "MobileNetV2-SSD", fps: 24.0, latency: 14.1, confBoost: -0.02, desc: "Ultra-Light • Low Power" },
+      efficientnet: { name: "EfficientNet-B0", fps: 9.6, latency: 41.0, confBoost: 0.03, desc: "Deep Lesion Classifier" }
+    };
+    let activeModelKey = localStorage.getItem("agri_ai_model") || "yolov8n";
     let currentPWM = 191;
     let roverLat = 12.8258, roverLng = 77.7126;
     let map, marker, pathLine;
@@ -2947,6 +2962,7 @@
       populateExcelCropSelector();
       renderAdvisory(diseases);
       setMailDispatchMode(true, true);
+      switchAIModel(activeModelKey, true);
       initMap();
       renderScene();
       initKeyboard();
@@ -3351,6 +3367,23 @@ Timestamp: ${new Date().toLocaleString()} IST`;
         if (idx === sampleIdx) opt.selected = true;
         sel.appendChild(opt);
       });
+    }
+
+    function switchAIModel(modelKey, silent = false) {
+      const m = AI_MODELS[modelKey] || AI_MODELS.yolov8n;
+      activeModelKey = modelKey;
+      localStorage.setItem("agri_ai_model", activeModelKey);
+      const sel = document.getElementById("ai-model-selector");
+      if (sel) sel.value = activeModelKey;
+      const badge = document.getElementById("active-model-badge");
+      if (badge) badge.innerText = m.name;
+      const latEl = document.getElementById("edge-lat");
+      if (latEl) latEl.innerText = m.latency.toFixed(1);
+      if (!silent) {
+        logEvent("MODEL-SWITCH", `Loaded ${m.name} (${m.desc}) @ ${m.fps} FPS / ${m.latency} ms`, "safe");
+        showToast(`🧠 Model Switched: ${m.name}`);
+        renderScene(false);
+      }
     }
 
     function selectExcelCrop(idxStr) {
